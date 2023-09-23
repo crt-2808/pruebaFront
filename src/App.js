@@ -21,6 +21,7 @@ import CalendarioLlamada from "./components/CalendarioLlamada";
 import SeguimientoColab from "./components/seguimientoColab";
 import SeguimientoDiarioColab from "./components/seguimientoDiarioColab";
 import AgregarVisita from "./components/AgregarVisita";
+import Mamado from "./components/mamado";
 import SeguimientoLlamada from "./components/SeguimientoLlamada";
 import SeguimientoVisita from "./components/SeguimientoVisita";
 import SeleccionColaboradores from "./components/ConfirmacionCambaceo1";
@@ -56,13 +57,10 @@ function App() {
             element={<SeguimientoDiarioColab />}
           />
           <Route path="/AgregarVisita" element={<AgregarVisita />} />
-
-          <Route path="/SeguimientoLlamada" element={<SeguimientoLlamada />} />
-          <Route path="/SeguimientoVisita" element={<SeguimientoVisita />} />
-          <Route
-            path="/SeleccionColaboradores"
-            element={<SeleccionColaboradores />}
-          />
+          <Route path="/VisitaAgregar" element={<Mamado />} />
+          <Route path="/SeguimientoLlamada" element={<SeguimientoLlamada />}/>
+          <Route path="/SeguimientoVisita" element={<SeguimientoVisita />}/>
+          <Route path="/SeleccionColaboradores" element={<SeleccionColaboradores/>}/>
         </Routes>
       </div>
     </UserProvider>

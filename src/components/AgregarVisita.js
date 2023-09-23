@@ -7,10 +7,6 @@ import { Calendar } from "primereact/calendar";
 import "../theme.css";
 import "primereact/resources/primereact.css"; // core css
 import { addLocale } from "primereact/api";
-import { Row, Col, Form } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import { useForm } from "react-hook-form";
-import { Navigate } from "react-router-dom";
 addLocale("es", {
   firstDayOfWeek: 1,
   dayNames: [
@@ -66,7 +62,20 @@ const formateoFecha = (fechaI) => {
   return FechaNueva;
 };
 
-const Codigo2 = ({ FechaProgramada, setFechaProgramada, handleContinuar }) => {
+const AgregarVisita = () => {
+  const [FechaProgramada, setFechaProgramada] = useState(null);
+  const fechaRegistrada = () => {
+    if (FechaProgramada === null) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Ingresa una fecha",
+      });
+    } else {
+      const fecha = formateoFecha(FechaProgramada);
+      console.log(fecha);
+    }
+  };
   return (
     <div className="fluid">
       <Navbar></Navbar>
@@ -124,7 +133,7 @@ const Codigo2 = ({ FechaProgramada, setFechaProgramada, handleContinuar }) => {
                 <button
                   className="btn-exportar"
                   id="Buscar"
-                  onClick={handleContinuar}
+                  onClick={fechaRegistrada}
                 >
                   Agregar
                 </button>
@@ -136,227 +145,5 @@ const Codigo2 = ({ FechaProgramada, setFechaProgramada, handleContinuar }) => {
     </div>
   );
 };
-const Codigo1 = ({ fechaProgramada, handleRegresar }) => {
-  const {
-    register,
 
-    formState: { errors },
-  } = useForm();
-  console.log(fechaProgramada);
-  return (
-    <div className="fluid">
-      <Navbar style={{ backgroundColor: "##F8F9FA" }}></Navbar>
-
-      <div style={{ backgroundColor: "#F1F5F8" }}>
-        <div
-          style={{
-            paddingTop: "10px",
-            paddingBottom: "10px",
-            backgroundColor: "#F1F5F8",
-          }}
-        >
-          <Link onClick={handleRegresar}>
-            <ArrowLeft className="ml-4 regreso" />
-            <span id="indicador">Cambia la fecha</span>
-          </Link>
-        </div>
-      </div>
-      <div className="py-md-4" style={{ backgroundColor: "#F1F5F8" }}>
-        <div
-          className="row"
-          style={{
-            marginLeft: "35px",
-            marginBottom: "-50px",
-            marginRight: "0px",
-          }}
-        >
-          <h2 className="titulo-cambaceo px-5 ">Agregar una Visita</h2>
-        </div>
-
-        <div
-          className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
-          id="contenedor-cambaceo"
-          style={{ marginBottom: "0px" }}
-        >
-          <Form
-            // encType="multipart/form-data"
-            method="post"
-            id="form"
-          >
-            <Row className="mb-5">
-              <Col xs={12} md={6}>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">
-                    Nombre Completo
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el nombre de contacto"
-                    {...register("contactos", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="telefono">Telefono</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el telefono de contacto"
-                    {...register("tel", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="timeInput">Hora Inicio</Form.Label>
-                  <Form.Control
-                    type="time"
-                    {...register("Time", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="timeInput">Hora Fin</Form.Label>
-                  <Form.Control
-                    type="time"
-                    {...register("Time", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">Calle</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa la calle de la cita"
-                    {...register("contactos", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">
-                    Numero Exterior
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el numero exterior"
-                    {...register("contactos", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">
-                    Numero Interior
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el numero interior"
-                    {...register("contactos", { required: true })}
-                  />
-                </Form.Group>
-              </Col>
-              <Col xs={12} md={6}>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">
-                    Codigo Postal
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el codigo postal"
-                    {...register("contactos", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">Colonia</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa la colonia"
-                    {...register("contactos", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">
-                    Tipo de Empresa
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el tipo de empresa"
-                    {...register("contactos", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">Sitio Web</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el dominio de la empresa"
-                    {...register("contactos", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">Sitio Web</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el dominio de la empresa"
-                    {...register("contactos", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <h5 style={{ textAlign: "left" }}>Descripcion</h5>
-                  <Form.Control
-                    as="textarea"
-                    rows={4}
-                    placeholder="Descripcion de la actividad diaria"
-                    {...register("Descripcion", { required: true })}
-                  />
-                </Form.Group>
-                <Button
-                  type="submit"
-                  value="Enviar"
-                  variant="success"
-                  size="lg"
-                  style={{ marginTop: "25px" }}
-                >
-                  Confirmar
-                </Button>
-              </Col>
-            </Row>
-          </Form>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const Mamado = () => {
-  const [mostrarCodigo2, setMostrarCodigo2] = useState(false);
-  const [fechaProgramada, setFechaProgramada] = useState(null);
-
-  const handleContinuar = () => {
-    if (fechaProgramada !== null) {
-      const fechaFormateada = formateoFecha(fechaProgramada);
-      setMostrarCodigo2(true);
-      setFechaProgramada(fechaFormateada);
-    }
-    if (fechaProgramada === null) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Debes ingresar una fecha",
-      });
-    }
-  };
-  const handleRegresar = () => {
-    setMostrarCodigo2(false);
-    setFechaProgramada(null);
-  };
-
-  if (mostrarCodigo2) {
-    return (
-      <Codigo1
-        fechaProgramada={fechaProgramada}
-        handleRegresar={handleRegresar}
-      />
-    );
-  } else {
-    return (
-      <Codigo2
-        fechaProgramada={fechaProgramada}
-        setFechaProgramada={setFechaProgramada}
-        handleContinuar={handleContinuar}
-      />
-    );
-  }
-};
-
-export default Mamado;
+export default AgregarVisita;

@@ -90,7 +90,7 @@ function SeleccionColaboradores() {
               label="Confirmar"
               className="p-button-danger"
               onClick={confirmarAccion}
-            />  
+            />
           </div>
         }
       />

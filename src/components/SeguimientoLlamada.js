@@ -150,7 +150,7 @@ import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Link } from "react-router-dom";
-import { Papa } from "papaparse";
+import {Papa} from "papaparse";
 
 function SeguimientoLlamada() {
   const [telefonos, setTelefonos] = useState([]);
@@ -158,9 +158,10 @@ function SeguimientoLlamada() {
   const [incidencia, setIncidencia] = useState("");
   const [datosTelefonos, setDatosTelefonos] = useState({});
 
+  
   useEffect(() => {
     // Obtener la lista de números de teléfono desde el backend
-    fetch("/api/llamadas")
+    fetch("/api/telefonos")
       .then((response) => response.json())
       .then((data) => setTelefonos(data))
       .catch((error) =>
@@ -171,7 +172,7 @@ function SeguimientoLlamada() {
   useEffect(() => {
     // Obtener los datos de teléfonos seleccionados desde el backend
     if (telefonoSeleccionado) {
-      fetch("/api/llamadas/${telefonoSeleccionado}")
+      fetch(`/api/telefonos/${telefonoSeleccionado}`)
         .then((response) => response.json())
         .then((data) => setDatosTelefonos(data))
         .catch((error) =>
@@ -203,33 +204,21 @@ function SeguimientoLlamada() {
     }
 
     const csvData = [
-      [
-        "Nombre Completo",
-        "Fecha de Asignación",
-        "Fecha de Conclusión",
-        "Tipo de Empresa",
-        "Incidencia",
-      ],
-      [
-        datosTelefonos.nombreCompleto,
-        datosTelefonos.fechaAsignacion,
-        datosTelefonos.fechaConclusion,
-        datosTelefonos.tipoEmpresa,
-        incidencia,
-      ],
+      ["Nombre Completo", "Fecha de Asignación", "Fecha de Conclusión", "Tipo de Empresa", "Incidencia"],
+      [datosTelefonos.nombreCompleto, datosTelefonos.fechaAsignacion, datosTelefonos.fechaConclusion, datosTelefonos.tipoEmpresa, incidencia],
     ];
-    const csv = Papa.unparse(csvData);
+  const csv = Papa.unparse(csvData);
 
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "Lista de Llamadas.csv");
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "Lista de Llamadas.csv");
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
   return (
     <div className="fluid">
       <Navbar />
@@ -261,6 +250,7 @@ function SeguimientoLlamada() {
                 placeholder="Seleccione un teléfono"
                 onChange={handleTelefonoChange}
               />
+
               {telefonoSeleccionado && (
                 <>
                   <div className="mt-4">
@@ -285,6 +275,7 @@ function SeguimientoLlamada() {
                   </div>
                 </>
               )}
+
               <div className="mt-4">
                 <label>Incidencia:</label>
                 <InputText
@@ -293,6 +284,7 @@ function SeguimientoLlamada() {
                   disabled={!telefonoSeleccionado}
                 />
               </div>
+
               <div className="mt-4">
                 <Button
                   label="Cancelar"
