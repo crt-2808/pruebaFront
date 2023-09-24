@@ -74,7 +74,7 @@ function AgregarColab(){
         mode: "cors",
         body: formData,
       };
-      let res = await fetch("http://localhost:3001/api/colaborador", config);
+      let res = await fetch("https://sarym-production-4033.up.railway.app/api/colaborador", config);
       let json = await res.json();
       console.log(json);
       Swal.fire({
