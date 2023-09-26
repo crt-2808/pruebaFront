@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.278fdfe1.css",
-    "main.js": "/static/js/main.be7312f5.js",
+    "main.js": "/static/js/main.7c08b5ea.js",
     "static/js/787.c6eb3a31.chunk.js": "/static/js/787.c6eb3a31.chunk.js",
     "static/media/Calendar-4.svg": "/static/media/Calendar-4.ea2720caae7a06fb464c6cef1dc62288.svg",
     "static/media/Logo Ceth.jpg": "/static/media/Logo Ceth.361295a79a7f82c16b3d.jpg",
@@ -19,11 +19,11 @@
     "static/media/logo.svg": "/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/index.html",
     "main.278fdfe1.css.map": "/static/css/main.278fdfe1.css.map",
-    "main.be7312f5.js.map": "/static/js/main.be7312f5.js.map",
+    "main.7c08b5ea.js.map": "/static/js/main.7c08b5ea.js.map",
     "787.c6eb3a31.chunk.js.map": "/static/js/787.c6eb3a31.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.278fdfe1.css",
-    "static/js/main.be7312f5.js"
+    "static/js/main.7c08b5ea.js"
   ]
 }

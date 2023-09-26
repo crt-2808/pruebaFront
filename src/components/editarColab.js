@@ -165,7 +165,7 @@ const EditarColab = () => {
                       try {
                         console.log("Holi");
                         const response = await fetch(
-                          `http://localhost:3001/api/colaborador/${idColab}`,
+                          `https://sarym-production-4033.up.railway.app/api/colaborador/${idColab}`,
                           updateOpt
                         );
                         Swal.fire(
