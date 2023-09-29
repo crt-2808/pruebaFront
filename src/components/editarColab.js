@@ -7,6 +7,7 @@ import Usuario_sin_img from "../img/imagen-de-usuario-con-fondo-negro.png";
 
 const EditarColab = () => {
   const navigate = useNavigate();
+
   const options = {
     method: "GET",
     mode: "cors",
@@ -173,7 +174,7 @@ const EditarColab = () => {
                           `Has editado al colaborador.`,
                           "success"
                         ).then(() => {
-                          navigate("/land");
+                          navigate("/editarColab");
                         });
                       } catch (error) {
                         Swal.fire("Error!", `Ha ocurrido un error.`, "error");
