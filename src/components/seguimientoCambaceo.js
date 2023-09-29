@@ -21,7 +21,7 @@ const SeguimientoCambaceo = () => {
   const colab = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/api/colaborador",
+        "https://sarym-production-4033.up.railway.app/api/colaborador",
         options
       );
       const data = await response.json();

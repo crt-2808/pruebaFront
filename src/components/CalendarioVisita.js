@@ -60,7 +60,7 @@ function CalendarioVisita() {
         
       `,
       }).then(() => {
-        navigate("/land");
+        navigate("/VisitaProgramada");
       });
     } catch (error) {
       return Swal.fire({
@@ -202,11 +202,15 @@ function CalendarioVisita() {
                         {...register("contactos", { required: true })}/>
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label for="NombreCompleto">Sitio Web</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el dominio de la empresa" 
-                        {...register("contactos", { required: true })}/>
-                </Form.Group>
+                      <Form.Label for="Descripcion" style={{ textAlign: "left" }}>Descripcion</Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        rows={4}
+                        placeholder="Descripcion de la actividad diaria"
+                        {...register("Descripcion", { required: true })}
+                        type="text"
+                      />
+                    </Form.Group>
                 <Button type="submit" value="Enviar" variant="success" size="lg"
                 style={{ marginTop: '25px' }}>
                   Confirmar</Button>

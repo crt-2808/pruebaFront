@@ -35,7 +35,7 @@ function CalendarioLlamada() {
         mode: "cors",
         body: formData,
       };
-      let res = await fetch("http://localhost:3001/api/llamada", config);
+      let res = await fetch("https://sarym-production-4033.up.railway.app/api/llamada", config);
       let json = await res.json();
       console.log(json);
 

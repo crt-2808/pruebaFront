@@ -32,7 +32,7 @@ const VisitaProgramada = () => {
               id="opcionesCambaceo"
             >
               <div className="col-md-4 align-items-center">
-                <Link to="/AgregarVisita" className="links-cambaceo">
+                <Link to="/CalendarioVisita" className="links-cambaceo">
                   <img
                     className="llamada"
                     src={AgregarProgramada}
