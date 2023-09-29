@@ -16,24 +16,19 @@ function CalendarioLlamada() {
   const navigate = useNavigate();
   const formData= new FormData
   const onSubmit = async (data) => {
-    data={...data, TipoEmpresa:" ",
-    SitioWeb:" ", IDColab:1,  Direccion_Calle:" ", 
-    Direccion_Num_Ext:"1", Direccion_Num_Int:"1", Direccion_CP:"1", Direccion_Colonia:" "}
-    
-    formData.append("NombreCompleto", data.contactos)
-    formData.append("Telefono", data.tel)
-    formData.append("FechaAsignacion", data.fecha)
-    formData.append("Descripcion", data.descripcion)
-    formData.append("TipoEmpresa", data.TipoEmpresa)
-    formData.append("SitioWeb", data.SitioWeb)
-    formData.append("IDColab", data.IdColab)
+    data={...data, Tipo:"Llamada", FechaConclusion:"2024-12-04", Documentos:"src", IDColaborador:1, Direccion_Calle:"prueba"}
+    formData.append("Tipo", data.Tipo)
+    formData.append("FechaAsignacion", data.FechaAsignacion)
+    formData.append("FechaConclusion", data.FechaConclusion)
+    formData.append("Descripcion", data.Descripcion)
+    formData.append("Documentos", data.Documentos)
+    formData.append("NombreCompleto", data.NombreCompleto)
+    formData.append("Telefono", data.Telefono)
+    formData.append("IDColaborador", data.IDColaborador)
     formData.append("Direccion_Calle", data.Direccion_Calle)
-    formData.append("Direccion_Num_Ext", data.Direccion_Num_Ext)
-    formData.append("Direccion_Num_Int", data.Direccion_Num_Int)
-    formData.append("Direccion_CP", data.Direccion_CP)
-    formData.append("Direccion_Calle", data.Direccion_Colonia)
     console.log(data)
     console.log("formdata", formData)
+
     try {
       let config = {
         method: "POST",
@@ -44,7 +39,6 @@ function CalendarioLlamada() {
       let json = await res.json();
       console.log(json);
 
-        // Reset the form data and close the modal
         Swal.fire({
           icon: 'success',
           title: 'Se agregó la llamada exitosamente',
@@ -121,50 +115,51 @@ function CalendarioLlamada() {
             <Row className="mb-5">
             <Col xs={12} md={6}>
                 <Form.Group>
-                    <Form.Label for="contactos">Nombre Completo</Form.Label>
+                    <Form.Label for="NombreCompleto">Nombre Completo</Form.Label>
                         <Form.Control type="text" 
                         placeholder="Ingresa el nombre de contacto" 
-                        {...register("contactos", { required: true })}/>
+                        {...register("NombreCompleto", { required: true })}/>
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label for="tel">Telefono</Form.Label>
+                    <Form.Label for="Telefono">Telefono</Form.Label>
                         <Form.Control type="text" 
                         placeholder="Ingresa el telefono de contacto" 
-                        {...register("tel", { required: true })}/>
+                        {...register("Telefono", { required: true })}/>
                 </Form.Group>
                 <Form.Group>
-              <Form.Label for="fecha">Fecha</Form.Label>
+              <Form.Label for="FechaAsignacion">Fecha</Form.Label>
               <Form.Control
                 type="date"
-                {...register("fecha", { required: true })}
+                {...register("FechaAsignacion", { required: true })}
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label for="hora">Hora Inicio</Form.Label>
+              <Form.Label for="Hora">Hora Inicio</Form.Label>
               <Form.Control
                 type="time"
-                {...register("hora", { required: true })}
+                {...register("Hora", { required: true })}
               />
             </Form.Group>
           
             </Col>
             <Col xs={12} md={6}>    
                 <Form.Group>
-                      <h6 style={{ textAlign: "left" }}>Descripcion</h6>
+                      <Form.Label for="Descripcion" style={{ textAlign: "left" }}>Descripcion</Form.Label>
                       <Form.Control
                         as="textarea"
                         rows={4}
                         placeholder="Descripcion de la actividad diaria"
-                        {...register("descripcion", { required: true })}
+                        {...register("Descripcion", { required: true })}
+                        type="text"
                       />
                     </Form.Group>
                     <Form.Group
                       style={{ marginTop: "15px" }}
-                      controlId="documentoCambaceo"
+                      controlId="DocumentosReal"
                     >
                       <h6 style={{ textAlign: "left" }}>Documentos</h6>
                       <Form.Control type="file" multiple 
-                      {...register("descripcion", { required: false })}/>
+                      {...register("DocumentosReal", { required: false })}/>
                     </Form.Group>
 
                 <Button type="submit" value="Enviar" variant="success" size="lg"
