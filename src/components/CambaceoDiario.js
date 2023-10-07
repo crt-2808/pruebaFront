@@ -7,6 +7,43 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
+// Función para formatear las fechas
+function formatearFechas(
+  fechaAsignacionStr,
+  fechaConclusionStr,
+  fechaSeguimientoStr
+) {
+  // Convertir la fecha de seguimiento al objeto Date
+  const fechaSeguimientoObj = new Date(fechaSeguimientoStr);
+
+  // Extraer las horas y minutos de fechaAsignacion y fechaConclusion
+  const [horaAsignacion, minutoAsignacion] = fechaAsignacionStr.split(":");
+  const [horaConclusion, minutoConclusion] = fechaConclusionStr.split(":");
+
+  // Establecer las horas y minutos en la fecha de seguimiento
+  fechaSeguimientoObj.setHours(horaAsignacion, minutoAsignacion, 0);
+  const fechaAsignacionStrNuevo = fechaSeguimientoObj
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
+
+  fechaSeguimientoObj.setHours(horaConclusion, minutoConclusion, 0);
+  const fechaConclusionStrNuevo = fechaSeguimientoObj
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
+
+  // Devolver las fechas formateadas
+  return {
+    FechaAsignacion: fechaAsignacionStrNuevo,
+    FechaConclusion: fechaConclusionStrNuevo,
+    FechaSeguimiento: fechaSeguimientoObj
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " "),
+  };
+}
+
 function CambaceoDiario() {
   const {
     register,
@@ -36,8 +73,17 @@ function CambaceoDiario() {
     data = {
       ...data,
       IDColaborador: "53",
-      Activo: "1",
+      Activo: 1,
       Tipo: "Cambaceo_Diario",
+      Documentos: "src",
+    };
+    data = {
+      ...data,
+      ...formatearFechas(
+        data.FechaAsignacion,
+        data.FechaConclusion,
+        data.FechaSeguimiento
+      ),
     };
     console.log("Nuevo: \n", data);
     //                  Falta esto            FechasSeguimiento es de la fechaasiganada del cambaceo Daily
@@ -50,28 +96,56 @@ function CambaceoDiario() {
           "Content-Type": "application/json",
         },
         mode: "cors",
-        body: JSON.stringify(register),
+        body: JSON.stringify(data),
       };
-      // let config = {
-      //   method: "POST",
-      //   mode: "cors",
-      // };
-      //let res = await fetch("http://localhost:3001/api/cambaceo/Dev/seguimientoDiario", config);
-      //let json = await res.json();
-      //console.log(json);
-      Swal.fire({
-        icon: "success",
-        title: "Se agregó tu colaborador exitosamente",
-        text: "UDA",
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: `
-        rgba(36,32,32,0.65)
-        
-      `,
-      }).then(() => {
-        // navigate("/Cambaceo");
-      });
+      try {
+        let res = await fetch(
+          "https://sarym-production-4033.up.railway.app/api/cambaceo/Dev/seguimientoDiario",
+          config
+        );
+        let json = await res.json();
+        console.log(json);
+        if (res.status == 500) {
+          return Swal.fire({
+            icon: "error",
+            title: "Se produjo un error",
+            text: "UDA",
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+            rgba(36,32,32,0.65)
+            
+          `,
+          });
+        }
+
+        Swal.fire({
+          icon: "success",
+          title: "Se agregó tu colaborador exitosamente",
+          text: "UDA",
+          timer: 1200,
+          timerProgressBar: true,
+          backdrop: `
+          rgba(36,32,32,0.65)
+          
+        `,
+        }).then(() => {
+          navigate("/Cambaceo");
+        });
+      } catch (error) {
+        console.log(error);
+        return Swal.fire({
+          icon: "error",
+          title: "Se produjo un error",
+          text: "UDA",
+          timer: 1200,
+          timerProgressBar: true,
+          backdrop: `
+          rgba(36,32,32,0.65)
+          
+        `,
+        });
+      }
     } catch (error) {
       return Swal.fire({
         icon: "error",
@@ -156,7 +230,7 @@ function CambaceoDiario() {
                   <Form.Label htmlFor="dateInput">Fecha</Form.Label>
                   <Form.Control
                     type="date"
-                    {...register("Date", { required: true })}
+                    {...register("FechaSeguimiento", { required: true })}
                   />
                 </Form.Group>
                 <Form.Group>

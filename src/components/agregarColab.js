@@ -9,9 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useUserContext } from "../userProvider";
 
-
-
-function AgregarColab(){
+function AgregarColab() {
   const {
     register,
     formState: { errors },
@@ -74,9 +72,25 @@ function AgregarColab(){
         mode: "cors",
         body: formData,
       };
-      let res = await fetch("https://sarym-production-4033.up.railway.app/api/colaborador", config);
+      let res = await fetch(
+        "https://sarym-production-4033.up.railway.app/api/colaborador",
+        config
+      );
       let json = await res.json();
       console.log(json);
+      if (res.status == 500) {
+        return Swal.fire({
+          icon: "error",
+          title: "Se produjo un error",
+          text: "UDA",
+          timer: 1200,
+          timerProgressBar: true,
+          backdrop: `
+          rgba(36,32,32,0.65)
+          
+        `,
+        });
+      }
       Swal.fire({
         icon: "success",
         title: "Se agregó tu colaborador exitosamente",
@@ -127,153 +141,157 @@ function AgregarColab(){
           </Link>
         </div>
       </div>
-        <div className="py-md-4" style={{ backgroundColor: "#F1F5F8" }}>
-          <div
-            className="row"
-            style={{ marginLeft: "35px", marginBottom: "-50px", marginRight:"0px"}}
-          >
-            <h2 className="titulo-cambaceo px-5 " >Agregar Colaborador</h2>
-          </div>
-
-          <div
-            className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
-            id="contenedor-cambaceo"
-          >
-<Form
-              onSubmit={handleSubmit(onSubmit)}
-              // encType="multipart/form-data"
-              method="post"
-              id="form"
-            >
-              <Row className="mb-5">
-              <Col xs={12} md={6}>
-                  <Form.Group controlid="ColbID">
-                    <Form.Label>ColabID</Form.Label>
-                    <Form.Control
-                      type="string"
-                      {...register("ID_Colab", { required: true })}
-                      placeholder="Ingresa el ID"
-                    />
-                    {errors.ColabID?.type === "required" && (
-                      <p>Este campo es requerido</p>
-                    )}
-                  </Form.Group>
-                  <br />
-                  <Form.Group>
-                    <Form.Label>Nombre</Form.Label>
-                    <Form.Control
-                      type="string"
-                      {...register("Nombre", { required: true })}
-                      placeholder="Ingresa el nombre"
-                    />
-                    {errors.Nombre?.type === "required" && (
-                      <p>Este campo es requerido</p>
-                    )}
-                  </Form.Group>
-                  <br />
-                  <Form.Group>
-                    <Form.Label>Apellido Paterno</Form.Label>
-                    <Form.Control
-                      type="string"
-                      {...register("Apellido_pat", {
-                        required: true,
-                      })}
-                      placeholder="Ingresa el apellido"
-                    />
-                    {errors.Apellido_Paterno?.type === "required" && (
-                      <p>Este campo es requerido</p>
-                    )}
-                  </Form.Group>
-                  <br />
-                  <Form.Group>
-                    <Form.Label>Apellido Materno</Form.Label>
-                    <Form.Control
-                      type="string"
-                      {...register("Apellido_mat", {
-                        required: true,
-                      })}
-                      placeholder="Ingresa el apellido"
-                    />
-                    {errors.Apellido_Materno?.type === "required" && (
-                      <p>Este campo es requerido</p>
-                    )}
-                  </Form.Group>
-                </Col>
-                <Col xs={12} md={6}>
-                  <Form.Group>
-                    <Form.Label>Correo</Form.Label>
-                    <Form.Control
-                      type="email"
-                      {...register("Correo", {
-                        required: true,
-                        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/i,
-                      })}
-                      placeholder="Ingresa el correo"
-                    />
-                    {errors.Correo?.type === "required" && (
-                      <p>Este campo es requerido</p>
-                    )}
-                    {errors.Correo?.type === "pattern" && (
-                      <p>El formato del correo no es valido</p>
-                    )}
-                  </Form.Group>
-                  <br />
-                  <Form.Group>
-                    <Form.Label>Telefono</Form.Label>
-                    <Form.Control
-                      type="tel"
-                      {...register("Telefono", {
-                        required: true,
-                        pattern:
-                          /^(\(\+?\d{2,3}\)[\|\s|\-|\.]?(([\d][\|\s|\-|\.]?){6})(([\d][\s|\-|\.]?){2})?|(\+?[\d][\s|\-|\.]?){8}(([\d][\s|\-|\.]?){2}(([\d][\s|\-|\.]?){2})?)?)$/i,
-                      })}
-                      placeholder="Ingresa el numero telefónico"
-                    />
-                    {errors.Telefono?.type === "required" && (
-                      <p>Este campo es requerido</p>
-                    )}
-                    {errors.Telefono?.type === "pattern" && (
-                      <p>El formato del telefono no es valido</p>
-                    )}
-                  </Form.Group>
-                  <br />
-                  <Form.Group>
-                    <Form.Label>Equipo</Form.Label>
-                    <Form.Select {...register("IDEquipo", { required: true })}>
-                      <option disabled="disabled">Selecciona una opcion</option>
-                      <option value="1">Frontera</option>
-                      <option value="2">Medio</option>
-                      <option value="3">Sur</option>
-                    </Form.Select>
-                  </Form.Group>
-                  <br />
-                  <Form.Group controlId="FotoColab" className="mb-3">
-                    <Form.Label>Imagen</Form.Label>
-                    <Form.Control
-                      type="file"
-                      accept=".png,.jpg,.jpeg,.webp"
-                      // {...register("FotoColab", { required: true })}
-                    />
-                    {errors.FotoColab?.type === "required" && (
-                      <p>Este campo es requerido</p>
-                    )}
-                  </Form.Group>
-                </Col>
-                <Col>
-                  <Button
-                    type="submit"
-                    value="Enviar"
-                    variant="success"
-                    size="lg"
-                    onClick={() => onSubmit()}
-                  >
-                    Confirmar
-                  </Button>
-                  </Col>
-              </Row>
-            </Form>
-          </div>
+      <div className="py-md-4" style={{ backgroundColor: "#F1F5F8" }}>
+        <div
+          className="row"
+          style={{
+            marginLeft: "35px",
+            marginBottom: "-50px",
+            marginRight: "0px",
+          }}
+        >
+          <h2 className="titulo-cambaceo px-5 ">Agregar Colaborador</h2>
         </div>
+
+        <div
+          className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
+          id="contenedor-cambaceo"
+        >
+          <Form
+            onSubmit={handleSubmit(onSubmit)}
+            // encType="multipart/form-data"
+            method="post"
+            id="form"
+          >
+            <Row className="mb-5">
+              <Col xs={12} md={6}>
+                <Form.Group controlid="ColbID">
+                  <Form.Label>ColabID</Form.Label>
+                  <Form.Control
+                    type="string"
+                    {...register("ID_Colab", { required: true })}
+                    placeholder="Ingresa el ID"
+                  />
+                  {errors.ColabID?.type === "required" && (
+                    <p>Este campo es requerido</p>
+                  )}
+                </Form.Group>
+                <br />
+                <Form.Group>
+                  <Form.Label>Nombre</Form.Label>
+                  <Form.Control
+                    type="string"
+                    {...register("Nombre", { required: true })}
+                    placeholder="Ingresa el nombre"
+                  />
+                  {errors.Nombre?.type === "required" && (
+                    <p>Este campo es requerido</p>
+                  )}
+                </Form.Group>
+                <br />
+                <Form.Group>
+                  <Form.Label>Apellido Paterno</Form.Label>
+                  <Form.Control
+                    type="string"
+                    {...register("Apellido_pat", {
+                      required: true,
+                    })}
+                    placeholder="Ingresa el apellido"
+                  />
+                  {errors.Apellido_Paterno?.type === "required" && (
+                    <p>Este campo es requerido</p>
+                  )}
+                </Form.Group>
+                <br />
+                <Form.Group>
+                  <Form.Label>Apellido Materno</Form.Label>
+                  <Form.Control
+                    type="string"
+                    {...register("Apellido_mat", {
+                      required: true,
+                    })}
+                    placeholder="Ingresa el apellido"
+                  />
+                  {errors.Apellido_Materno?.type === "required" && (
+                    <p>Este campo es requerido</p>
+                  )}
+                </Form.Group>
+              </Col>
+              <Col xs={12} md={6}>
+                <Form.Group>
+                  <Form.Label>Correo</Form.Label>
+                  <Form.Control
+                    type="email"
+                    {...register("Correo", {
+                      required: true,
+                      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/i,
+                    })}
+                    placeholder="Ingresa el correo"
+                  />
+                  {errors.Correo?.type === "required" && (
+                    <p>Este campo es requerido</p>
+                  )}
+                  {errors.Correo?.type === "pattern" && (
+                    <p>El formato del correo no es valido</p>
+                  )}
+                </Form.Group>
+                <br />
+                <Form.Group>
+                  <Form.Label>Telefono</Form.Label>
+                  <Form.Control
+                    type="tel"
+                    {...register("Telefono", {
+                      required: true,
+                      pattern:
+                        /^(\(\+?\d{2,3}\)[\|\s|\-|\.]?(([\d][\|\s|\-|\.]?){6})(([\d][\s|\-|\.]?){2})?|(\+?[\d][\s|\-|\.]?){8}(([\d][\s|\-|\.]?){2}(([\d][\s|\-|\.]?){2})?)?)$/i,
+                    })}
+                    placeholder="Ingresa el numero telefónico"
+                  />
+                  {errors.Telefono?.type === "required" && (
+                    <p>Este campo es requerido</p>
+                  )}
+                  {errors.Telefono?.type === "pattern" && (
+                    <p>El formato del telefono no es valido</p>
+                  )}
+                </Form.Group>
+                <br />
+                <Form.Group>
+                  <Form.Label>Equipo</Form.Label>
+                  <Form.Select {...register("IDEquipo", { required: true })}>
+                    <option disabled="disabled">Selecciona una opcion</option>
+                    <option value="1">Frontera</option>
+                    <option value="2">Medio</option>
+                    <option value="3">Sur</option>
+                  </Form.Select>
+                </Form.Group>
+                <br />
+                <Form.Group controlId="FotoColab" className="mb-3">
+                  <Form.Label>Imagen</Form.Label>
+                  <Form.Control
+                    type="file"
+                    accept=".png,.jpg,.jpeg,.webp"
+                    // {...register("FotoColab", { required: true })}
+                  />
+                  {errors.FotoColab?.type === "required" && (
+                    <p>Este campo es requerido</p>
+                  )}
+                </Form.Group>
+              </Col>
+              <Col>
+                <Button
+                  type="submit"
+                  value="Enviar"
+                  variant="success"
+                  size="lg"
+                  onClick={() => onSubmit()}
+                >
+                  Confirmar
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </div>
+      </div>
     </div>
   );
 }
