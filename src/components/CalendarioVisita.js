@@ -114,109 +114,111 @@ function CalendarioVisita() {
         <div
           className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
           id="contenedor-cambaceo"
-          style={{marginBottom:"0px"}}
+          style={{ marginBottom: "0px" }}
         >
-          <Form
-            onSubmit={handleSubmit(onSubmit)}
-            // encType="multipart/form-data"
-            method="post"
-            id="form"
-          >
-            <Row className="mb-5">
-            <Col xs={12} md={6}>
-                <Form.Group>
-                    <Form.Label for="NombreCompleto">Nombre Completo</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el nombre de contacto" 
-                        {...register("contactos", { required: true })}/>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label for="telefono">Telefono</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el telefono de contacto" 
-                        {...register("tel", { required: true })}/>
-                </Form.Group>
-                <Form.Group>
-              <Form.Label for="dateInput">Fecha</Form.Label>
-              <Form.Control
-                type="date"
-                {...register("Date", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label for="timeInput">Hora Inicio</Form.Label>
-              <Form.Control
-                type="time"
-                {...register("Time", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label for="timeInput">Hora Fin</Form.Label>
-              <Form.Control
-                type="time"
-                {...register("Time", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-                    <Form.Label for="NombreCompleto">Calle</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa la calle de la cita" 
-                        {...register("contactos", { required: true })}/>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label for="NombreCompleto">Numero Exterior</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el numero exterior" 
-                        {...register("contactos", { required: true })}/>
-                </Form.Group>
-            </Col>
-            <Col xs={12} md={6}>
-                <Form.Group>
-                    <Form.Label for="NombreCompleto">Numero Interior</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el numero interior" 
-                        {...register("contactos", { required: true })}/>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label for="NombreCompleto">Codigo Postal</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el codigo postal" 
-                        {...register("contactos", { required: true })}/>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label for="NombreCompleto">Colonia</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa la colonia" 
-                        {...register("contactos", { required: true })}/>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label for="NombreCompleto">Tipo de Empresa</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el tipo de empresa" 
-                        {...register("contactos", { required: true })}/>
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label for="NombreCompleto">Sitio Web</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el dominio de la empresa" 
-                        {...register("contactos", { required: true })}/>
-                </Form.Group>
-                <Form.Group>
-                      <Form.Label for="Descripcion" style={{ textAlign: "left" }}>Descripcion</Form.Label>
-                      <Form.Control
-                        as="textarea"
-                        rows={4}
-                        placeholder="Descripcion de la actividad diaria"
-                        {...register("Descripcion", { required: true })}
-                        type="text"
-                      />
-                    </Form.Group>
-                <Button type="submit" value="Enviar" variant="success" size="lg"
-                style={{ marginTop: '25px' }}>
-                  Confirmar</Button>
-            </Col>
+          <form action="http://localhost:3005/guardar_datos_visita" method="POST">
+            <Row>
+              <Col>
+                <label for="NombreCompleto">Nombre Completo:</label>
+                <input
+                  type="text"
+                  id="NombreCompleto"
+                  name="NombreCompleto"
+                  required
+                />
+                <br />
+
+                <label for="telefono">Teléfono:</label>
+                <input type="text" id="telefono" name="telefono" required />
+                <br />
+
+                <label for="fecha">Fecha:</label>
+                <input
+                  type="datetime-local"
+                  id="FechaAsignacion"
+                  name="FechaAsignacion"
+                  required
+                />
+                <br />
+
+                <label for="Direccion_Calle">Calle:</label>
+                <input
+                  type="text"
+                  id="Direccion_Calle"
+                  name="Direccion_Calle"
+                  required
+                />
+                <br />
+
+                <label for="Direccion_Num_Ext">Numero Exterior:</label>
+                <input
+                  type="text"
+                  id="Direccion_Num_Ext"
+                  name="Direccion_Num_Ext"
+                  required
+                />
+                <br />
+              </Col>
+              <Col>
+                <label for="Direccion_Num_Int">Numero Interior:</label>
+                <input
+                  type="text"
+                  id="Direccion_Num_Int"
+                  name="Direccion_Num_Int"
+                  required
+                />
+                <br />
+
+                <label for="Direccion_CP">Codigo Postal:</label>
+                <input
+                  type="text"
+                  id="Direccion_CP"
+                  name="Direccion_CP"
+                  required
+                />
+                <br />
+
+                <label for="Direccion_Colonia">Colonia:</label>
+                <input
+                  type="text"
+                  id="Direccion_Colonia"
+                  name="Direccion_Colonia"
+                  required
+                />
+                <br />
+
+                <label for="TipoEmpresa">Empresa:</label>
+                <input
+                  type="text"
+                  id="TipoEmpresa"
+                  name="TipoEmpresa"
+                  required
+                />
+                <br />
+
+                <label for="Sitioweb">Sitio Web:</label>
+                <input type="text" id="Sitioweb" name="Sitioweb" required />
+                <br />
+
+                <label for="descripcion">Descripción:</label>
+                <textarea
+                  id="Descripcion"
+                  name="Descripcion"
+                  required
+                  type="text"
+                ></textarea>
+              </Col>
+              <Button
+                type="submit"
+                value="Enviar"
+                variant="success"
+                size="lg"
+                style={{ marginTop: "25px" }}
+              >
+                Confirmar
+              </Button>
             </Row>
-          </Form>
+          </form>
         </div>
       </div>
     </div>
