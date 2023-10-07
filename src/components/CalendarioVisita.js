@@ -91,7 +91,7 @@ function CalendarioVisita() {
             backgroundColor: "#F1F5F8",
           }}
         >
-          <Link to="/SeguimientoVisita">
+          <Link to="https://sarym-production-4033.up.railway.app/api/VisitaProgramada">
             <ArrowLeft className="ml-4 regreso" />
             <span style={{ marginBottom: "100px" }} id="indicador">
               Menu Visita
