@@ -41,7 +41,7 @@ const Llamada = () => {
                 </Link>
               </div>
               <div className="col-md-4">
-                <Link to="/SeguimientoLlamada" className="links-cambaceo">
+                <Link to="/SeguimientoLlamada2" className="links-cambaceo">
                   <img
                     className="llamada"
                     src={LlamarEditar}

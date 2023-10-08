@@ -113,7 +113,7 @@ function CalendarioLlamada() {
           id="contenedor-cambaceo"
           style={{ marginBottom: "0px" }}
         >
-          <form action="https://sarym-production-4033.up.railway.app/api/ttp://localhost:3005/guardar_datos" method="POST">
+          <form action="http://localhost:3005/guardar_datos" method="POST">
             <Row>
               <Col>
                 <label for="NombreCompleto">Nombre Completo:</label>
@@ -123,8 +123,8 @@ function CalendarioLlamada() {
                   name="NombreCompleto"
                   required
                 />
-                <label for="telefono">Teléfono:</label>
-                <input type="text" id="telefono" name="telefono" required />
+                <label for="Telefono">Teléfono:</label>
+                <input type="text" id="Telefono" name="Telefono" required />
                 <label for="fecha">Fecha:</label>
                 <input
                   type="datetime-local"

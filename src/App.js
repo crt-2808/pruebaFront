@@ -25,6 +25,8 @@ import Mamado from "./components/mamado";
 import SeguimientoLlamada from "./components/SeguimientoLlamada";
 import SeguimientoVisita from "./components/SeguimientoVisita";
 import SeleccionColaboradores from "./components/ConfirmacionCambaceo1";
+import DropdownLlamada from "./components/SeguimientoLlada";
+import SeguimientoLlamada2 from "./components/SeguimientoLLamada2";
 function App() {
   return (
     <UserProvider>
@@ -61,6 +63,8 @@ function App() {
           <Route path="/SeguimientoLlamada" element={<SeguimientoLlamada />}/>
           <Route path="/SeguimientoVisita" element={<SeguimientoVisita />}/>
           <Route path="/SeleccionColaboradores" element={<SeleccionColaboradores/>}/>
+          <Route path="/Dropdown" element={<DropdownLlamada/>}/>
+          <Route path="SeguimientoLlamada2" element={<SeguimientoLlamada2/>}/>
         </Routes>
       </div>
     </UserProvider>
