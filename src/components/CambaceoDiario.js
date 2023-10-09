@@ -13,34 +13,60 @@ function formatearFechas(
   fechaConclusionStr,
   fechaSeguimientoStr
 ) {
-  // Convertir la fecha de seguimiento al objeto Date
-  const fechaSeguimientoObj = new Date(fechaSeguimientoStr);
+  console.log("Fecha: ", fechaSeguimientoStr);
+  // Dividir la cadena de fecha en año, mes y día
+  const [anoSeguimiento, mesSeguimiento, diaSeguimiento] =
+    fechaSeguimientoStr.split("-");
 
   // Extraer las horas y minutos de fechaAsignacion y fechaConclusion
   const [horaAsignacion, minutoAsignacion] = fechaAsignacionStr.split(":");
   const [horaConclusion, minutoConclusion] = fechaConclusionStr.split(":");
 
+  // Convertir la fecha de seguimiento al objeto Date
+  const fechaSeguimientoObj = new Date(
+    Date.UTC(
+      anoSeguimiento,
+      mesSeguimiento - 1,
+      diaSeguimiento,
+      horaAsignacion,
+      minutoAsignacion,
+      0
+    )
+  );
+  console.log("Fecha Despues: ", fechaSeguimientoObj);
   // Establecer las horas y minutos en la fecha de seguimiento
   fechaSeguimientoObj.setHours(horaAsignacion, minutoAsignacion, 0);
-  const fechaAsignacionStrNuevo = fechaSeguimientoObj
-    .toISOString()
-    .slice(0, 19)
-    .replace("T", " ");
+  const fechaAsignacionStrNuevo =
+    fechaSeguimientoObj.getFullYear() +
+    "-" +
+    (fechaSeguimientoObj.getMonth() + 1).toString().padStart(2, "0") +
+    "-" +
+    fechaSeguimientoObj.getDate().toString().padStart(2, "0") +
+    " " +
+    fechaSeguimientoObj.getHours().toString().padStart(2, "0") +
+    ":" +
+    fechaSeguimientoObj.getMinutes().toString().padStart(2, "0") +
+    ":" +
+    fechaSeguimientoObj.getSeconds().toString().padStart(2, "0");
 
   fechaSeguimientoObj.setHours(horaConclusion, minutoConclusion, 0);
-  const fechaConclusionStrNuevo = fechaSeguimientoObj
-    .toISOString()
-    .slice(0, 19)
-    .replace("T", " ");
+  const fechaConclusionStrNuevo =
+    fechaSeguimientoObj.getFullYear() +
+    "-" +
+    (fechaSeguimientoObj.getMonth() + 1).toString().padStart(2, "0") +
+    "-" +
+    fechaSeguimientoObj.getDate().toString().padStart(2, "0") +
+    " " +
+    fechaSeguimientoObj.getHours().toString().padStart(2, "0") +
+    ":" +
+    fechaSeguimientoObj.getMinutes().toString().padStart(2, "0") +
+    ":" +
+    fechaSeguimientoObj.getSeconds().toString().padStart(2, "0");
 
   // Devolver las fechas formateadas
   return {
     FechaAsignacion: fechaAsignacionStrNuevo,
     FechaConclusion: fechaConclusionStrNuevo,
-    FechaSeguimiento: fechaSeguimientoObj
-      .toISOString()
-      .slice(0, 19)
-      .replace("T", " "),
   };
 }
 
@@ -85,6 +111,7 @@ function CambaceoDiario() {
         data.FechaSeguimiento
       ),
     };
+    delete data.FechaSeguimiento;
     console.log("Nuevo: \n", data);
     //                  Falta esto            FechasSeguimiento es de la fechaasiganada del cambaceo Daily
     //  Documentos, IDColaborador 'Dinamico', Incidentes, FechaSeguimiento,
@@ -100,12 +127,12 @@ function CambaceoDiario() {
       };
       try {
         let res = await fetch(
-          "https://sarym-production-4033.up.railway.app/api/cambaceo/Dev/seguimientoDiario",
+          "https://sarym-production-4033.up.railway.app/api/cambaceo",
           config
         );
         let json = await res.json();
         console.log(json);
-        if (res.status == 500) {
+        if (res.status == 500 || res.status == 400 || res.status == 404) {
           return Swal.fire({
             icon: "error",
             title: "Se produjo un error",

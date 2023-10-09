@@ -7,6 +7,62 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
+function formatearFechasAsignacionYConclusion(
+  FechaInicio,
+  FechaFin,
+  HoraInicio,
+  HoraFin
+) {
+  console.log(FechaInicio);
+  // Convertir las fechas de inicio y fin en objetos Date
+
+  const fechaInicioObj = new Date(`${FechaInicio}T${HoraInicio}:00Z`);
+  console.log("Fecha modificada: ", fechaInicioObj);
+  const fechaFinObj = new Date(`${FechaFin}T${HoraFin}:00Z`);
+
+  // Extraer las horas y minutos de HoraInicio y HoraFin
+  const [horaInicio, minutoInicio] = HoraInicio.split(":");
+  console.log(horaInicio, minutoInicio);
+  const [horaFin, minutoFin] = HoraFin.split(":");
+  console.log(horaFin, minutoFin);
+  // Establecer las horas y minutos en las fechas de inicio y fin
+  fechaInicioObj.setHours(horaInicio, minutoInicio, 0);
+  fechaFinObj.setHours(horaFin, minutoFin, 0);
+  console.log(fechaInicioObj, fechaFinObj);
+  // Formatear las fechas en el formato deseado manualmente
+  const FechaAsignacion =
+    fechaInicioObj.getFullYear() +
+    "-" +
+    (fechaInicioObj.getMonth() + 1).toString().padStart(2, "0") +
+    "-" +
+    fechaInicioObj.getDate().toString().padStart(2, "0") +
+    " " +
+    fechaInicioObj.getHours().toString().padStart(2, "0") +
+    ":" +
+    fechaInicioObj.getMinutes().toString().padStart(2, "0") +
+    ":" +
+    fechaInicioObj.getSeconds().toString().padStart(2, "0");
+
+  console.log("FechaAsignacion:", FechaAsignacion);
+
+  const FechaConclusion =
+    fechaFinObj.getFullYear() +
+    "-" +
+    (fechaFinObj.getMonth() + 1).toString().padStart(2, "0") +
+    "-" +
+    fechaFinObj.getDate().toString().padStart(2, "0") +
+    " " +
+    fechaFinObj.getHours().toString().padStart(2, "0") +
+    ":" +
+    fechaFinObj.getMinutes().toString().padStart(2, "0") +
+    ":" +
+    fechaFinObj.getSeconds().toString().padStart(2, "0");
+
+  console.log("FechaConclusion:", FechaConclusion);
+  // Devolver las fechas formateadas
+  return { FechaAsignacion, FechaConclusion };
+}
+
 function CambaceoSemanal() {
   const {
     register,
@@ -31,37 +87,90 @@ function CambaceoSemanal() {
       `,
       });
     }
+    console.log(data);
+    console.log(Object.keys(data).length);
+    data = {
+      ...data,
+      IDColaborador: "53",
+      Activo: 1,
+      Tipo: "Cambaceo_Semanal",
+      Documentos: "src",
+    };
+    data = {
+      ...data,
+      ...formatearFechasAsignacionYConclusion(
+        data.FechaInicio,
+        data.FechaFin,
+        data.HoraInicio,
+        data.HoraFin
+      ),
+    };
+    // Eliminar las variables originales
+    delete data.FechaInicio;
+    delete data.FechaFin;
+    delete data.HoraInicio;
+    delete data.HoraFin;
 
+    console.log("Nuevo: \n", data);
+    //                  Falta esto            FechasSeguimiento es de la fechaasiganada del cambaceo Daily
+    //  Documentos, IDColaborador 'Dinamico', Incidentes, FechaSeguimiento,
     try {
-      // let config = {
-      //   method: "POST",
-      //   headers: {
-      //     Accept: "application/json",
-      //     "Content-Type": "application/json",
-      //   },
-      //   mode: "cors",
-      //   body: JSON.stringify(datos),
-      // };
       let config = {
         method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
         mode: "cors",
+        body: JSON.stringify(data),
       };
-      //let res = await fetch("http://localhost:3001/api/colaborador", config);
-      //let json = await res.json();
-      //console.log(json);
-      Swal.fire({
-        icon: "success",
-        title: "Se agregó tu colaborador exitosamente",
-        text: "UDA",
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: `
-        rgba(36,32,32,0.65)
-        
-      `,
-      }).then(() => {
-        navigate("/Cambaceo");
-      });
+      try {
+        let res = await fetch(
+          "https://sarym-production-4033.up.railway.app/api/cambaceo",
+          config
+        );
+        let json = await res.json();
+        console.log(json);
+        if (res.status == 500 || res.status == 400 || res.status == 404) {
+          return Swal.fire({
+            icon: "error",
+            title: "Se produjo un error",
+            text: "UDA",
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+            rgba(36,32,32,0.65)
+            
+          `,
+          });
+        }
+        Swal.fire({
+          icon: "success",
+          title: "Se agregó tu colaborador exitosamente",
+          text: "UDA",
+          timer: 1200,
+          timerProgressBar: true,
+          backdrop: `
+          rgba(36,32,32,0.65)
+          
+        `,
+        }).then(() => {
+          navigate("/Cambaceo");
+        });
+      } catch (error) {
+        console.log(error);
+        return Swal.fire({
+          icon: "error",
+          title: "Se produjo un error",
+          text: "UDA",
+          timer: 1200,
+          timerProgressBar: true,
+          backdrop: `
+          rgba(36,32,32,0.65)
+          
+        `,
+        });
+      }
     } catch (error) {
       return Swal.fire({
         icon: "error",
@@ -114,7 +223,7 @@ function CambaceoSemanal() {
         <div
           className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
           id="contenedor-cambaceo"
-          style={{marginBottom:"0px"}}
+          style={{ marginBottom: "0px" }}
         >
           <Form
             onSubmit={handleSubmit(onSubmit)}
@@ -123,105 +232,142 @@ function CambaceoSemanal() {
             id="form"
           >
             <Row className="mb-5">
-            <Col xs={12} md={6}>
+              <Col xs={12} md={6}>
                 <Form.Group>
-                    <Form.Label for="NombreCompleto">Nombre Completo</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el nombre de contacto" 
-                        {...register("contactos", { required: true })}/>
+                  <Form.Label htmlFor="NombreCompleto">
+                    Nombre Completo
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Ingresa el nombre de contacto"
+                    {...register("NombreCompleto", { required: true })}
+                  />
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label for="telefono">Telefono</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el telefono de contacto" 
-                        {...register("tel", { required: true })}/>
+                  <Form.Label htmlFor="telefono">Telefono</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Ingresa el telefono de contacto"
+                    {...register("Telefono", { required: true })}
+                  />
                 </Form.Group>
                 <Form.Group>
-              <Form.Label for="dateInput">Fecha Inicio</Form.Label>
-              <Form.Control
-                type="date"
-                {...register("Date", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label for="dateInput">Fecha Fin</Form.Label>
-              <Form.Control
-                type="date"
-                {...register("Date", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label for="timeInput">Hora Inicio</Form.Label>
-              <Form.Control
-                type="time"
-                {...register("Time", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label for="timeInput">Hora Fin</Form.Label>
-              <Form.Control
-                type="time"
-                {...register("Time", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-                    <Form.Label for="NombreCompleto">Calle</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa la calle de la cita" 
-                        {...register("contactos", { required: true })}/>
+                  <Form.Label for="dateInput">Fecha Inicio</Form.Label>
+                  <Form.Control
+                    type="date"
+                    {...register("FechaInicio", { required: true })}
+                  />
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label for="NombreCompleto">Numero Exterior</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el numero exterior" 
-                        {...register("contactos", { required: true })}/>
-                </Form.Group>
-            </Col>
-            <Col xs={12} md={6}>
-                <Form.Group>
-                    <Form.Label for="NombreCompleto">Numero Interior</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el numero interior" 
-                        {...register("contactos", { required: true })}/>
+                  <Form.Label for="dateInput">Fecha Fin</Form.Label>
+                  <Form.Control
+                    type="date"
+                    {...register("FechaFin", { required: true })}
+                  />
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label for="NombreCompleto">Codigo Postal</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el codigo postal" 
-                        {...register("contactos", { required: true })}/>
+                  <Form.Label for="timeInput">Hora Inicio</Form.Label>
+                  <Form.Control
+                    type="time"
+                    {...register("HoraInicio", { required: true })}
+                  />
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label for="NombreCompleto">Colonia</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa la colonia" 
-                        {...register("contactos", { required: true })}/>
+                  <Form.Label for="timeInput">Hora Fin</Form.Label>
+                  <Form.Control
+                    type="time"
+                    {...register("HoraFin", { required: true })}
+                  />
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label for="NombreCompleto">Tipo de Empresa</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el tipo de empresa" 
-                        {...register("contactos", { required: true })}/>
+                  <Form.Label htmlFor="Calle">Calle</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Ingresa la calle de la cita"
+                    {...register("Direccion_Calle", { required: true })}
+                  />
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label for="NombreCompleto">Sitio Web</Form.Label>
-                        <Form.Control type="text" 
-                        placeholder="Ingresa el dominio de la empresa" 
-                        {...register("contactos", { required: true })}/>
+                  <Form.Label htmlFor="Exterior">Numero Exterior</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Ingresa el numero exterior"
+                    {...register("Direccion_Num_Ext", { required: true })}
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={12} md={6}>
+                <Form.Group>
+                  <Form.Label htmlFor="NombreCompleto">
+                    Numero Interior
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Ingresa el numero interior"
+                    {...register("Direccion_Num_Int", { required: true })}
+                  />
                 </Form.Group>
                 <Form.Group>
-                      <Form.Label for="Descripcion" style={{ textAlign: "left" }}>Descripcion</Form.Label>
-                      <Form.Control
-                        as="textarea"
-                        rows={4}
-                        placeholder="Descripcion de la actividad diaria"
-                        {...register("Descripcion", { required: true })}
-                        type="text"
-                      />
-                    </Form.Group>
-                <Button type="submit" value="Enviar" variant="success" size="lg"
-                style={{ marginTop: '25px' }}>
-                  Confirmar</Button>
-            </Col>
+                  <Form.Label htmlFor="NombreCompleto">
+                    Codigo Postal
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Ingresa el codigo postal"
+                    {...register("Direccion_CP", { required: true })}
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label htmlFor="NombreCompleto">Colonia</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Ingresa la colonia"
+                    {...register("Direccion_Colonia", { required: true })}
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label htmlFor="NombreCompleto">
+                    Tipo de Empresa
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Ingresa el tipo de empresa"
+                    {...register("TipoEmpresa", { required: true })}
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label htmlFor="NombreCompleto">Sitio Web</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Ingresa el dominio de la empresa"
+                    {...register("Sitioweb", { required: true })}
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label
+                    htmlFor="Descripcion"
+                    style={{ textAlign: "left" }}
+                  >
+                    Descripcion
+                  </Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={4}
+                    placeholder="Descripcion de la actividad diaria"
+                    {...register("Descripcion", { required: true })}
+                    type="text"
+                  />
+                </Form.Group>
+                <Button
+                  type="submit"
+                  value="Enviar"
+                  variant="success"
+                  size="lg"
+                  style={{ marginTop: "25px" }}
+                >
+                  Confirmar
+                </Button>
+              </Col>
             </Row>
           </Form>
         </div>
