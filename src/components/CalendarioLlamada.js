@@ -1,79 +1,68 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Form } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import { useForm } from "react-hook-form";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { Calendar } from "primereact/calendar";
+import { InputTextarea } from "primereact/inputtextarea";
+import { FileUpload } from "primereact/fileupload";
+import axios from "axios";
+import Swal from "sweetalert2";
 import Navbar from "./navbar";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
-import { Calendar } from "primereact/calendar";
-import Swal from "sweetalert2";
+import { Row, Col, Form } from "react-bootstrap";
+
 
 function CalendarioLlamada() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
   const navigate = useNavigate();
-  const formData = new FormData();
-  const onSubmit = async (data) => {
-    console.log("data del formulario", data);
-    data = {
-      ...data,
+  const [NombreCompleto, setNombreCompleto] = useState("");
+  const [Telefono, setTelefono] = useState("");
+  const [FechaAsignacion, setFecha] = useState(null);
+  const [Descripcion, setDescripcion] = useState("");
+  const [DocumentosReal, setDocumentos] = useState([]);
+
+  const handleSubmit = () => {
+    // Aquí puedes enviar los datos a la base de datos MySQL utilizando Axios u otra biblioteca de HTTP.
+    // Por ejemplo, puedes enviarlos a una API REST.
+
+    const data = {
+      NombreCompleto,
+      Telefono,
+      FechaAsignacion,
+      Descripcion,
     };
-
-    formData.append("FechaAsignacion", data.FechaAsignacion);
-    formData.append("Descripcion", data.Descripcion);
-    formData.append("Documentos", data.Documentos);
-    formData.append("NombreCompleto", data.NombreCompleto);
-    formData.append("Telefono", data.Telefono);
-
-    try {
-      // let config = {
-      //   method: "POST",
-      //   headers: {
-      //     Accept: "application/json",
-      //     "Content-Type": "application/json",
-      //   },
-      //   mode: "cors",
-      //   body: JSON.stringify(datos),
-      // };
-      let config = {
-        method: "POST",
-        body: formData,
-      };
-
-      let res = await fetch("http://localhost:3005/guardar_datos", config);
-      let json = await res.json();
-      console.log(json);
-
-      Swal.fire({
-        icon: "success",
-        title: "Se agregó la llamada exitosamente",
-        text: "UDA",
-        timer: 1200,
+    axios
+      .post("http://localhost:3005/guardar_datos", data)
+      .then((response) => {
+        // Muestra una alerta de éxito
+        Swal.fire({
+          icon: "success",
+          title: "Éxito",
+          text: "Los datos se han registrado correctamente",
+          timer: 1200,
         timerProgressBar: true,
         backdrop: `
-            rgba(36,32,32,0.65)
-          `,
-      }).then(() => {
-        // Redirect or perform any other actions after success
-        // navigate('/Llamada');
-      });
-    } catch (error) {
-      // Handle error case
-      console.error("Failed to submit data for llamada.");
-      return Swal.fire({
-        icon: "error",
-        title: "Se produjo un error",
-        text: "UDA",
-        timer: 1200,
+        rgba(36,32,32,0.65)
+        
+      `,
+        }).then(() => {
+          navigate("/Llamada");
+        });
+      })
+      .catch((error) => {
+        // Muestra una alerta de error
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Hubo un error al registrar los datos",
+          timer: 1200,
         timerProgressBar: true,
         backdrop: `
-            rgba(36,32,32,0.65)
-          `,
+        rgba(36,32,32,0.65)
+        
+      `,
+        });
+        console.error("Error al enviar los datos al servidor:", error);
       });
-    }
   };
 
   return (
@@ -113,59 +102,85 @@ function CalendarioLlamada() {
           id="contenedor-cambaceo"
           style={{ marginBottom: "0px" }}
         >
-          <form action="http://localhost:3005/guardar_datos" method="POST">
-            <Row>
-              <Col>
-                <label for="NombreCompleto">Nombre Completo:</label>
-                <input
-                  type="text"
+          <Row className="mb-5">
+            <Col xs={12} md={6}>
+              <div className="p-field">
+                <label htmlFor="NombreCompleto">
+                  Nombre Completo
+                  <br />
+                </label>
+              </div>
+              <div>
+                <InputText
                   id="NombreCompleto"
-                  name="NombreCompleto"
-                  required
+                  value={NombreCompleto}
+                  onChange={(e) => setNombreCompleto(e.target.value)}
+                  style={{ width: '100%' }}
                 />
-                <label for="Telefono">Teléfono:</label>
-                <input type="text" id="Telefono" name="Telefono" required />
-                <label for="fecha">Fecha:</label>
-                <input
-                  type="datetime-local"
+              </div>
+              <div className="p-field">
+                <label htmlFor="Telefono">Teléfono</label>
+              </div>
+              <div>
+                <InputText
+                  id="Telefono"
+                  value={Telefono}
+                  onChange={(e) => setTelefono(e.target.value)}
+                   style={{ width: '100%' }}
+                />
+              </div>
+              <div className="p-field">
+                <label htmlFor="FechaAsignacion">Fecha y Hora</label>
+              </div>
+              <div>
+                <Calendar
                   id="FechaAsignacion"
-                  name="FechaAsignacion"
-                  required
+                  value={FechaAsignacion}
+                  onChange={(e) => setFecha(e.value)}
+                  showIcon
+                  showTime
+                  hourFormat="12"
+                  dateFormat="mm/dd/yy"
+                  style={{ width: '100%' }}
                 />
-              </Col>
-              <Col>
-                <label for="descripcion">Descripción:</label>
-                <textarea
+              </div>
+            </Col>
+            <Col xs={12} md={6}>
+              <div className="p-field">
+                <label htmlFor="Descripcion">Descripción</label>
+              </div>
+              <div>
+                <InputTextarea
                   id="Descripcion"
-                  name="Descripcion"
-                  required
-                  type="text"
-                ></textarea>
-                <Form.Group
-                  style={{ marginTop: "15px" }}
-                  controlId="DocumentosReal"
-                >
-                  <h6 style={{ textAlign: "left" }}>Documentos</h6>
-                  <Form.Control
-                    type="file"
-                    multiple
-                    disabled
-                    {...register("DocumentosReal", { required: false })}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
+                  autoResize
+                  value={Descripcion}
+                  onChange={(e) => setDescripcion(e.target.value)}
+                  rows={5}
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div className="p-field">
+                <label>Documentos</label>
+                <FileUpload
+                  name="DocumentosReal"
+                  url="https://your-server.com/upload"
+                  mode="advanced"
+                  accept="image/*,application/pdf"
+                  onSelect={(e) => setDocumentos(e.files)}
+                  multiple
+                  auto
+                  disabled
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </Col>
             <Button
-              type="submit"
-              value="Enviar"
-              variant="success"
-              size="lg"
-              style={{ marginTop: "25px" }}
-              onClick={() => onSubmit}
-            >
-              Confirmar
-            </Button>
-          </form>
+                label="Confirmar"
+                onClick={handleSubmit}
+                severity="success"
+                 style={{ width: '100%' }}
+              />
+          </Row>
         </div>
       </div>
     </div>

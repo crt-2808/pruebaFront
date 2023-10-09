@@ -44,7 +44,7 @@ class SeguimientoLlamada2 extends Component {
 
     if (selectedValue !== "" && inputValue !== "") {
       axios
-        .put("http://localhost:3005/agregarIncidencia2", {
+        .put("http://localhost:3005/agregarIncidencia3", {
           telefono: selectedValue,
           nuevaIncidencia: inputValue,
         })
@@ -153,12 +153,12 @@ class SeguimientoLlamada2 extends Component {
           </div>
         )}
         <Button
-          icon="pi pi-bell"
-          aria-label="Notification"
           className="p-button-info" // Estilo de info
           label="Exportar"
+          rounded
+          size="large"
           onClick={this.handleExport}
-          style={{ marginTop: '50px' }}
+          style={{ marginTop: '50px', maxWidth: "100%", width: "auto" }}
 
         />
 
