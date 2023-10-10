@@ -44,7 +44,7 @@ class SeguimientoLlamada2 extends Component {
 
     if (selectedValue !== "" && inputValue !== "") {
       axios
-        .put("http://localhost:3005/agregarIncidencia3", {
+        .put("http://localhost:3005/agregarIncidencia", {
           telefono: selectedValue,
           nuevaIncidencia: inputValue,
         })
