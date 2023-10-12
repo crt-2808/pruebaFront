@@ -61,6 +61,58 @@ const formateoFecha = (fechaI) => {
   const FechaNueva = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   return FechaNueva;
 };
+const cambaceosTemplate = (cambaceo) => {
+  return `
+  <div class="container-fluid my-md-5  p-md-5 p-3 mb-4  infoSeguimiento">
+      <div class="row">
+          <div class="col-md-12">
+              <h1 class=" mx-5">Información</h1>
+          </div>
+          <div class="col-md-12 mt-md-4">
+              <div class="row">
+                  <div class="col-md-8">
+                      <div class="col-md-12">
+                          <div class="row my-md-4">
+                              <div class="col-md-6">
+                                  <h3>Nombre</h3>
+                                  <h5>${cambaceo.NombreCompleto}</h5>
+                              </div>
+                              <div class="col-md-6">
+                                  <h3>Fechas Trabajadas</h3>
+                                  <h5>${cambaceo.FechaAsignacion} - ${
+    cambaceo.FechaConclusion
+  }</h5>
+                              </div>
+                          </div>
+                          <div class="row my-md-4">
+                              <div class="col-md-6">
+                                  <h3>Calle</h3>
+                                  <h5>${cambaceo.Direccion_Calle} ${
+    cambaceo.Direccion_Num_Ext
+  }</h5>
+                              </div>
+                              <div class="col-md-6">
+                                  <h3>Colonias</h3>
+                                  <h5>${cambaceo.Direccion_Colonia}</h5>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="col-md-12">
+                          <div class="row my-md-4">
+                              <div class="col-md-12">
+                                  <h3>Incidencias</h3>
+                                  <h5>${cambaceo.Incidentes || "Ninguna"}</h5>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>`;
+};
 const SeguimientoDiarioColab = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -89,12 +141,45 @@ const SeguimientoDiarioColab = () => {
       mode: "cors",
       body: JSON.stringify(data),
     };
+
+    Swal.fire({
+      title: "Cargando...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+    });
+    Swal.showLoading();
+
     let res = await fetch(
-      "http://localhost:3001/api/cambaceo/seguimientoDiario",
+      "https://sarym-production-4033.up.railway.app/api/cambaceo/seguimientoDiario",
       config
     );
+
+    Swal.close();
+
     let json = await res.json();
     console.log(json);
+    if (json === null || (Array.isArray(json) && json.length === 0)) {
+      return Swal.fire({
+        icon: "info",
+        title: "Información",
+        text: "No hay nada reportado para esas fechas",
+      });
+    }
+    if (res.status == 500 || res.status == 404 || res.status == 400) {
+      return Swal.fire({
+        icon: "error",
+        title: "Se produjo un error",
+        text: "UDA",
+        timer: 1200,
+        timerProgressBar: true,
+        backdrop: `
+    rgba(36,32,32,0.65)
+    
+  `,
+      });
+    }
+    let templates = json.map(cambaceosTemplate);
+    let combinedTemplate = templates.join("");
 
     Swal.fire({
       width: 2100,
@@ -104,53 +189,7 @@ const SeguimientoDiarioColab = () => {
       confirmButtonText: "Exportar",
       confirmButtonColor: "#ea4335",
       cancelButtonColor: "#333333",
-
-      html: ` <div class="container-fluid mt-md-5  p-md-5 p-3 mb-2  infoSeguimiento">
-    <div class="row">
-      <div class="col-md-12">
-        <h1 class=" mx-5">Información</h1>
-      </div>
-      <div class="col-md-12 mt-md-4">
-        <div class="row">
-          <div class="col-md-8">
-            <div class="col-md-12">
-              <div class="row my-md-4">
-                <div class="col-md-6">
-                  <h3>Nombre</h3>
-                  <h5>Ejemplo</h5>
-                </div>
-                <div class="col-md-6">
-                  <h3>Fechas Trabajadas</h3>
-                  <h5>Ejemplo</h5>
-                </div>
-              </div>
-              <div class="row my-md-4">
-                <div class="col-md-6">
-                  <h3>Municipio</h3>
-                  <h5>Ejemplo</h5>
-                </div>
-                <div class="col-md-6">
-                  <h3>Colonias</h3>
-                  <h5>Ejemplo</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="col-md-12">
-              <div class="row my-md-4">
-                <div class="col-md-12">
-                  <h3>Incidencias</h3>
-                  <h5>Ejemplo</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-    </div>
-    </div>`,
+      html: combinedTemplate,
     }).then(async (result) => {
       if (result.isConfirmed) {
         console.log("Confirmado");

@@ -210,20 +210,13 @@ function CambaceoDiario() {
           </Link>
         </div>
       </div>
-      <div className="py-md-4" style={{ backgroundColor: "#F1F5F8" }}>
-        <div
-          className="row"
-          style={{
-            marginLeft: "35px",
-            marginBottom: "-50px",
-            marginRight: "0px",
-          }}
-        >
+      <div style={{ backgroundColor: "#F1F5F8", padding: "1.5rem 0" }}>
+        <div className="row px-5">
           <h2 className="titulo-cambaceo px-5 ">Cambaceo Diario</h2>
         </div>
 
         <div
-          className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
+          className="container-fluid mt-md-2 mb-md-5 p-md-5 p-3 mb-4 mt-4"
           id="contenedor-cambaceo"
           style={{ marginBottom: "0px" }}
         >
