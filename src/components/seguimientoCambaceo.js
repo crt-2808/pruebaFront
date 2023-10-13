@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Navbar from "./navbar";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "react-bootstrap-icons";
 import usuarioAnon from "../img/imagen-de-usuario-con-fondo-negro.png";
 import Swal from "sweetalert2";
+import { Toast } from "primereact/toast";
 import "../theme.css";
 import "primereact/resources/primereact.css"; // core css
 
@@ -18,6 +19,19 @@ const SeguimientoCambaceo = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const toast = useRef(null);
+  const showToast = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "Error",
+      detail: "No logramos acceder a la imagen del colaborador.",
+      life: 2000,
+    });
+  };
+  const handleImageError = (e) => {
+    e.target.src = usuarioAnon; // imagen predeterminada
+  };
+
   const colab = async () => {
     try {
       const response = await fetch(
@@ -43,7 +57,9 @@ const SeguimientoCambaceo = () => {
       });
     }
   };
+
   const handleClick = (type, colaborador) => {
+    showToast();
     Swal.fire({
       title: "Corrobora los datos",
       text: "Fecha",
@@ -54,7 +70,9 @@ const SeguimientoCambaceo = () => {
         <div class='row centrar' style='overflow: hidden;'>
           <div class='col-md-8 col-xs-6'>
             <div class='card centrar p-3 mt-3'>
-              <img src='${colaborador.Imagen}' class='img-fluid' id='img-card'>
+              <img src='${
+                colaborador.Imagen
+              }' class='img-fluid' id='img-card' alt="imagen de colaborador" onerror="this.onerror=null; this.src='${usuarioAnon}';showToast();">
               <h3>${colaborador.Nombre}</h3>
               <h4>${
                 colaborador.Apellido_pat + " " + colaborador.Apellido_mat
@@ -73,7 +91,7 @@ const SeguimientoCambaceo = () => {
       cancelButtonColor: "#333333",
     }).then((result) => {
       if (result.isConfirmed) {
-        navigate(`/SeguimientoCambaceo/${type}/${colaborador.ID_Colab}`);
+        navigate(`/SeguimientoCambaceo/${type}/${colaborador.id}`);
       }
     });
   };
@@ -94,6 +112,8 @@ const SeguimientoCambaceo = () => {
   return (
     <div className="fluid">
       <Navbar></Navbar>
+      <Toast ref={toast} />
+
       <div className="Colab">
         <div className="container-fluid px-4">
           <div className="row table_space mt-4">
@@ -144,6 +164,7 @@ const SeguimientoCambaceo = () => {
                             className="img-fluid"
                             id="img-card"
                             alt="imagen de colaborador"
+                            onError={handleImageError}
                           />
                           <h3>{colaborador.Nombre}</h3>
                           <h4>
@@ -165,7 +186,7 @@ const SeguimientoCambaceo = () => {
                                   Diario
                                 </button>
                                 <button
-                                  className="btnSemanal"
+                                  className="btnSemanal mt-md-2 mt-sm-0"
                                   onClick={() =>
                                     handleClick("Semanal", colaborador)
                                   }
