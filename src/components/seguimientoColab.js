@@ -51,6 +51,32 @@ addLocale("es", {
   today: "Hoy",
   clear: "Limpiar",
 });
+const exportToCSV = (data) => {
+  const csvData =
+    `Nombre,Fecha Inicio,Fecha Fin,Calle,Colonia,Incidencias\n` +
+    data
+      .map(
+        (item) =>
+          `"${item.NombreCompleto}",${item.FechaAsignacion},${
+            item.FechaConclusion
+          },"${item.Direccion_Calle} ${item.Direccion_Num_Ext}","${
+            item.Direccion_Colonia
+          }","${item.Incidentes || "Ninguna"}"`
+      )
+      .join("\n");
+
+  const blob = new Blob([csvData], { type: "text/csv" });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.style.display = "none";
+  a.href = url;
+  a.download = "seguimiento.csv";
+
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+};
+
 const formateoFecha = (fechaI) => {
   const year = fechaI.getFullYear();
   const month = ("0" + (fechaI.getMonth() + 1)).slice(-2);
@@ -192,6 +218,13 @@ const SeguimientoColab = () => {
         confirmButtonColor: "#ea4335",
         cancelButtonColor: "#333333",
         html: combinedTemplate,
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          exportToCSV(cambaceos);
+          console.log("Confirmado");
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          console.log("Cancelado");
+        }
       });
     }
   };

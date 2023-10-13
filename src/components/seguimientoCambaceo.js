@@ -59,7 +59,7 @@ const SeguimientoCambaceo = () => {
   };
 
   const handleClick = (type, colaborador) => {
-    showToast();
+    // showToast();
     Swal.fire({
       title: "Corrobora los datos",
       text: "Fecha",
@@ -72,7 +72,7 @@ const SeguimientoCambaceo = () => {
             <div class='card centrar p-3 mt-3'>
               <img src='${
                 colaborador.Imagen
-              }' class='img-fluid' id='img-card' alt="imagen de colaborador" onerror="this.onerror=null; this.src='${usuarioAnon}';showToast();">
+              }' class='img-fluid' id='img-card' alt="imagen de colaborador" onerror="this.onerror=null; this.src='${usuarioAnon}';">
               <h3>${colaborador.Nombre}</h3>
               <h4>${
                 colaborador.Apellido_pat + " " + colaborador.Apellido_mat
