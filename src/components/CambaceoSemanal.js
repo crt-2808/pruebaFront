@@ -95,6 +95,8 @@ function CambaceoSemanal() {
       Activo: 1,
       Tipo: "Cambaceo_Semanal",
       Documentos: "src",
+      Sitioweb: "src",
+      TipoEmpresa: "src",
     };
     data = {
       ...data,
@@ -280,7 +282,9 @@ function CambaceoSemanal() {
                     {...register("Direccion_Calle", { required: true })}
                   />
                 </Form.Group>
-                <Form.Group>
+              </Col>
+              <Col xs={12} md={6}>
+              <Form.Group>
                   <Form.Label htmlFor="Exterior">Numero Exterior</Form.Label>
                   <Form.Control
                     type="text"
@@ -288,8 +292,6 @@ function CambaceoSemanal() {
                     {...register("Direccion_Num_Ext", { required: true })}
                   />
                 </Form.Group>
-              </Col>
-              <Col xs={12} md={6}>
                 <Form.Group>
                   <Form.Label htmlFor="NombreCompleto">
                     Numero Interior
@@ -316,24 +318,6 @@ function CambaceoSemanal() {
                     type="text"
                     placeholder="Ingresa la colonia"
                     {...register("Direccion_Colonia", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">
-                    Tipo de Empresa
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el tipo de empresa"
-                    {...register("TipoEmpresa", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">Sitio Web</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el dominio de la empresa"
-                    {...register("Sitioweb", { required: true })}
                   />
                 </Form.Group>
                 <Form.Group>
