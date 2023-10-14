@@ -31,36 +31,54 @@ const Planeador = () => {
                 <div className="col-12">
                   <div className="row no-padding pt-5 pl-0 pr-0">
                     <div className="col-md-4 ">
-                      <Link to="/Cambaceo" className="no-decoration">
-                        <img
-                          className="imgPlaneador"
-                          src={Cambaceo}
-                          alt="Cambaceo"
-                        ></img>
-                        <button className="btnPlaneador">Cambaceo</button>
-                      </Link>
+                      <div className="col-md-12">
+                        <Link to="/Cambaceo" className="no-decoration">
+                          <div className="col-md-12">
+                            <img
+                              className="imgPlaneador"
+                              src={Cambaceo}
+                              alt="Cambaceo"
+                            ></img>
+                          </div>
+                          <div className="col-md-12">
+                            <button className="btnPlaneador">Cambaceo</button>
+                          </div>
+                        </Link>
+                      </div>
                     </div>
                     <div className="col-md-4">
-                      <Link to="/VisitaProgramada" className="no-decoration">
-                        <img
-                          className="imgPlaneador"
-                          src={Visita}
-                          alt="Visita programada"
-                        ></img>
-                        <button className="btnPlaneador">
-                          Visita programada
-                        </button>
-                      </Link>
+                      <div className="col-md-12">
+                        <Link to="/VisitaProgramada" className="no-decoration">
+                          <div className="col-md-12">
+                            <img
+                              className="imgPlaneador"
+                              src={Visita}
+                              alt="Visita programada"
+                            ></img>
+                          </div>
+                          <div className="col-md-12">
+                            <button className="btnPlaneador">
+                              Visita programada
+                            </button>
+                          </div>
+                        </Link>
+                      </div>
                     </div>
                     <div className="col-md-4">
-                      <Link to="/Llamada" className="no-decoration">
-                        <img
-                          className="imgPlaneador"
-                          src={Llamada}
-                          alt="Llamada"
-                        ></img>
-                        <button className="btnPlaneador">Llamada</button>
-                      </Link>
+                      <div className="col-md-12">
+                        <Link to="/Llamada" className="no-decoration">
+                          <div className="col-md-12">
+                            <img
+                              className="imgPlaneador"
+                              src={Llamada}
+                              alt="Llamada"
+                            ></img>
+                          </div>
+                          <div className="col-md-12">
+                            <button className="btnPlaneador">Llamada</button>
+                          </div>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>

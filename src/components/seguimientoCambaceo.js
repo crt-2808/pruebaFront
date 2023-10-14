@@ -33,11 +33,35 @@ const SeguimientoCambaceo = () => {
   };
 
   const colab = async () => {
+    Swal.fire({
+      title: "Cargando...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+    });
+    Swal.showLoading();
     try {
       const response = await fetch(
         "https://sarym-production-4033.up.railway.app/api/colaborador",
         options
       );
+      Swal.close();
+      if (
+        response.status == 500 ||
+        response.status == 404 ||
+        response.status == 400
+      ) {
+        return Swal.fire({
+          icon: "error",
+          title: "Se produjo un error",
+          text: "UDA",
+          timer: 1200,
+          timerProgressBar: true,
+          backdrop: `
+      rgba(36,32,32,0.65)
+      
+    `,
+        });
+      }
       const data = await response.json();
 
       // Transformamos la data si es necesario
