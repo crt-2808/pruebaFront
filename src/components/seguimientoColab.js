@@ -257,36 +257,39 @@ const SeguimientoColab = () => {
                   <h3>Seleccione el rango de fechas</h3>
                   <div className="row centrar" style={{ overflow: "hidden" }}>
                     <div className="col-md-6">
-                      <Calendar
-                        id="SemanalInicio"
-                        value={SemanalInicio}
-                        onChange={(e) => {
-                          setSemanalInicio(e.value);
-                        }}
-                        locale="es"
-                        className="custom-calendar"
-                        showIcon
-                        touchUI
-                        placeholder="Ingresa la fecha de inicio"
-                      />
-
-                      <Calendar
-                        id="SemanalFin"
-                        value={SemanalFin}
-                        onChange={(e) => {
-                          setSemanalFin(e.value);
-                        }}
-                        locale="es"
-                        className="custom-calendar"
-                        showIcon
-                        touchUI
-                        placeholder="Ingresa la fecha de fin"
-                        minDate={
-                          SemanalInicio
-                            ? new Date(SemanalInicio.getTime() + 86400000)
-                            : null
-                        }
-                      />
+                      <div className="col-md-12">
+                        <Calendar
+                          id="SemanalInicio"
+                          value={SemanalInicio}
+                          onChange={(e) => {
+                            setSemanalInicio(e.value);
+                          }}
+                          locale="es"
+                          className="custom-calendar"
+                          showIcon
+                          touchUI
+                          placeholder="Ingresa la fecha de inicio"
+                        />
+                      </div>
+                      <div className="col-md-12">
+                        <Calendar
+                          id="SemanalFin"
+                          value={SemanalFin}
+                          onChange={(e) => {
+                            setSemanalFin(e.value);
+                          }}
+                          locale="es"
+                          className="custom-calendar"
+                          showIcon
+                          touchUI
+                          placeholder="Ingresa la fecha de fin"
+                          minDate={
+                            SemanalInicio
+                              ? new Date(SemanalInicio.getTime() + 86400000)
+                              : null
+                          }
+                        />
+                      </div>
                     </div>
                     <div className="row mt-3">
                       <div className="col-md-12 justify-content-end d-flex">

@@ -12,16 +12,43 @@ const EditarColab = () => {
     method: "GET",
     mode: "cors",
   };
-
+  const handleImageError = (e) => {
+    e.target.src = Usuario_sin_img; // imagen predeterminada
+  };
   var arr = [];
   const colab = async () => {
     const otroRes = document.querySelector("#Resultado");
+    Swal.fire({
+      title: "Cargando...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+    });
+    Swal.showLoading();
     try {
       const response = await fetch(
         "https://sarym-production-4033.up.railway.app/api/colaborador",
         options
       );
-
+      Swal.close();
+      if (
+        response.status == 500 ||
+        response.status == 404 ||
+        response.status == 400
+      ) {
+        return Swal.fire({
+          icon: "error",
+          title: "Se produjo un error",
+          text: "UDA",
+          timer: 2200,
+          timerProgressBar: true,
+          backdrop: `
+      rgba(36,32,32,0.65)
+      
+    `,
+        }).then(() => {
+          navigate("/land");
+        });
+      }
       const data = await response.json();
       for (let i = 0; i < data.length; i++) {
         arr.push(data[i]);
@@ -33,7 +60,9 @@ const EditarColab = () => {
         }
         otroRes.innerHTML += ` <div class='col-md-3 '>
         <div class='card centrar p-3'>
-          <img src='${arr[i].Imagen}' class='img-fluid' id='img-card'>
+          <img src='${
+            arr[i].Imagen
+          }' class='img-fluid' id='img-card' onerror="this.onerror=null; this.src='${Usuario_sin_img}';">
           <h3>${arr[i].Nombre}</h3>
           <h4>${arr[i].Apellido_pat + " " + arr[i].Apellido_mat}</h4>
           <h6>${arr[i].Correo}</h6>
@@ -78,7 +107,9 @@ const EditarColab = () => {
             
             <div class='col-md-3 col-xs-6'>
             <div class='card centrar p-3 mt-3'>
-            <img src='${arrColab[0].Imagen}' class='img-fluid' id='img-card'>
+            <img src='${
+              arrColab[0].Imagen
+            }' class='img-fluid' id='img-card' onerror="this.onerror=null; this.src='${Usuario_sin_img}';">
             <h3>${arrColab[0].Nombre}</h3>
             <h4>${
               arrColab[0].Apellido_pat + " " + arrColab[0].Apellido_mat
