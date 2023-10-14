@@ -61,6 +61,32 @@ const formateoFecha = (fechaI) => {
   const FechaNueva = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   return FechaNueva;
 };
+const exportToCSV = (data) => {
+  const csvData =
+    `Nombre,Fecha Inicio,Fecha Fin,Calle,Colonia,Incidencias\n` +
+    data
+      .map(
+        (item) =>
+          `"${item.NombreCompleto}",${item.FechaAsignacion},${
+            item.FechaConclusion
+          },"${item.Direccion_Calle} ${item.Direccion_Num_Ext}","${
+            item.Direccion_Colonia
+          }","${item.Incidentes || "Ninguna"}"`
+      )
+      .join("\n");
+
+  const blob = new Blob([csvData], { type: "text/csv" });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.style.display = "none";
+  a.href = url;
+  a.download = "seguimiento.csv";
+
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+};
+
 const cambaceosTemplate = (cambaceo) => {
   return `
   <div class="container-fluid my-md-5  p-md-5 p-3 mb-4  infoSeguimiento">
@@ -192,6 +218,7 @@ const SeguimientoDiarioColab = () => {
       html: combinedTemplate,
     }).then(async (result) => {
       if (result.isConfirmed) {
+        exportToCSV(json);
         console.log("Confirmado");
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         console.log("Cancelado");
