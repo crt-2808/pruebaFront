@@ -25,10 +25,7 @@ import Mamado from "./components/mamado";
 import SeguimientoLlamada from "./components/SeguimientoLlamada";
 import SeguimientoVisita from "./components/SeguimientoVisita";
 import SeleccionColaboradores from "./components/ConfirmacionCambaceo1";
-import DropdownLlamada from "./components/SeguimientoLlada";
-import SeguimientoLlamada2 from "./components/SeguimientoLLamada2";
-import AgregarLlamda from "./components/AgregarLlamda2";
-import MyComponent from "./components/pruebas";
+
 function App() {
   return (
     <UserProvider>
@@ -62,13 +59,9 @@ function App() {
           />
           <Route path="/AgregarVisita" element={<AgregarVisita />} />
           <Route path="/VisitaAgregar" element={<Mamado />} />
-          <Route path="/SeguimientoLlamada" element={<SeguimientoLlamada />}/>
           <Route path="/SeguimientoVisita" element={<SeguimientoVisita />}/>
           <Route path="/SeleccionColaboradores" element={<SeleccionColaboradores/>}/>
-          <Route path="/Dropdown" element={<DropdownLlamada/>}/>
-          <Route path="/SeguimientoLlamada2" element={<SeguimientoLlamada2/>}/>
-          <Route path="/AgregarLlamda2" element={<AgregarLlamda/>}/>
-          <Route path="/pruebas" element={<MyComponent/>}/>
+          <Route path="/SeguimientoLlamada" element={<SeguimientoLlamada/>}/>
         </Routes>
       </div>
     </UserProvider>

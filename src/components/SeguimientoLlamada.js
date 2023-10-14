@@ -1,315 +1,173 @@
-/* 
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { Component } from "react";
+import axios from "axios";
+import { Dropdown } from "primereact/dropdown";
+import { InputTextarea } from "primereact/inputtextarea";
+import { Button } from "primereact/button";
 import Navbar from "./navbar";
 import { ArrowLeft } from "react-bootstrap-icons";
-import { Dropdown } from "primereact/dropdown";
-import { InputText } from "primereact/inputtext";
-import { Button } from "primereact/button";
+import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
-function SeguimientoLlamada() {
-  const telefonos = [
-    {
-      label: "123456789 - Ejemplo S.A.",
-      value: "123456789",
-      empresa: "Ejemplo S.A.",
-    },
-    {
-      label: "987654321 - Otro Ejemplo S.A.",
-      value: "987654321",
-      empresa: "Otro Ejemplo S.A.",
-    },
-    // Agrega más números de teléfono según lo necesario
-  ];
+class SeguimientoLlamada extends Component {
+  constructor() {
+    super();
+    this.state = {
+      data: [],
+      selectedValue: "",
+      inputValue: "",
+    };
+  }
 
-  const [telefonoSeleccionado, setTelefonoSeleccionado] = useState(null);
-  const [incidencia, setIncidencia] = useState("");
+  componentDidMount() {
+    axios
+      .get("http://localhost:3005/SeguimientoLlamada") // Reemplaza '/datos' con la ruta correcta a tu servidor
+      .then((response) => {
+        this.setState({ data: response.data });
+      })
+      .catch((error) => {
+        console.error("Error al obtener datos: " + error.message);
+      });
+  }
 
-  const datosTelefonos = {
-    "123456789": {
-      nombreCompleto: "John Doe",
-      fechaAsignacion: "2023-07-21",
-      fechaConclusion: "2023-07-25",
-      tipoEmpresa: "Ejemplo S.A.",
-    },
-    "987654321": {
-      nombreCompleto: "Jane Smith",
-      fechaAsignacion: "2023-07-22",
-      fechaConclusion: "2023-07-26",
-      tipoEmpresa: "Otro Ejemplo S.A.",
-    },
+  handleChange = (e) => {
+    this.setState({ selectedValue: e.value });
+
+    if (e.value !== "") {
+      this.setState({ inputValue: "" });
+    }
+  };
+  handleInputChange = (e) => {
+    this.setState({ inputValue: e.target.value });
+  };
+  handleUpdate = () => {
+    const { selectedValue, inputValue } = this.state;
+
+    if (selectedValue !== "" && inputValue !== "") {
+      axios
+        .put("http://localhost:3005/agregarIncidencia", {
+          telefono: selectedValue,
+          nuevaIncidencia: inputValue,
+        })
+        .then((response) => {
+          console.log(response.data); // Maneja la respuesta del servidor si es necesario
+          Swal.fire({
+            icon: 'success',
+            title: 'Incidencia registrada correctamente.',
+            text: 'UDA',
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+                rgba(36,32,32,0.65)
+              `,        
+          }).then(() => {
+            // Recarga la página después de mostrar la alerta de éxito.
+            window.location.reload();
+          });
+        })
+        .catch((error) => {
+          console.error("Error al actualizar: " + error.message);
+        });
+    }else{
+        return Swal.fire({
+            icon: "error",
+            title: "No ha registrado ninguna Incidencia",
+            text: "UDA",
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+                rgba(36,32,32,0.65)
+              `,
+          });
+    }
+
   };
 
-  const handleTelefonoChange = (e) => {
-    const selectedTelefono = e.value;
-    setTelefonoSeleccionado(selectedTelefono);
+  handleExport = () => {
+    axios
+      .get("http://localhost:3005/exportarLlamada") // Reemplaza '/exportar' con la ruta correcta a tu servidor
+      .then((response) => {
+        const csvData = response.data;
+        const blob = new Blob([csvData], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "planificador.csv";
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error("Error al exportar: " + error.message);
+      });
   };
-
-  return (
-    <div className="fluid">
-      <Navbar></Navbar>
-      <div className="Colab">
-        <div className="container-fluid px-4">
-          <div className="row table_space mt-4">
-            <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
-              <Link to="/Llamada">
-                <ArrowLeft className="ml-4 regreso" />
-                <span id="indicador">Menu Llamada</span>
-              </Link>
-            </div>
-          </div>
-          <div
-            className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
-            id="contenedor"
-          >
-            <div className="row">
-              <h2 className="titulo-cambaceo">Seguimiento</h2>
+  render() {
+    return (
+      <div className="fluid">
+        <Navbar />
+        <div className="Colab">
+          <div className="container-fluid px-4">
+            <div className="row table_space mt-4">
+              <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
+                <Link to="/Llamada">
+                  <ArrowLeft className="ml-4 regreso" />
+                  <span id="indicador">Menu Llamada</span>
+                </Link>
+              </div>
             </div>
             <div
-              className="row align-items-center mt-sm-4 mb-sm-4 justify-content-around"
-              id="opcionesCambaceo"
+              className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
+              id="contenedor"
             >
-              <Dropdown
-                value={telefonoSeleccionado}
-                options={telefonos}
-                optionLabel="label"
-                placeholder="Seleccione un teléfono"
-                onChange={handleTelefonoChange}
-              />
-
-              {telefonoSeleccionado && (
-                <>
-                  <div className="mt-4">
-                    <label style={{ color: "#EB6B68" }}>Nombre Completo:</label>
-                    <span>{datosTelefonos[telefonoSeleccionado].nombreCompleto}</span>
-                  </div>
-                  <div className="mt-4">
-                    <label style={{ color: "#EB6B68" }}>Fecha de Asignación:</label>
-                    <span>{datosTelefonos[telefonoSeleccionado].fechaAsignacion}</span>
-                  </div>
-                  <div className="mt-4">
-                    <label style={{ color: "#EB6B68" }}>Fecha de Conclusión:</label>
-                    <span>{datosTelefonos[telefonoSeleccionado].fechaConclusion}</span>
-                  </div>
-                  <div className="mt-4">
-                    <label style={{ color: "#EB6B68" }}>Tipo de Empresa:</label>
-                    <span>{datosTelefonos[telefonoSeleccionado].tipoEmpresa}</span>
-                  </div>
-                </>
-              )}
-
-              <div className="mt-4">
-                <label>Incidencia:</label>
-                <InputText
-                  value={incidencia}
-                  onChange={(e) => setIncidencia(e.target.value)}
-                  disabled={!telefonoSeleccionado}
-                />
+              <div className="row">
+                <h2 className="titulo-cambaceo">Seguimiento</h2>
               </div>
+              <div
+                className="row align-items-center mt-sm-4 mb-sm-4 justify-content-around"
+                id="opcionesCambaceo"
+              >
+                <Dropdown
+          value={this.state.selectedValue}
+          options={this.state.data}
+          optionLabel="NombreCompleto"
+          filter
+          showClear
+          filterBy="NombreCompleto"
+          placeholder="Selecciona un contacto a llamar"
+          onChange={this.handleChange}
+        />
+                {this.state.selectedValue !== '' && (
+          <div>
+            <InputTextarea
+              rows={5}
+              autoResize
+              placeholder="Ingresa Incidencia aquí"
+              value={this.state.inputValue}
+              onChange={this.handleInputChange}
+              style={{ width: '100%', marginTop: '15px' }}
+            />
+            <Button
+              label="Actualizar"
+              icon="pi pi-check" // Icono de check
+              onClick={this.handleUpdate}
+              style={{ marginTop: '10px' }}
+            />
+          </div>
+        )}
+        <Button
+          className="p-button-info" // Estilo de info
+          label="Exportar"
+          rounded
+          size="large"
+          onClick={this.handleExport}
+          style={{ marginTop: '50px', maxWidth: "100%", width: "auto" }}
 
-              <div className="mt-4">
-                <Button
-                  label="Cancelar"
-                  className="p-button-danger mr-2"
-                  onClick={() => {
-                    setTelefonoSeleccionado(null);
-                    setIncidencia("");
-                  }}
-                  disabled={!telefonoSeleccionado}
-                />
+        />
 
-                <Button
-                  label="Actualizar"
-                  className="p-button-success"
-                  onClick={() => {
-                    // Implementa aquí la lógica para guardar los cambios
-                    // en la base de datos o realizar alguna acción de actualización
-                    // Luego podrías hacer alguna acción de éxito o redirección si es necesario
-                  }}
-                  disabled={!telefonoSeleccionado}
-                />
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
-
-export default SeguimientoLlamada;
-
-
-
-*/
-
-import React, { useEffect, useState } from "react";
-import Navbar from "./navbar";
-import { ArrowLeft } from "react-bootstrap-icons";
-import { Dropdown } from "primereact/dropdown";
-import { InputText } from "primereact/inputtext";
-import { Button } from "primereact/button";
-import { Link } from "react-router-dom";
-import {Papa} from "papaparse";
-
-function SeguimientoLlamada() {
-  const [telefonos, setTelefonos] = useState([]);
-  const [telefonoSeleccionado, setTelefonoSeleccionado] = useState(null);
-  const [incidencia, setIncidencia] = useState("");
-  const [datosTelefonos, setDatosTelefonos] = useState({});
-
-  
-  useEffect(() => {
-    // Obtener la lista de números de teléfono desde el backend
-    fetch("/api/telefonos")
-      .then((response) => response.json())
-      .then((data) => setTelefonos(data))
-      .catch((error) =>
-        console.error("Error al obtener los números de teléfono:", error)
-      );
-  }, []);
-
-  useEffect(() => {
-    // Obtener los datos de teléfonos seleccionados desde el backend
-    if (telefonoSeleccionado) {
-      fetch(`/api/telefonos/${telefonoSeleccionado}`)
-        .then((response) => response.json())
-        .then((data) => setDatosTelefonos(data))
-        .catch((error) =>
-          console.error("Error al obtener los datos del teléfono:", error)
-        );
-    } else {
-      setDatosTelefonos({});
-    }
-  }, [telefonoSeleccionado]);
-
-  const handleTelefonoChange = (e) => {
-    const selectedTelefono = e.value;
-    setTelefonoSeleccionado(selectedTelefono);
-  };
-
-  const handleCancelar = () => {
-    setTelefonoSeleccionado(null);
-    setIncidencia("");
-  };
-
-  const handleActualizar = () => {
-    // Lógica para guardar la incidencia en el backend
-    // Puedes enviar incidencia y datosTelefonos al backend para procesarlos
-    // Después de guardar, puedes hacer alguna acción de éxito o redirección si es necesario
-  };
-  const handleExportar = () => {
-    if (!telefonoSeleccionado) {
-      return;
-    }
-
-    const csvData = [
-      ["Nombre Completo", "Fecha de Asignación", "Fecha de Conclusión", "Tipo de Empresa", "Incidencia"],
-      [datosTelefonos.nombreCompleto, datosTelefonos.fechaAsignacion, datosTelefonos.fechaConclusion, datosTelefonos.tipoEmpresa, incidencia],
-    ];
-  const csv = Papa.unparse(csvData);
-
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-  link.setAttribute("download", "Lista de Llamadas.csv");
-  link.style.visibility = "hidden";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-  return (
-    <div className="fluid">
-      <Navbar />
-      <div className="Colab">
-        <div className="container-fluid px-4">
-          <div className="row table_space mt-4">
-            <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
-              <Link to="/Llamada">
-                <ArrowLeft className="ml-4 regreso" />
-                <span id="indicador">Menu Llamada</span>
-              </Link>
-            </div>
-          </div>
-          <div
-            className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
-            id="contenedor"
-          >
-            <div className="row">
-              <h2 className="titulo-cambaceo">Seguimiento</h2>
-            </div>
-            <div
-              className="row align-items-center mt-sm-4 mb-sm-4 justify-content-around"
-              id="opcionesCambaceo"
-            >
-              <Dropdown
-                value={telefonoSeleccionado}
-                options={telefonos}
-                optionLabel="label"
-                placeholder="Seleccione un teléfono"
-                onChange={handleTelefonoChange}
-              />
-
-              {telefonoSeleccionado && (
-                <>
-                  <div className="mt-4">
-                    <label style={{ color: "#EB6B68" }}>Nombre Completo:</label>
-                    <span>{datosTelefonos.nombreCompleto}</span>
-                  </div>
-                  <div className="mt-4">
-                    <label style={{ color: "#EB6B68" }}>
-                      Fecha de Asignación:
-                    </label>
-                    <span>{datosTelefonos.fechaAsignacion}</span>
-                  </div>
-                  <div className="mt-4">
-                    <label style={{ color: "#EB6B68" }}>
-                      Fecha de Conclusión:
-                    </label>
-                    <span>{datosTelefonos.fechaConclusion}</span>
-                  </div>
-                  <div className="mt-4">
-                    <label style={{ color: "#EB6B68" }}>Tipo de Empresa:</label>
-                    <span>{datosTelefonos.tipoEmpresa}</span>
-                  </div>
-                </>
-              )}
-
-              <div className="mt-4">
-                <label>Incidencia:</label>
-                <InputText
-                  value={incidencia}
-                  onChange={(e) => setIncidencia(e.target.value)}
-                  disabled={!telefonoSeleccionado}
-                />
-              </div>
-
-              <div className="mt-4">
-                <Button
-                  label="Cancelar"
-                  className="p-button-danger mr-2"
-                  onClick={handleCancelar}
-                  disabled={!telefonoSeleccionado}
-                />
-                <Button
-                  label="Actualizar"
-                  className="p-button-success"
-                  onClick={handleActualizar}
-                  disabled={!telefonoSeleccionado}
-                />
-                <Button
-                  label="Exportar"
-                  className="p-button-info"
-                  onClick={handleExportar}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default SeguimientoLlamada;
