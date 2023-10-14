@@ -90,9 +90,9 @@ class SeguimientoVisita extends Component {
           <div className="container-fluid px-4">
             <div className="row table_space mt-4">
               <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
-                <Link to="/Llamada">
+                <Link to="/VisitaProgramada">
                   <ArrowLeft className="ml-4 regreso" />
-                  <span id="indicador">Menu Llamada</span>
+                  <span id="indicador">Menu Visita</span>
                 </Link>
               </div>
             </div>
