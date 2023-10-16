@@ -92,7 +92,7 @@ const cambaceosTemplate = (cambaceo) => {
   <div class="container-fluid my-md-5  p-md-5 p-3 mb-4  infoSeguimiento">
       <div class="row">
           <div class="col-md-12">
-              <h1 class=" mx-5">Información</h1>
+              <h1 class=" mx-md-5 mx-sm-2 text-center text-md-start">Información</h1>
           </div>
           <div class="col-md-12 mt-md-4">
               <div class="row">
@@ -105,7 +105,7 @@ const cambaceosTemplate = (cambaceo) => {
                               </div>
                               <div class="col-md-6">
                                   <h3>Fechas Trabajadas</h3>
-                                  <h5>${cambaceo.FechaAsignacion} - ${
+                                  <h5>${cambaceo.FechaAsignacion} - <br> ${
     cambaceo.FechaConclusion
   }</h5>
                               </div>
@@ -182,6 +182,30 @@ const SeguimientoColab = () => {
       );
       Swal.close();
       let cambaceos = await res.json();
+      cambaceos = cambaceos.map((cambaceo) => {
+        const fechaInicio = new Date(cambaceo.FechaAsignacion);
+        const fechaFin = new Date(cambaceo.FechaConclusion);
+
+        cambaceo.FechaAsignacion = `${fechaInicio.getUTCFullYear()}-${(
+          "0" +
+          (fechaInicio.getUTCMonth() + 1)
+        ).slice(-2)}-${("0" + fechaInicio.getUTCDate()).slice(-2)} ${(
+          "0" + fechaInicio.getUTCHours()
+        ).slice(-2)}:${("0" + fechaInicio.getUTCMinutes()).slice(-2)}:${(
+          "0" + fechaInicio.getUTCSeconds()
+        ).slice(-2)}`;
+
+        cambaceo.FechaConclusion = `${fechaFin.getUTCFullYear()}-${(
+          "0" +
+          (fechaFin.getUTCMonth() + 1)
+        ).slice(-2)}-${("0" + fechaFin.getUTCDate()).slice(-2)} ${(
+          "0" + fechaFin.getUTCHours()
+        ).slice(-2)}:${("0" + fechaFin.getUTCMinutes()).slice(-2)}:${(
+          "0" + fechaFin.getUTCSeconds()
+        ).slice(-2)}`;
+
+        return cambaceo;
+      });
       console.log(cambaceos);
       if (
         cambaceos === null ||

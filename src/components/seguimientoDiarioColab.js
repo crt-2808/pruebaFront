@@ -51,6 +51,17 @@ addLocale("es", {
   today: "Hoy",
   clear: "Limpiar",
 });
+const convierteFecha = (fecha) => {
+  const dateObj = new Date(fecha);
+  const year = dateObj.getUTCFullYear();
+  const month = ("0" + (dateObj.getUTCMonth() + 1)).slice(-2);
+  const day = ("0" + dateObj.getUTCDate()).slice(-2);
+  const hours = ("0" + dateObj.getUTCHours()).slice(-2);
+  const minutes = ("0" + dateObj.getUTCMinutes()).slice(-2);
+  const seconds = ("0" + dateObj.getUTCSeconds()).slice(-2);
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
 const formateoFecha = (fechaI) => {
   const year = fechaI.getFullYear();
   const month = ("0" + (fechaI.getMonth() + 1)).slice(-2);
@@ -105,7 +116,7 @@ const cambaceosTemplate = (cambaceo) => {
                               </div>
                               <div class="col-md-6">
                                   <h3>Fechas Trabajadas</h3>
-                                  <h5>${cambaceo.FechaAsignacion} - ${
+                                  <h5>${cambaceo.FechaAsignacion} - <br> ${
     cambaceo.FechaConclusion
   }</h5>
                               </div>
@@ -183,6 +194,12 @@ const SeguimientoDiarioColab = () => {
     Swal.close();
 
     let json = await res.json();
+    // Convertir las fechas al formato deseado
+    json = json.map((item) => {
+      item.FechaAsignacion = convierteFecha(item.FechaAsignacion);
+      item.FechaConclusion = convierteFecha(item.FechaConclusion);
+      return item;
+    });
     console.log(json);
     if (json === null || (Array.isArray(json) && json.length === 0)) {
       return Swal.fire({
