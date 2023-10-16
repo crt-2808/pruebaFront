@@ -20,7 +20,8 @@ class SeguimientoLlamada extends Component {
 
   componentDidMount() {
     axios
-      .get("http://localhost:3005/SeguimientoLlamada") // Reemplaza '/datos' con la ruta correcta a tu servidor
+      //.get("http://localhost:3005/SeguimientoLlamada")
+      .get("https://sarym-production-4033.up.railway.app/api/seguimientoVisita")
       .then((response) => {
         this.setState({ data: response.data });
       })
@@ -44,7 +45,7 @@ class SeguimientoLlamada extends Component {
 
     if (selectedValue !== "" && inputValue !== "") {
       axios
-        .put("http://localhost:3005/agregarIncidencia", {
+        .put("https://sarym-production-4033.up.railway.app/api/llamada/incidencia", {
           telefono: selectedValue,
           nuevaIncidencia: inputValue,
         })
@@ -84,7 +85,8 @@ class SeguimientoLlamada extends Component {
 
   handleExport = () => {
     axios
-      .get("http://localhost:3005/exportarLlamada") // Reemplaza '/exportar' con la ruta correcta a tu servidor
+      //.get("http://localhost:3005/exportarLlamada")
+      .get("https://sarym-production-4033.up.railway.app/api//llamada/exportar")
       .then((response) => {
         const csvData = response.data;
         const blob = new Blob([csvData], { type: "text/csv" });

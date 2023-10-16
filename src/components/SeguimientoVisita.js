@@ -20,7 +20,8 @@ class SeguimientoVisita extends Component {
 
   componentDidMount() {
     axios
-      .get("http://localhost:3005/SeguimientoVisita") // Reemplaza '/datos' con la ruta correcta a tu servidor
+      //.get("http://localhost:3005/SeguimientoVisita") 
+      .get("https://sarym-production-4033.up.railway.app/api/getSeguimientoVisita")
       .then((response) => {
         this.setState({ data: response.data });
       })
@@ -44,7 +45,8 @@ class SeguimientoVisita extends Component {
 
     if (selectedValue !== "" && inputValue !== "") {
       axios
-        .put("http://localhost:3005/agregarIncidencia", {
+        //.put("http://localhost:3005/agregarIncidencia", {
+          .put("https://sarym-production-4033.up.railway.app/api/llamada/incidencia", {
           telefono: selectedValue,
           nuevaIncidencia: inputValue,
         })

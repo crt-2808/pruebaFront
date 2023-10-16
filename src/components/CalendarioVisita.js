@@ -43,7 +43,8 @@ function CalendarioVisita() {
       Descripcion,
     };
     axios
-      .post("http://localhost:3005/guardar_datos_visita", data)
+      .post("https://sarym-production-4033.up.railway.app/api/createVisitaProgramda", data)
+      //.post("http://localhost:3005/guardar_datos_visita", data)
       .then((response) => {
         // Muestra una alerta de éxito
         Swal.fire({
