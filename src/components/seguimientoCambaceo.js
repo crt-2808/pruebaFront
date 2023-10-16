@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Navbar from "./navbar";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "react-bootstrap-icons";
+import { ArrowLeft, X } from "react-bootstrap-icons";
 import usuarioAnon from "../img/imagen-de-usuario-con-fondo-negro.png";
 import Swal from "sweetalert2";
 import { Toast } from "primereact/toast";
@@ -19,6 +19,8 @@ const SeguimientoCambaceo = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const [imageLoaded, setImageLoaded] = useState({});
+
   const toast = useRef(null);
   const showToast = () => {
     toast.current.show({
@@ -30,6 +32,29 @@ const SeguimientoCambaceo = () => {
   };
   const handleImageError = (e) => {
     e.target.src = usuarioAnon; // imagen predeterminada
+  };
+  const generateSwalTemplate = (colaborador, type) => {
+    return `
+      <h3>Has seleccionado</h3>
+      <div class='row centrar' style='overflow: hidden;'>
+        <div class='col-md-8 col-xs-6'>
+          <div class='card centrar p-3 mt-3'>
+            
+              <img src='${
+                colaborador.Imagen
+              }' class='img-fluid' id='img-card' alt="imagen de colaborador" onerror="this.onerror=null; this.src='${usuarioAnon}';">
+            <h3>${colaborador.Nombre}</h3>
+            <h4>${
+              colaborador.Apellido_pat + " " + colaborador.Apellido_mat
+            }</h4>
+            <h6>${colaborador.Correo}</h6>
+            <h6>${colaborador.Telefono}</h6>
+          </div>
+        </div>
+      </div>
+      <br>
+      <h3>Para un seguimiento <span class="text-danger">${type}</span></h3>
+    `;
   };
 
   const colab = async () => {
@@ -89,26 +114,7 @@ const SeguimientoCambaceo = () => {
       text: "Fecha",
       icon: "warning",
       showCancelButton: true,
-      html: `
-        <h3>Has seleccionado</h3>
-        <div class='row centrar' style='overflow: hidden;'>
-          <div class='col-md-8 col-xs-6'>
-            <div class='card centrar p-3 mt-3'>
-              <img src='${
-                colaborador.Imagen
-              }' class='img-fluid' id='img-card' alt="imagen de colaborador" onerror="this.onerror=null; this.src='${usuarioAnon}';">
-              <h3>${colaborador.Nombre}</h3>
-              <h4>${
-                colaborador.Apellido_pat + " " + colaborador.Apellido_mat
-              }</h4>
-              <h6>${colaborador.Correo}</h6>
-              <h6>${colaborador.Telefono}</h6>
-            </div>
-          </div>
-        </div>
-        <br>
-        <h3>Para un seguimiento <span class="text-danger">${type}</span></h3>
-      `,
+      html: generateSwalTemplate(colaborador, type),
       confirmButtonText: "Confirmar",
       cancelButtonText: "Cancelar",
       confirmButtonColor: "#ea4335",
@@ -162,15 +168,18 @@ const SeguimientoCambaceo = () => {
                 </h6>
               </div>
               <div className="col-md-6">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Buscar por Nombre"
-                  aria-label="Buscar"
-                  aria-describedby="basic-addon1"
-                  value={search}
-                  onChange={handleSearchChange}
-                ></input>
+                <div className="input-wrapper">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Buscar por Nombre"
+                    aria-label="Buscar"
+                    aria-describedby="basic-addon1"
+                    value={search}
+                    onChange={handleSearchChange}
+                  />
+                  <X className="clear-icon" onClick={() => setSearch("")} />
+                </div>
               </div>
             </div>
             <div
@@ -183,13 +192,45 @@ const SeguimientoCambaceo = () => {
                     filteredData.map((colaborador, index) => (
                       <div className="col-md-3 " key={index}>
                         <div className="card centrar p-3">
+                          <div
+                            className="loader-container"
+                            style={{
+                              display: imageLoaded[colaborador.id]
+                                ? "none"
+                                : "block",
+                            }}
+                          >
+                            <span className="loader"></span>
+                            <div className="loader-text">
+                              Cargando imagen del colaborador...
+                            </div>
+                          </div>
+
                           <img
                             src={colaborador.Imagen}
-                            className="img-fluid"
+                            className={`img-fluid fade-in ${
+                              imageLoaded[colaborador.id] ? "loaded" : ""
+                            }`}
                             id="img-card"
                             alt="imagen de colaborador"
                             onError={handleImageError}
+                            onLoad={() =>
+                              setImageLoaded((prevState) => ({
+                                ...prevState,
+                                [colaborador.id]: true,
+                              }))
+                            }
+                            style={
+                              imageLoaded[colaborador.id]
+                                ? { opacity: 1, visibility: "visible" }
+                                : {
+                                    opacity: 0,
+                                    visibility: "hidden",
+                                    display: "none",
+                                  }
+                            }
                           />
+
                           <h3>{colaborador.Nombre}</h3>
                           <h4>
                             {colaborador.Apellido_pat +
