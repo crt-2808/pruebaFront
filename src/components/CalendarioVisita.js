@@ -11,7 +11,6 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Row, Col, Form } from "react-bootstrap";
 
-
 function CalendarioVisita() {
   const navigate = useNavigate();
   const [NombreCompleto, setNombreCompleto] = useState("");
@@ -43,7 +42,10 @@ function CalendarioVisita() {
       Descripcion,
     };
     axios
-      .post("https://sarym-production-4033.up.railway.app/api/createVisitaProgramda", data)
+      .post(
+        "https://sarym-production-4033.up.railway.app/api/visitaProgramada",
+        data
+      )
       //.post("http://localhost:3005/guardar_datos_visita", data)
       .then((response) => {
         // Muestra una alerta de éxito
@@ -52,8 +54,8 @@ function CalendarioVisita() {
           title: "Éxito",
           text: "Los datos se han registrado correctamente",
           timer: 1200,
-        timerProgressBar: true,
-        backdrop: `
+          timerProgressBar: true,
+          backdrop: `
         rgba(36,32,32,0.65)
         
       `,
@@ -68,8 +70,8 @@ function CalendarioVisita() {
           title: "Error",
           text: "Hubo un error al registrar los datos",
           timer: 1200,
-        timerProgressBar: true,
-        backdrop: `
+          timerProgressBar: true,
+          backdrop: `
         rgba(36,32,32,0.65)
         
       `,
@@ -199,11 +201,9 @@ function CalendarioVisita() {
                   style={{ width: "100%" }}
                 />
               </div>
-              
             </Col>
             <Col xs={12} md={6}>
-              
-            <div className="p-field">
+              <div className="p-field">
                 <label htmlFor="Direccion_CP">
                   Codigo Postal
                   <br />
@@ -217,7 +217,7 @@ function CalendarioVisita() {
                   style={{ width: "100%" }}
                 />
               </div>
-              
+
               <div className="p-field">
                 <label htmlFor="Direccion_Colonia">
                   Colonia
@@ -232,10 +232,10 @@ function CalendarioVisita() {
                   style={{ width: "100%" }}
                 />
               </div>
-              
+
               <div className="p-field">
                 <label htmlFor="TipoEmpresa">
-                    Empresa
+                  Empresa
                   <br />
                 </label>
               </div>
@@ -250,7 +250,7 @@ function CalendarioVisita() {
 
               <div className="p-field">
                 <label htmlFor="Sitioweb">
-                    Sitio Web
+                  Sitio Web
                   <br />
                 </label>
               </div>

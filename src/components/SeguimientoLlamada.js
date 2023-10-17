@@ -21,7 +21,9 @@ class SeguimientoLlamada extends Component {
   componentDidMount() {
     axios
       //.get("http://localhost:3005/SeguimientoLlamada")
-      .get("https://sarym-production-4033.up.railway.app/api/seguimientoVisita")
+      .get(
+        "https://sarym-production-4033.up.railway.app/api/seguimientoLlamada"
+      )
       .then((response) => {
         this.setState({ data: response.data });
       })
@@ -45,21 +47,24 @@ class SeguimientoLlamada extends Component {
 
     if (selectedValue !== "" && inputValue !== "") {
       axios
-        .put("https://sarym-production-4033.up.railway.app/api/llamada/incidencia", {
-          telefono: selectedValue,
-          nuevaIncidencia: inputValue,
-        })
+        .put(
+          "https://sarym-production-4033.up.railway.app/api/llamada/incidencia",
+          {
+            telefono: selectedValue,
+            nuevaIncidencia: inputValue,
+          }
+        )
         .then((response) => {
           console.log(response.data); // Maneja la respuesta del servidor si es necesario
           Swal.fire({
-            icon: 'success',
-            title: 'Incidencia registrada correctamente.',
-            text: 'UDA',
+            icon: "success",
+            title: "Incidencia registrada correctamente.",
+            text: "UDA",
             timer: 1200,
             timerProgressBar: true,
             backdrop: `
                 rgba(36,32,32,0.65)
-              `,        
+              `,
           }).then(() => {
             // Recarga la página después de mostrar la alerta de éxito.
             window.location.reload();
@@ -68,19 +73,18 @@ class SeguimientoLlamada extends Component {
         .catch((error) => {
           console.error("Error al actualizar: " + error.message);
         });
-    }else{
-        return Swal.fire({
-            icon: "error",
-            title: "No ha registrado ninguna Incidencia",
-            text: "UDA",
-            timer: 1200,
-            timerProgressBar: true,
-            backdrop: `
+    } else {
+      return Swal.fire({
+        icon: "error",
+        title: "No ha registrado ninguna Incidencia",
+        text: "UDA",
+        timer: 1200,
+        timerProgressBar: true,
+        backdrop: `
                 rgba(36,32,32,0.65)
               `,
-          });
+      });
     }
-
   };
 
   handleExport = () => {
@@ -127,43 +131,41 @@ class SeguimientoLlamada extends Component {
                 id="opcionesCambaceo"
               >
                 <Dropdown
-          value={this.state.selectedValue}
-          options={this.state.data}
-          optionLabel="NombreCompleto"
-          filter
-          showClear
-          filterBy="NombreCompleto"
-          placeholder="Selecciona un contacto a llamar"
-          onChange={this.handleChange}
-        />
-                {this.state.selectedValue !== '' && (
-          <div>
-            <InputTextarea
-              rows={5}
-              autoResize
-              placeholder="Ingresa Incidencia aquí"
-              value={this.state.inputValue}
-              onChange={this.handleInputChange}
-              style={{ width: '100%', marginTop: '15px' }}
-            />
-            <Button
-              label="Actualizar"
-              icon="pi pi-check" // Icono de check
-              onClick={this.handleUpdate}
-              style={{ marginTop: '10px' }}
-            />
-          </div>
-        )}
-        <Button
-          className="p-button-info" // Estilo de info
-          label="Exportar"
-          rounded
-          size="large"
-          onClick={this.handleExport}
-          style={{ marginTop: '50px', maxWidth: "100%", width: "auto" }}
-
-        />
-
+                  value={this.state.selectedValue}
+                  options={this.state.data}
+                  optionLabel="NombreCompleto"
+                  filter
+                  showClear
+                  filterBy="NombreCompleto"
+                  placeholder="Selecciona un contacto a llamar"
+                  onChange={this.handleChange}
+                />
+                {this.state.selectedValue !== "" && (
+                  <div>
+                    <InputTextarea
+                      rows={5}
+                      autoResize
+                      placeholder="Ingresa Incidencia aquí"
+                      value={this.state.inputValue}
+                      onChange={this.handleInputChange}
+                      style={{ width: "100%", marginTop: "15px" }}
+                    />
+                    <Button
+                      label="Actualizar"
+                      icon="pi pi-check" // Icono de check
+                      onClick={this.handleUpdate}
+                      style={{ marginTop: "10px" }}
+                    />
+                  </div>
+                )}
+                <Button
+                  className="p-button-info" // Estilo de info
+                  label="Exportar"
+                  rounded
+                  size="large"
+                  onClick={this.handleExport}
+                  style={{ marginTop: "50px", maxWidth: "100%", width: "auto" }}
+                />
               </div>
             </div>
           </div>

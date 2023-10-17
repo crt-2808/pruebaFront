@@ -11,7 +11,6 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Row, Col, Form } from "react-bootstrap";
 
-
 function CalendarioLlamada() {
   const navigate = useNavigate();
   const [NombreCompleto, setNombreCompleto] = useState("");
@@ -32,7 +31,7 @@ function CalendarioLlamada() {
     };
     axios
       //.post("http://localhost:3005/guardar_datos", data)
-      .post("https://sarym-production-4033.up.railway.app/api/createLlamada", data)
+      .post("https://sarym-production-4033.up.railway.app/api/llamada", data)
       .then((response) => {
         // Muestra una alerta de éxito
         Swal.fire({
@@ -40,8 +39,8 @@ function CalendarioLlamada() {
           title: "Éxito",
           text: "Los datos se han registrado correctamente",
           timer: 1200,
-        timerProgressBar: true,
-        backdrop: `
+          timerProgressBar: true,
+          backdrop: `
         rgba(36,32,32,0.65)
         
       `,
@@ -56,8 +55,8 @@ function CalendarioLlamada() {
           title: "Error",
           text: "Hubo un error al registrar los datos",
           timer: 1200,
-        timerProgressBar: true,
-        backdrop: `
+          timerProgressBar: true,
+          backdrop: `
         rgba(36,32,32,0.65)
         
       `,
@@ -116,7 +115,7 @@ function CalendarioLlamada() {
                   id="NombreCompleto"
                   value={NombreCompleto}
                   onChange={(e) => setNombreCompleto(e.target.value)}
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                 />
               </div>
               <div className="p-field">
@@ -127,7 +126,7 @@ function CalendarioLlamada() {
                   id="Telefono"
                   value={Telefono}
                   onChange={(e) => setTelefono(e.target.value)}
-                   style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                 />
               </div>
               <div className="p-field">
@@ -142,7 +141,7 @@ function CalendarioLlamada() {
                   showTime
                   hourFormat="12"
                   dateFormat="mm/dd/yy"
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                 />
               </div>
             </Col>
@@ -157,7 +156,7 @@ function CalendarioLlamada() {
                   value={Descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
                   rows={5}
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                 />
               </div>
               <div className="p-field">
@@ -171,16 +170,16 @@ function CalendarioLlamada() {
                   multiple
                   auto
                   disabled
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                 />
               </div>
             </Col>
             <Button
-                label="Confirmar"
-                onClick={handleSubmit}
-                severity="success"
-                 style={{ width: '100%' }}
-              />
+              label="Confirmar"
+              onClick={handleSubmit}
+              severity="success"
+              style={{ width: "100%" }}
+            />
           </Row>
         </div>
       </div>
