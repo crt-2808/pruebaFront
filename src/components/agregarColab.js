@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Form } from "react-bootstrap";
+import { Row, Col, Form } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import Navbar from "./navbar";
-import Modal from "react-bootstrap/Modal";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -19,6 +18,12 @@ function AgregarColab() {
   const navigate = useNavigate();
   const formData = new FormData();
   const onSubmit = async (data) => {
+    Swal.fire({
+      title: "Cargando...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+    });
+    Swal.showLoading();
     if (data == undefined) {
       return Swal.fire({
         icon: "error",
@@ -28,7 +33,7 @@ function AgregarColab() {
         timerProgressBar: true,
         backdrop: `
         rgba(36,32,32,0.65)
-        
+
       `,
       });
     }
@@ -55,30 +60,23 @@ function AgregarColab() {
     // data.FotoColab = data.FileList[0];
 
     console.log(data);
-    console.log("Form data: ", formData);
+    // Visualizar el contenido de formData
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
 
+    let config = {
+      method: "POST",
+      mode: "cors",
+      body: formData,
+    };
     try {
-      // let config = {
-      //   method: "POST",
-      //   headers: {
-      //     Accept: "application/json",
-      //     "Content-Type": "application/json",
-      //   },
-      //   mode: "cors",
-      //   body: JSON.stringify(datos),
-      // };
-      let config = {
-        method: "POST",
-        mode: "cors",
-        body: formData,
-      };
       let res = await fetch(
         "https://sarym-production-4033.up.railway.app/api/colaborador",
         config
       );
-      let json = await res.json();
-      console.log(json);
-      if (res.status == 500) {
+      Swal.close();
+      if (!res.ok) {
         return Swal.fire({
           icon: "error",
           title: "Se produjo un error",
@@ -88,9 +86,11 @@ function AgregarColab() {
           backdrop: `
           rgba(36,32,32,0.65)
           
-        `,
+          `,
         });
       }
+      let json = await res.json();
+      console.log(json);
       Swal.fire({
         icon: "success",
         title: "Se agregó tu colaborador exitosamente",
@@ -105,6 +105,7 @@ function AgregarColab() {
         navigate("/land");
       });
     } catch (error) {
+      console.error(error);
       return Swal.fire({
         icon: "error",
         title: "Se produjo un error",
@@ -118,9 +119,7 @@ function AgregarColab() {
       });
     }
   };
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+
   return (
     <div className="fluid">
       <Navbar style={{ backgroundColor: "##F8F9FA" }}></Navbar>

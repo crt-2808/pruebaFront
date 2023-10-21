@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Form } from "react-bootstrap";
+import { Row, Col, Form } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import { useForm } from "react-hook-form";
 import Navbar from "./navbar";
@@ -91,7 +91,7 @@ function CambaceoSemanal() {
     console.log(Object.keys(data).length);
     data = {
       ...data,
-      IDColaborador: "53",
+      IDColaborador: "60",
       Activo: 1,
       Tipo: "Cambaceo_Semanal",
       Documentos: "src",
@@ -127,10 +127,17 @@ function CambaceoSemanal() {
         body: JSON.stringify(data),
       };
       try {
+        Swal.fire({
+          title: "Cargando...",
+          text: "Por favor espera un momento",
+          allowOutsideClick: false,
+        });
+        Swal.showLoading();
         let res = await fetch(
           "https://sarym-production-4033.up.railway.app/api/cambaceo",
           config
         );
+        Swal.close();
         let json = await res.json();
         console.log(json);
         if (res.status == 500 || res.status == 400 || res.status == 404) {
@@ -148,7 +155,7 @@ function CambaceoSemanal() {
         }
         Swal.fire({
           icon: "success",
-          title: "Se agregó tu colaborador exitosamente",
+          title: "Se agregó tu cambaceo semanal correctamente",
           text: "UDA",
           timer: 1200,
           timerProgressBar: true,
@@ -284,7 +291,7 @@ function CambaceoSemanal() {
                 </Form.Group>
               </Col>
               <Col xs={12} md={6}>
-              <Form.Group>
+                <Form.Group>
                   <Form.Label htmlFor="Exterior">Numero Exterior</Form.Label>
                   <Form.Control
                     type="text"
