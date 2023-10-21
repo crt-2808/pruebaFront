@@ -254,28 +254,28 @@ function CambaceoSemanal() {
                   />
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label for="dateInput">Fecha Inicio</Form.Label>
+                  <Form.Label htmlFor="dateInput">Fecha Inicio</Form.Label>
                   <Form.Control
                     type="date"
                     {...register("FechaInicio", { required: true })}
                   />
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label for="dateInput">Fecha Fin</Form.Label>
+                  <Form.Label htmlFor="dateInput">Fecha Fin</Form.Label>
                   <Form.Control
                     type="date"
                     {...register("FechaFin", { required: true })}
                   />
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label for="timeInput">Hora Inicio</Form.Label>
+                  <Form.Label htmlFor="timeInput">Hora Inicio</Form.Label>
                   <Form.Control
                     type="time"
                     {...register("HoraInicio", { required: true })}
                   />
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label for="timeInput">Hora Fin</Form.Label>
+                  <Form.Label htmlFor="timeInput">Hora Fin</Form.Label>
                   <Form.Control
                     type="time"
                     {...register("HoraFin", { required: true })}

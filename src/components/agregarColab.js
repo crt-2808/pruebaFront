@@ -8,6 +8,22 @@ import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useUserContext } from "../userProvider";
 
+const checkIfIdExists = async (id) => {
+  try {
+    const response = await fetch(
+      `https://sarym-production-4033.up.railway.app/api/colaborador/${id}`
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data ? true : false;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error checking ID:", error);
+    return false;
+  }
+};
+
 function AgregarColab() {
   const {
     register,
@@ -35,6 +51,15 @@ function AgregarColab() {
         rgba(36,32,32,0.65)
 
       `,
+      });
+    }
+    const idExists = await checkIfIdExists(data.ID_Colab);
+    console.log("ID exists:", idExists);
+    if (idExists) {
+      return Swal.fire({
+        icon: "error",
+        title: "ID_Colab ya existe",
+        text: "Por favor, ingresa un ID_Colab diferente.",
       });
     }
     let inputElem = document.getElementById("FotoColab");

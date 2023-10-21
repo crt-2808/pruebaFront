@@ -190,14 +190,19 @@ const EditarColab = () => {
             Swal.close();
 
             if (response.ok) {
+              const updatedColaboradores = colaboradores.map((colab) => {
+                if (colab.ID_Colab === colaborador.ID_Colab) {
+                  return { ...colab, ...valoresUp };
+                }
+                return colab;
+              });
+              setColaboradores(updatedColaboradores);
               Swal.fire({
                 title: "Editado!",
                 text: `Has editado al colaborador.`,
                 icon: "success",
                 timer: 2000,
                 timerProgressBar: true,
-              }).then(() => {
-                window.location.reload();
               });
             } else {
               Swal.fire(
