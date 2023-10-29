@@ -5,8 +5,10 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import Cambaceo from "../img/Cambaceo.png";
 import Visita from "../img/Visita.png";
 import Llamada from "../img/Llamada.png";
+import { useAuthRedirect } from "../useAuthRedirect";
 
 const Planeador = () => {
+  useAuthRedirect();
   return (
     <div className="fluid">
       <Navbar></Navbar>

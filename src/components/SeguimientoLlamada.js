@@ -7,6 +7,7 @@ import Navbar from "./navbar";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useAuthRedirect } from "../useAuthRedirect";
 
 class SeguimientoLlamada extends Component {
   constructor() {

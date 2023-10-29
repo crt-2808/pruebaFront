@@ -4,8 +4,10 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import Usuario_sin_img from "../img/imagen-de-usuario-con-fondo-negro.png";
+import { useAuthRedirect } from "../useAuthRedirect";
 
 const EditarColab = () => {
+  useAuthRedirect();
   const [colaboradores, setColaboradores] = useState([]);
   const [imageLoaded, setImageLoaded] = useState({});
   const fetchColaboradores = async () => {

@@ -5,8 +5,10 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import Diario from "../img/Diario.svg";
 import Semanal from "../img/Semanal.svg";
 import Seguimiento from "../img/Seguimiento.svg";
+import { useAuthRedirect } from "../useAuthRedirect";
 
 const Cambaceo = () => {
+  useAuthRedirect();
   return (
     <div className="fluid">
       <Navbar></Navbar>

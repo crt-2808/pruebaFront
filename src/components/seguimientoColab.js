@@ -7,6 +7,7 @@ import { Calendar } from "primereact/calendar";
 import "../theme.css";
 import "primereact/resources/primereact.css"; // core css
 import { addLocale } from "primereact/api";
+import { useAuthRedirect } from "../useAuthRedirect";
 addLocale("es", {
   firstDayOfWeek: 1,
   dayNames: [
@@ -140,6 +141,7 @@ const cambaceosTemplate = (cambaceo) => {
   </div>`;
 };
 const SeguimientoColab = () => {
+  useAuthRedirect();
   const navigate = useNavigate();
   const { id } = useParams();
   console.log(id);

@@ -59,9 +59,12 @@ function App() {
           />
           <Route path="/AgregarVisita" element={<AgregarVisita />} />
           <Route path="/VisitaAgregar" element={<Mamado />} />
-          <Route path="/SeguimientoVisita" element={<SeguimientoVisita />}/>
-          <Route path="/SeleccionColaboradores" element={<SeleccionColaboradores/>}/>
-          <Route path="/SeguimientoLlamada" element={<SeguimientoLlamada/>}/>
+          <Route path="/SeguimientoVisita" element={<SeguimientoVisita />} />
+          <Route
+            path="/SeleccionColaboradores"
+            element={<SeleccionColaboradores />}
+          />
+          <Route path="/SeguimientoLlamada" element={<SeguimientoLlamada />} />
         </Routes>
       </div>
     </UserProvider>

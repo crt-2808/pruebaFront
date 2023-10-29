@@ -2,11 +2,12 @@ import React from "react";
 import Navbar from "./navbar";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "react-bootstrap-icons";
-
+import { useAuthRedirect } from "../useAuthRedirect";
 import AgregarProgramada from "../img/Calendar-5.svg";
 import SeguimientoProgramada from "../img/Calendar-4.svg";
 
 const VisitaProgramada = () => {
+  useAuthRedirect();
   return (
     <div className="fluid">
       <Navbar></Navbar>

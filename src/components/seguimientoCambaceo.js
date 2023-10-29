@@ -5,10 +5,12 @@ import { ArrowLeft, X } from "react-bootstrap-icons";
 import usuarioAnon from "../img/imagen-de-usuario-con-fondo-negro.png";
 import Swal from "sweetalert2";
 import { Toast } from "primereact/toast";
+import { useAuthRedirect } from "../useAuthRedirect";
 import "../theme.css";
 import "primereact/resources/primereact.css"; // core css
 
 const SeguimientoCambaceo = () => {
+  useAuthRedirect();
   const navigate = useNavigate();
   const options = {
     method: "GET",

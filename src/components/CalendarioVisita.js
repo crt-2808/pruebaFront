@@ -10,8 +10,10 @@ import Navbar from "./navbar";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Row, Col, Form } from "react-bootstrap";
+import { useAuthRedirect } from "../useAuthRedirect";
 
 function CalendarioVisita() {
+  useAuthRedirect();
   const navigate = useNavigate();
   const [NombreCompleto, setNombreCompleto] = useState("");
   const [Telefono, setTelefono] = useState("");

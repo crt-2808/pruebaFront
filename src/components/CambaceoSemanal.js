@@ -6,6 +6,7 @@ import Navbar from "./navbar";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useAuthRedirect } from "../useAuthRedirect";
 
 function formatearFechasAsignacionYConclusion(
   FechaInicio,
@@ -64,6 +65,7 @@ function formatearFechasAsignacionYConclusion(
 }
 
 function CambaceoSemanal() {
+  useAuthRedirect();
   const {
     register,
     handleSubmit,

@@ -7,6 +7,7 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useUserContext } from "../userProvider";
+import { useAuthRedirect } from "../useAuthRedirect";
 
 const checkIfIdExists = async (id) => {
   try {
@@ -25,6 +26,7 @@ const checkIfIdExists = async (id) => {
 };
 
 function AgregarColab() {
+  useAuthRedirect();
   const {
     register,
     formState: { errors },

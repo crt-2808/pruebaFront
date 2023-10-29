@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "react-bootstrap-icons";
 import LlamarAgregar from "../img/Call.svg";
 import LlamarEditar from "../img/Cell phone.svg";
+import { useAuthRedirect } from "../useAuthRedirect";
 
 const Llamada = () => {
+  useAuthRedirect();
   return (
     <div className="fluid">
       <Navbar></Navbar>
