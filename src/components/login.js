@@ -37,7 +37,7 @@ function Login() {
     console.log(res.profileObj);
     // setProfile(res.profileObj);
     toggleUser(res.profileObj);
-    console.log(res.profileObj);
+    sessionStorage.setItem("usuario", JSON.stringify(res.profileObj));
     setTimeout(() => {
       navigate("/land");
     }, 100);
@@ -49,6 +49,7 @@ function Login() {
   const logOut = () => {
     // setProfile(null);
     toggleUser(null);
+    sessionStorage.removeItem("usuario");
   };
   return (
     <div className="fluid">
