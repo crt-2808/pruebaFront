@@ -65,6 +65,7 @@ function App() {
             element={<SeleccionColaboradores />}
           />
           <Route path="/SeguimientoLlamada" element={<SeguimientoLlamada />} />
+          <Route path="*" element={<Land />} />
         </Routes>
       </div>
     </UserProvider>
