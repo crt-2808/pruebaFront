@@ -136,14 +136,19 @@ const cambaceosTemplate = (cambaceo) => {
                       </div>
                   </div>
                   <div class="col-md-4">
-                      <div class="col-md-12">
-                          <div class="row my-md-4">
-                              <div class="col-md-12">
-                                  <h3>Incidencias</h3>
-                                  <h5>${cambaceo.Incidentes || "Ninguna"}</h5>
-                              </div>
-                          </div>
-                      </div>
+                  <div class="col-md-12">
+                  <h3>Incidencias</h3>
+                  <textarea id="incidencias-${
+                    cambaceo.ID
+                  }" rows='5' style="border: 1px solid #f44336;" class="form-control">${
+    cambaceo.Incidentes || "Ninguna"
+  }</textarea>
+                  <button id="guardar-${
+                    cambaceo.ID
+                  }" class="btn-exportar mt-4" onclick="guardarIncidencia(${
+    cambaceo.ID
+  })">Guardar</button>
+                </div>
                   </div>
               </div>
           </div>
@@ -155,6 +160,59 @@ const SeguimientoDiarioColab = () => {
   const { id } = useParams();
 
   const [Diario, setDiario] = useState(null);
+
+  const guardarIncidencia = async (id) => {
+    const incidencias = document.getElementById(`incidencias-${id}`).value;
+    console.log(incidencias);
+    try {
+      const response = await fetch(
+        "https://sarym-production-4033.up.railway.app/api/cambaceo/incidencia",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id, incidencia: incidencias }),
+        }
+      );
+
+      if (!response.ok) {
+        Swal.fire({
+          icon: "error",
+          title: "Se produjo un error",
+          text: "UDA",
+          timer: 1200,
+          timerProgressBar: true,
+          backdrop: `
+      rgba(36,32,32,0.65)
+      
+    `,
+        });
+      }
+
+      let data;
+      if (response.headers.get("content-length") !== "0") {
+        data = await response.json();
+      } else {
+        data = "No content";
+      }
+
+      console.log("Incidencias guardadas:", data);
+      Swal.fire({
+        icon: "success",
+        title: "¡Incidencias actualizadas!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch (error) {
+      console.error("Error al guardar las incidencias:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error al guardar las incidencias",
+        text: error.toString(),
+      });
+    }
+  };
 
   const colabInfo = async () => {
     if (Diario === null) {
@@ -242,7 +300,11 @@ const SeguimientoDiarioColab = () => {
       }
     });
   };
-  useEffect(() => {}, []);
+  useEffect(() => {
+    // Hacer que la función guardarIncidencia esté disponible globalmente
+    window.guardarIncidencia = guardarIncidencia;
+  }, []);
+
   return (
     <div className="fluid">
       <Navbar></Navbar>

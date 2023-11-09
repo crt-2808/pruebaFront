@@ -14,9 +14,11 @@ const checkIfIdExists = async (id) => {
     const response = await fetch(
       `https://sarym-production-4033.up.railway.app/api/colaborador/${id}`
     );
-    if (response.ok) {
-      const data = await response.json();
-      return data ? true : false;
+    const data = await response.json();
+    console.log("Data:", data);
+
+    if (response.ok && data.length > 0) {
+      return true;
     }
     return false;
   } catch (error) {
