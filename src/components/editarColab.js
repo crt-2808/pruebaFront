@@ -18,12 +18,26 @@ const EditarColab = () => {
     });
     Swal.showLoading();
     try {
+      const userData = JSON.parse(sessionStorage.getItem("usuario"));
+      const email = userData.email;
+
+      const requestBody = {
+        correoLider: email,
+      };
       const response = await fetch(
         "https://sarym-production-4033.up.railway.app/api/colaborador",
-        { method: "GET", mode: "cors" }
+        {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
       );
       Swal.close();
       if (!response.ok) {
+        console.log("Error: ", response);
         return Swal.fire({
           icon: "error",
           title: "Se produjo un error",
