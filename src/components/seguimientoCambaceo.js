@@ -12,10 +12,6 @@ import "primereact/resources/primereact.css"; // core css
 const SeguimientoCambaceo = () => {
   useAuthRedirect();
   const navigate = useNavigate();
-  const options = {
-    method: "GET",
-    mode: "cors",
-  };
 
   // Nuevo estado para los datos de los colaboradores
   const [data, setData] = useState([]);
@@ -67,6 +63,20 @@ const SeguimientoCambaceo = () => {
     });
     Swal.showLoading();
     try {
+      const userData = JSON.parse(sessionStorage.getItem("usuario"));
+      const email = userData.email;
+
+      const requestBody = {
+        correoLider: email,
+      };
+      const options = {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      };
       const response = await fetch(
         "https://sarym-production-4033.up.railway.app/api/colaborador",
         options
@@ -90,7 +100,14 @@ const SeguimientoCambaceo = () => {
         });
       }
       const data = await response.json();
-
+      if (data.length === 0) {
+        return Swal.fire({
+          title: "¡Atención!",
+          text: "Todavía no hay ningún colaborador registrado en tu equipo.",
+          icon: "info",
+          confirmButtonText: "Entendido",
+        });
+      }
       // Transformamos la data si es necesario
       const transformedData = data.map((item) => {
         if (item.Imagen === "src") {

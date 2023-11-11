@@ -70,7 +70,7 @@ function AgregarColab() {
     let file = inputElem.files[0];
     let blob = file.slice(0);
     const imagen = new File([blob], `${file.name}`);
-    data = { ...data, IDLider: "2345678", FotoColab: imagen };
+    data = { ...data, FotoColab: imagen };
     // data = { ...data, IDLider: "2345678" };
     // data.append("FotoColab", imagen);
 
@@ -83,7 +83,7 @@ function AgregarColab() {
     formData.append("Correo", data.Correo);
     formData.append("Telefono", data.Telefono);
     formData.append("IDEquipo", data.IDEquipo);
-    formData.append("IDLider", data.IDLider);
+    // formData.append("IDLider", data.IDLider);
     formData.append("FotoColab", data.FotoColab);
     console.log(data.FotoColab);
     // data.FotoColab = data.FileList[0];
@@ -93,7 +93,9 @@ function AgregarColab() {
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
-
+    const userData = JSON.parse(sessionStorage.getItem("usuario"));
+    const email = userData.email;
+    formData.append("correoLider", email);
     let config = {
       method: "POST",
       mode: "cors",
@@ -101,7 +103,7 @@ function AgregarColab() {
     };
     try {
       let res = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/colaborador",
+        "https://sarym-production-4033.up.railway.app/api/crearColaborador",
         config
       );
       Swal.close();

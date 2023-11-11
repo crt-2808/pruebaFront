@@ -50,7 +50,16 @@ const EditarColab = () => {
     `,
         });
       }
+
       const data = await response.json();
+      if (data.length === 0) {
+        return Swal.fire({
+          title: "¡Atención!",
+          text: "Todavía no hay ningún colaborador registrado en tu equipo.",
+          icon: "info",
+          confirmButtonText: "Entendido",
+        });
+      }
       setColaboradores(data);
     } catch (error) {
       console.error(error);

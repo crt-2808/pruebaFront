@@ -88,7 +88,7 @@ const formateoFecha = (fechaI) => {
   const FechaNueva = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   return FechaNueva;
 };
-const cambaceosTemplate = (cambaceo) => {
+const cambaceosColabTemplate = (cambaceo) => {
   return `
   <div class="container-fluid my-md-5  p-md-5 p-3 mb-4  infoSeguimiento">
       <div class="row">
@@ -140,6 +140,54 @@ const cambaceosTemplate = (cambaceo) => {
         }" class="btn-exportar mt-4" onclick="guardarIncidencia(${
     cambaceo.ID
   })">Guardar</button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>`;
+};
+const cambaceosTemplate = (cambaceo) => {
+  return `
+  <div class="container-fluid my-md-5  p-md-5 p-3 mb-4  infoSeguimiento">
+      <div class="row">
+          <div class="col-md-12">
+              <h1 class=" mx-md-5 mx-sm-2 text-center text-md-start">Información</h1>
+          </div>
+          <div class="col-md-12 mt-md-4">
+              <div class="row">
+                  <div class="col-md-8">
+                      <div class="col-md-12">
+                          <div class="row my-md-4">
+                              <div class="col-md-6">
+                                  <h3>Nombre</h3>
+                                  <h5>${cambaceo.NombreCompleto}</h5>
+                              </div>
+                              <div class="col-md-6">
+                                  <h3>Fechas Trabajadas</h3>
+                                  <h5>${cambaceo.FechaAsignacion} - <br> ${cambaceo.FechaConclusion}</h5>
+                              </div>
+                          </div>
+                          <div class="row my-md-4">
+                              <div class="col-md-6">
+                                  <h3>Calle</h3>
+                                  <h5>${cambaceo.Direccion_Calle} ${cambaceo.Direccion_Num_Ext}</h5>
+                              </div>
+                              <div class="col-md-6">
+                                  <h3>Colonias</h3>
+                                  <h5>${cambaceo.Direccion_Colonia}</h5>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="col-md-12">
+                          <div class="row my-md-4">
+                              <div class="col-md-12">
+                                  <h3>Descripción</h3>
+                                  <h5>${cambaceo.Descripcion}</h5>
                               </div>
                           </div>
                       </div>
