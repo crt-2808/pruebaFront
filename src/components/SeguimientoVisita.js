@@ -6,29 +6,30 @@ import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import axios from "axios";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 function SeguimientoVisita() {
   const [data, setData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [incidencia, setIncidencia] = useState('');
+  const [incidencia, setIncidencia] = useState("");
   const [isIncidenciaValid, setIsIncidenciaValid] = useState(false);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     fetchData();
-    setIsIncidenciaValid(incidencia.trim() !== '');
-}, [incidencia]);
+    setIsIncidenciaValid(incidencia.trim() !== "");
+  }, [incidencia]);
 
   const fetchData = () => {
     axios
-      .get("http://localhost:3005/getVisitas")
+      .get("https://sarym-production-4033.up.railway.app/api/visitaProgramada")
       .then((response) => setData(response.data))
       .catch((error) => console.error("Error fetching data:", error));
   };
 
   const showDialog = (item) => {
     setSelectedItem(item);
+    setIncidencia(item.Incidentes);
     setVisible(true);
   };
 
@@ -40,54 +41,50 @@ function SeguimientoVisita() {
 
   const agregarIncidencia = () => {
     axios
-      .put(`http://localhost:3005/api/planificador/${selectedItem.ID}`, { incidencia })
+      .put(
+        `https://sarym-production-4033.up.railway.app/api/planeador/${selectedItem.ID}`,
+        { incidencia }
+      )
       .then((response) => {
         console.log(response.data.message);
         hideDialog();
         Swal.fire({
-            icon: 'success',
-            title: 'Incidencia registrada correctamente',
-            showConfirmButton: false,
-            timer: 1500,
-          });
+          icon: "success",
+          title: "Incidencia registrada correctamente",
+          showConfirmButton: false,
+          timer: 1500,
+        });
         fetchData(); // Actualizar datos después de agregar incidencia
-
       })
-      .catch((error) =>{
+      .catch((error) => {
         console.error("Error updating data:", error);
         hideDialog();
         Swal.fire({
-            icon: 'error',
-            title: 'Hubo un error al registrar la incidencia',
-            text: 'Por favor, intenta de nuevo',
-            showConfirmButton: false,
-            timer: 1500,
-          });
-      }) 
+          icon: "error",
+          title: "Hubo un error al registrar la incidencia",
+          text: "Por favor, intenta de nuevo",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      });
   };
 
   const cardFooter = (item) => (
     <span>
-      <Button
-        label="Ver"
-
-        onClick={() => showDialog(item)}
-      />
+      <Button label="Ver" onClick={() => showDialog(item)} />
     </span>
   );
 
   const renderCards = () => {
     return data.map((item) => (
-      <div key={item.ID} >
+      <div key={item.ID}>
         <Card
           title={item.TipoEmpresa}
           subTitle={item.FechaAsignacion}
           footer={cardFooter(item)}
           style={{ width: "300px", margin: "10px" }}
         >
-          <div>
-          {item.Direccion_Calle}
-          </div>
+          <div>{item.Direccion_Calle}</div>
         </Card>
       </div>
     ));
@@ -129,95 +126,133 @@ function SeguimientoVisita() {
           className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
           id="contenedor-cambaceo"
         >
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-      {renderCards()}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "space-around",
+            }}
+          >
+            {renderCards()}
 
-      <Dialog
-        header={`Visita - ${selectedItem ? selectedItem.FechaAsignacion : ""}`}
-        visible={visible}
-        onHide={hideDialog}
-        breakpoints={{ '960px': '75vw', '640px': '100vw' }}
-        style={{ width: '75vw' }} // Ancho inicial, ajusta según tus necesidades
-    
-      >
-        <div className="container-fluid">
-          <div className="row">
-              <div className="col-md-4">
-                <label>Nombre:</label>
-                <br />
-                <input
-                  type="text"
-                  value={selectedItem ? selectedItem.NombreCompleto : ""}
-                  disabled
-                />
-                <br />
+            <Dialog
+              header={`Visita - ${
+                selectedItem ? selectedItem.FechaAsignacion : ""
+              }`}
+              visible={visible}
+              onHide={hideDialog}
+              breakpoints={{ "960px": "75vw", "640px": "100vw" }}
+              style={{ width: "75vw" }} // Ancho inicial, ajusta según tus necesidades
+            >
+              <div className="container-fluid">
+                <div className="row">
+                  <div className="col-md-4">
+                    <label>Nombre:</label>
+                    <br />
+                    <input
+                      type="text"
+                      value={selectedItem ? selectedItem.NombreCompleto : ""}
+                      disabled
+                    />
+                    <br />
 
-                <label>Empresa:</label>
-                <br />
-                <input
-                  type="text"
-                  value={selectedItem ? selectedItem.TipoEmpresa : ""}
-                  disabled
-                />
-                <br />
+                    <label>Empresa:</label>
+                    <br />
+                    <input
+                      type="text"
+                      value={selectedItem ? selectedItem.TipoEmpresa : ""}
+                      disabled
+                    />
+                    <br />
+                  </div>
+                  <div className="col-md-4">
+                    <label>Telefono:</label>
+                    <br />
+                    <input
+                      type="text"
+                      value={selectedItem ? selectedItem.Telefono : ""}
+                      disabled
+                    />
+                    <br />
+
+                    <label>Sitio Web:</label>
+                    <br />
+                    <input
+                      type="text"
+                      value={selectedItem ? selectedItem.Sitioweb : ""}
+                      disabled
+                    />
+                    <br />
+
+                    {/* Este no quedo bien */}
+                    <div className="row">
+                      <label>Direccion:</label>
+                      <input
+                        type="text"
+                        value={
+                          selectedItem
+                            ? selectedItem.Direccion_Calle +
+                              ", " +
+                              selectedItem.Direccion_Num_Ext +
+                              ", " +
+                              selectedItem.Direccion_Num_Int +
+                              ", " +
+                              selectedItem.Direccion_Colonia +
+                              ", " +
+                              selectedItem.Direccion_CP
+                            : ""
+                        }
+                        disabled
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 mt-2">
+                    <label>Descripcion:</label>
+                    <textarea
+                      value={selectedItem ? selectedItem.Descripcion : ""}
+                      disabled
+                      rows={2}
+                      style={{ width: "100%" }}
+                    />
+
+                    <label>Incidencia:</label>
+                    <textarea
+                      value={incidencia}
+                      onChange={(e) => setIncidencia(e.target.value)}
+                      rows={4}
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="col-md-4">
-                <label>Telefono:</label>
-                <br />
-                <input
-                  type="text"
-                  value={selectedItem ? selectedItem.Telefono : ""}
-                  disabled
-                />
-                <br />
 
-                <label>Sitio Web:</label>
-                <br />
-                <input
-                  type="text"
-                  value={selectedItem ? selectedItem.Sitioweb : ""}
-                  disabled
+              <div
+                className="p-dialog-footer p-d-flex p-jc-center p-ai-center p-flex-column p-md-justify-between p-md-flex-row"
+                style={{ textAlign: "center" }}
+              >
+                <Button
+                  label="Cancelar"
+                  severity="danger"
+                  outlined
+                  onClick={hideDialog}
+                  className="p-button-secondary p-mb-2 p-md-mb-0"
                 />
-                <br />
-            
-              {/* Este no quedo bien */}
-              <div className="row">
-                <label>Direccion:</label>
-                <input
-                  type="text"
-                  value={selectedItem ? (selectedItem.Direccion_Calle+', '+selectedItem.Direccion_Num_Ext+', '+selectedItem.Direccion_Num_Int+', '+selectedItem.Direccion_Colonia+', '+selectedItem.Direccion_CP) : ""}
-                  disabled
-                  style={{ width: "100%" }}
+                <Button
+                  label="Agregar Incidencia"
+                  severity="danger"
+                  disabled={!isIncidenciaValid}
+                  onClick={agregarIncidencia}
+                  className="p-button-success p-mb-2 p-md-mb-0"
+                />
+                <Button
+                  label="Descargar"
+                  severity="info"
+                  className="p-button-secondary p-mb-2 p-md-mb-0"
                 />
               </div>
-            </div>
-            <div className="col-md-4 mt-2">
-              <label>Descripcion:</label>
-              <textarea
-                value={selectedItem ? selectedItem.Descripcion : ""}
-                disabled
-                rows={2}
-                style={{ width: "100%" }}
-              />
-
-              <label>Incidencia:</label>
-              <textarea
-                value={incidencia}
-                onChange={(e) => setIncidencia(e.target.value)}
-                rows={4}
-                style={{ width: "100%" }}
-              />
-            </div>
+            </Dialog>
           </div>
-        </div>
-
-        <div className="p-dialog-footer p-d-flex p-jc-center p-ai-center p-flex-column p-md-justify-between p-md-flex-row" style={{textAlign:"center"}}>
-        <Button label="Cancelar" severity="danger" outlined onClick={hideDialog} className="p-button-secondary p-mb-2 p-md-mb-0" />
-        <Button label="Agregar Incidencia" severity="danger" disabled={!isIncidenciaValid} onClick={agregarIncidencia} className="p-button-success p-mb-2 p-md-mb-0" />
-        <Button label="Descargar" severity="info" className="p-button-secondary p-mb-2 p-md-mb-0" />
-      </div>
-      </Dialog>
-    </div>
         </div>
       </div>
     </div>

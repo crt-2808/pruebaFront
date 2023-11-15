@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Form } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import { useForm } from "react-hook-form";
@@ -75,6 +75,52 @@ function CambaceoSemanal() {
     // Lógica para cancelar el formulario
   };
   const navigate = useNavigate();
+  const [colaboradores, setColaboradores] = useState([]);
+  const [idColaboradorSeleccionado, setIdColaboradorSeleccionado] =
+    useState("");
+  const [nombreColaboradorSeleccionado, setNombreColaboradorSeleccionado] =
+    useState("");
+  // Función para cargar los nombres de los colaboradores
+  const cargarColaboradores = async () => {
+    try {
+      const userData = JSON.parse(sessionStorage.getItem("usuario"));
+      const email = userData.email;
+
+      const requestBody = {
+        correoLider: email,
+      };
+      const response = await fetch(
+        "https://sarym-production-4033.up.railway.app/api/nombresColaborador",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify(requestBody),
+        }
+      );
+      const data = await response.json();
+      const colaboradoresProcesados = data.map((colaborador) => ({
+        id: colaborador.id,
+        nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
+      }));
+
+      console.log("Colaboradores: ", colaboradoresProcesados);
+      setColaboradores(colaboradoresProcesados);
+    } catch (error) {
+      console.error("Error al cargar nombres de colaboradores:", error);
+    }
+  };
+  useEffect(() => {
+    cargarColaboradores();
+  }, []);
+  // Manejador para cuando se selecciona un colaborador
+  const handleColaboradorChange = (event) => {
+    const [idSeleccionado, nombreCompleto] = event.target.value.split("_");
+    setIdColaboradorSeleccionado(idSeleccionado);
+    setNombreColaboradorSeleccionado(nombreCompleto); // Guardar el nombre completo en un estado separado
+  };
   const onSubmit = async (data) => {
     if (data == undefined) {
       return Swal.fire({
@@ -89,11 +135,11 @@ function CambaceoSemanal() {
       `,
       });
     }
-    console.log(data);
     console.log(Object.keys(data).length);
     data = {
       ...data,
-      IDColaborador: "60",
+      IDColaborador: idColaboradorSeleccionado,
+      NombreCompleto: nombreColaboradorSeleccionado,
       Activo: 1,
       Tipo: "Cambaceo_Semanal",
       Documentos: "src",
@@ -241,11 +287,17 @@ function CambaceoSemanal() {
                   <Form.Label htmlFor="NombreCompleto">
                     Nombre Completo
                   </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el nombre de contacto"
-                    {...register("NombreCompleto", { required: true })}
-                  />
+                  <Form.Control as="select" onChange={handleColaboradorChange}>
+                    <option value="">Selecciona un colaborador</option>
+                    {colaboradores.map((colaborador) => (
+                      <option
+                        key={colaborador.id}
+                        value={`${colaborador.id}_${colaborador.nombreCompleto}`}
+                      >
+                        {colaborador.nombreCompleto}
+                      </option>
+                    ))}
+                  </Form.Control>
                 </Form.Group>
                 <Form.Group>
                   <Form.Label htmlFor="telefono">Telefono</Form.Label>
