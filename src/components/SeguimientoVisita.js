@@ -19,6 +19,12 @@ const SeguimientoVisita = () => {
   const [search, setSearch] = useState("");
 
   const [busqueda, setBusqueda] = useState("");
+  const userData = JSON.parse(sessionStorage.getItem("usuario"));
+  const email = userData.email;
+
+  const requestBody = {
+    correoLider: email,
+  };
 
   // Función para cargar los registros desde el servidor
   const cargarRegistros = async () => {
@@ -31,7 +37,16 @@ const SeguimientoVisita = () => {
         timer: 1500, // Duración de la animación en milisegundos
         willClose: () => {
           // Después de cerrar el mensaje de espera, carga los registros
-          fetch("http://localhost:3005/getVisitas")
+          fetch(
+            "https://sarym-production-4033.up.railway.app/api/visitaProgramada",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(requestBody),
+            }
+          )
             .then((response) => response.json())
             .then((data) => {
               setRegistros(data); // Asigna los datos a la variable de estado
@@ -131,28 +146,28 @@ const SeguimientoVisita = () => {
             className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
             id="contenedor"
           >
-            {modoCuestionario ? null :(
+            {modoCuestionario ? null : (
               <div className="row">
-              <div className="col-md-6">
-                <h6 className="textoBuscaSeg">
-                  Selecciona el registro<br></br>para dar seguimiento
-                </h6>
-              </div>
-              <div className="col-md-6">
-                <div className="input-wrapper">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Buscar por Nombre"
-                    aria-label="Buscar"
-                    aria-describedby="basic-addon1"
-                    value={search}
-                    onChange={filtrarRegistros}
-                  />
-                  <X className="clear-icon" onClick={() => setSearch("")} />
+                <div className="col-md-6">
+                  <h6 className="textoBuscaSeg">
+                    Selecciona el registro<br></br>para dar seguimiento
+                  </h6>
+                </div>
+                <div className="col-md-6">
+                  <div className="input-wrapper">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Buscar por Nombre"
+                      aria-label="Buscar"
+                      aria-describedby="basic-addon1"
+                      value={search}
+                      onChange={filtrarRegistros}
+                    />
+                    <X className="clear-icon" onClick={() => setSearch("")} />
+                  </div>
                 </div>
               </div>
-            </div>
             )}
             <div
               className="row align-items-center mt-sm-4 mb-sm-4 mt-md-0 mb-md-0"
@@ -162,97 +177,104 @@ const SeguimientoVisita = () => {
                 <div className="row px-2 gy-4" id="Resultado">
                   {modoCuestionario ? (
                     // Renderiza la vista de cuestionario en dos columnas
-                    <div style={{ display: "flex", justifyContent: "center", flexWrap:"wrap" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        flexWrap: "wrap",
+                      }}
+                    >
                       <Row className="mb-5">
                         <Col xs={12} md={6}>
-                        <label>Nombre Completo:</label>
-                        <InputText
-                          value={registroSeleccionado?.NombreCompleto}
-                          disabled
-                          style={{ width: "100%" }}
-                        />
-                        <label>Empresa:</label>
-                        <InputText
-                          value={registroSeleccionado?.TipoEmpresa}
-                          disabled
-                          style={{ width: "100%" }}
-                        />
-                        <label>Telefono:</label>
-                        <InputText
-                          value={registroSeleccionado?.Telefono}
-                          disabled
-                          style={{ width: "100%" }}
-                        />
-                        <label>Sitio Web:</label>
-                        <InputText
-                          value={registroSeleccionado?.Sitioweb}
-                          disabled
-                          style={{ width: "100%" }}
-                        />
-                        <label>Dirreccion:</label>
-                        <InputText
-                          value={
-                            registroSeleccionado?.Direccion_Calle +
-                            " " +
-                            registroSeleccionado?.Direccion_Num_Ext +
-                            " " +
-                            registroSeleccionado?.Direccion_Num_Int +
-                            " " +
-                            registroSeleccionado?.Direccion_Colonia +
-                            " " +
-                            registroSeleccionado?.Direccion_CP
-                          }
-                          disabled
-                          style={{ width: "100%" }}
-                        />
+                          <label>Nombre Completo:</label>
+                          <InputText
+                            value={registroSeleccionado?.NombreCompleto}
+                            disabled
+                            style={{ width: "100%" }}
+                          />
+                          <label>Empresa:</label>
+                          <InputText
+                            value={registroSeleccionado?.TipoEmpresa}
+                            disabled
+                            style={{ width: "100%" }}
+                          />
+                          <label>Telefono:</label>
+                          <InputText
+                            value={registroSeleccionado?.Telefono}
+                            disabled
+                            style={{ width: "100%" }}
+                          />
+                          <label>Sitio Web:</label>
+                          <InputText
+                            value={registroSeleccionado?.Sitioweb}
+                            disabled
+                            style={{ width: "100%" }}
+                          />
+                          <label>Dirreccion:</label>
+                          <InputText
+                            value={
+                              registroSeleccionado?.Direccion_Calle +
+                              " " +
+                              registroSeleccionado?.Direccion_Num_Ext +
+                              " " +
+                              registroSeleccionado?.Direccion_Num_Int +
+                              " " +
+                              registroSeleccionado?.Direccion_Colonia +
+                              " " +
+                              registroSeleccionado?.Direccion_CP
+                            }
+                            disabled
+                            style={{ width: "100%" }}
+                          />
 
-                        <label>Fecha Asignacion:</label>
-                        <InputText
-                          value={formatearFecha(registroSeleccionado?.FechaAsignacion)}
-                          disabled
-                          style={{ width: "100%" }}
-                        />
+                          <label>Fecha Asignacion:</label>
+                          <InputText
+                            value={formatearFecha(
+                              registroSeleccionado?.FechaAsignacion
+                            )}
+                            disabled
+                            style={{ width: "100%" }}
+                          />
                         </Col>
                         <Col xs={12} md={6}>
-                        <div style={{ marginBottom: "10px" }}>
-                          <label>Descripcion:</label>
-                          <InputTextarea
-                            autoResize={true}
-                            rows={5}
-                            value={registroSeleccionado?.Descripcion}
-                            style={{ width: "100%" }}
-                            disabled
-                          />
-                        </div>
+                          <div style={{ marginBottom: "10px" }}>
+                            <label>Descripcion:</label>
+                            <InputTextarea
+                              autoResize={true}
+                              rows={5}
+                              value={registroSeleccionado?.Descripcion}
+                              style={{ width: "100%" }}
+                              disabled
+                            />
+                          </div>
 
-                        {/* Campo de texto editable */}
-                        <div style={{ marginBottom: "10px" }}>
-                          <label>Incidencias:</label>
-                          <InputTextarea
-                            autoResize={true}
-                            rows={5}
-                            value={registroSeleccionado?.Incidencias}
-                            style={{ width: "100%" }}
-                          />
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            marginTop: "10px",
-                          }}
-                        >
-                          <Button
-                            label="Guardar"
-                            style={{ marginRight: "10px" }}
-                          />
-                          <Button
-                            label="Cancelar"
-                            onClick={handleCancelarCuestionario}
-                          />
-                        </div>
+                          {/* Campo de texto editable */}
+                          <div style={{ marginBottom: "10px" }}>
+                            <label>Incidencias:</label>
+                            <InputTextarea
+                              autoResize={true}
+                              rows={5}
+                              value={registroSeleccionado?.Incidencias}
+                              style={{ width: "100%" }}
+                            />
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              marginTop: "10px",
+                            }}
+                          >
+                            <Button
+                              label="Guardar"
+                              style={{ marginRight: "10px" }}
+                            />
+                            <Button
+                              label="Cancelar"
+                              onClick={handleCancelarCuestionario}
+                            />
+                          </div>
                         </Col>
-
                       </Row>
                     </div>
                   ) : (

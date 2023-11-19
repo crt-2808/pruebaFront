@@ -15,12 +15,15 @@ const SeguimientoLlamada = () => {
   const [mostrarEspera, setMostrarEspera] = useState(true);
   const [registroSeleccionado, setRegistroSeleccionado] = useState(null);
 
-
-
-
   const [filteredData, setFilteredData] = useState([]);
   const [search, setSearch] = useState("");
   const [busqueda, setBusqueda] = useState("");
+  const userData = JSON.parse(sessionStorage.getItem("usuario"));
+  const email = userData.email;
+
+  const requestBody = {
+    correoLider: email,
+  };
 
   // Función para cargar los registros desde el servidor
   const cargarRegistros = async () => {
@@ -33,7 +36,13 @@ const SeguimientoLlamada = () => {
         timer: 1500, // Duración de la animación en milisegundos
         willClose: () => {
           // Después de cerrar el mensaje de espera, carga los registros
-          fetch("http://localhost:3005/getLlamadas")
+          fetch("https://sarym-production-4033.up.railway.app/api/llamada", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
+          })
             .then((response) => response.json())
             .then((data) => {
               setRegistros(data); // Asigna los datos a la variable de estado
@@ -133,31 +142,30 @@ const SeguimientoLlamada = () => {
             className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
             id="contenedor"
           >
-
-{modoCuestionario ? null :(
+            {modoCuestionario ? null : (
               <div className="row">
-              <div className="col-md-6">
-                <h6 className="textoBuscaSeg">
-                  Selecciona el registro<br></br>para dar seguimiento
-                </h6>
-              </div>
-              <div className="col-md-6">
-                <div className="input-wrapper">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Buscar por Nombre"
-                    aria-label="Buscar"
-                    aria-describedby="basic-addon1"
-                    value={search}
-                    onChange={filtrarRegistros}
-                  />
-                  <X className="clear-icon" onClick={() => setSearch("")} />
+                <div className="col-md-6">
+                  <h6 className="textoBuscaSeg">
+                    Selecciona el registro<br></br>para dar seguimiento
+                  </h6>
+                </div>
+                <div className="col-md-6">
+                  <div className="input-wrapper">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Buscar por Nombre"
+                      aria-label="Buscar"
+                      aria-describedby="basic-addon1"
+                      value={search}
+                      onChange={filtrarRegistros}
+                    />
+                    <X className="clear-icon" onClick={() => setSearch("")} />
+                  </div>
                 </div>
               </div>
-            </div>
             )}
-            
+
             <div
               className="row align-items-center mt-sm-4 mb-sm-4 mt-md-0 mb-md-0"
               id="opcionesCambaceo"
