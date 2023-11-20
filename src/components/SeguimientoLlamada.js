@@ -7,8 +7,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, X } from "react-bootstrap-icons";
 import Navbar from "./navbar";
 import { Row, Col } from "react-bootstrap";
+import { useAuthRedirect } from "../useAuthRedirect";
 // Componente principal
 const SeguimientoLlamada = () => {
+  useAuthRedirect();
   // Estado para almacenar los datos de la base de datos
   const [registros, setRegistros] = useState([]);
   const [modoCuestionario, setModoCuestionario] = useState(false);
@@ -16,6 +18,7 @@ const SeguimientoLlamada = () => {
   const [registroSeleccionado, setRegistroSeleccionado] = useState(null);
 
   const [filteredData, setFilteredData] = useState([]);
+  const [incidentesEditados, setIncidentesEditados] = useState("");
   const [search, setSearch] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const userData = JSON.parse(sessionStorage.getItem("usuario"));
@@ -27,35 +30,56 @@ const SeguimientoLlamada = () => {
 
   // Función para cargar los registros desde el servidor
   const cargarRegistros = async () => {
+    Swal.fire({
+      title: "Cargando...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+    });
+    Swal.showLoading();
     try {
-      // Muestra el mensaje de espera al cargar registros
-      Swal.fire({
-        title: "Espera un momento",
-        icon: "info",
-        showConfirmButton: false,
-        timer: 1500, // Duración de la animación en milisegundos
-        willClose: () => {
-          // Después de cerrar el mensaje de espera, carga los registros
-          fetch("https://sarym-production-4033.up.railway.app/api/llamada", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              setRegistros(data); // Asigna los datos a la variable de estado
-              setMostrarEspera(false); // Oculta el mensaje de espera
-            })
-            .catch((error) => {
-              console.error("Error al obtener registros:", error);
-              setMostrarEspera(false); // Oculta el mensaje de espera en caso de error
-            });
-        },
-      });
+      const response = await fetch(
+        "https://sarym-production-4033.up.railway.app/api/llamada",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      Swal.close();
+      if (!response.ok) {
+        console.error("Error al obtener registros:", response);
+        return Swal.fire({
+          icon: "error",
+          title: "Se produjo un error",
+          text: "No se pudieron cargar los registros",
+          timer: 2200,
+          timerProgressBar: true,
+        });
+      }
+      const data = await response.json();
+      if (data.length === 0) {
+        return Swal.fire({
+          title: "¡Atención!",
+          text: "No hay registros disponibles.",
+          icon: "info",
+          confirmButtonText: "Entendido",
+        });
+      }
+      setRegistros(data);
+      setMostrarEspera(false);
     } catch (error) {
       console.error("Error al obtener registros:", error);
+      Swal.close();
+      return Swal.fire({
+        icon: "error",
+        title: "Se produjo un error",
+        text: "Error al cargar los registros",
+        timer: 2200,
+        timerProgressBar: true,
+      });
     }
   };
 
@@ -94,23 +118,68 @@ const SeguimientoLlamada = () => {
       if (result.isConfirmed) {
         // Lógica para confirmar
         setRegistroSeleccionado(registro);
+        setIncidentesEditados(registro.Incidentes);
         setModoCuestionario(true);
       }
     });
   };
   const handleCancelarCuestionario = () => {
-    // Muestra el mensaje de espera al hacer clic en "Cancelar"
-    Swal.fire({
-      title: "Espera un momento",
-      icon: "info",
-      showConfirmButton: false,
-      timer: 1500, // Duración de la animación en milisegundos
-      willClose: () => {
-        // Después de cerrar el mensaje de espera, vuelve al estado original
+    setModoCuestionario(false);
+  };
+  const handleIncidentesChange = (e) => {
+    setIncidentesEditados(e.target.value);
+  };
+  const handleGuardarCuestionario = async () => {
+    if (incidentesEditados === registroSeleccionado?.Incidentes) {
+      Swal.fire({
+        icon: "error",
+        title: "No se detectaron cambios",
+        text: "Edita las incidencias antes de guardar.",
+      });
+      return;
+    }
+    const envioIncidentes = { incidencia: incidentesEditados };
+    try {
+      const response = await fetch(
+        `https://sarym-production-4033.up.railway.app/api/planeador/${registroSeleccionado.ID}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify(envioIncidentes),
+        }
+      );
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Incidencia registrada correctamente",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        // Actualizar el registro en el estado local
+        const registrosActualizados = registros.map((registro) => {
+          if (registro.ID === registroSeleccionado.ID) {
+            return { ...registro, Incidentes: incidentesEditados };
+          }
+          return registro;
+        });
+        setRegistros(registrosActualizados);
         setModoCuestionario(false);
-        setMostrarEspera(false); // Oculta el mensaje de espera
-      },
-    });
+      } else {
+        console.log(response);
+        Swal.fire({
+          icon: "error",
+          title: "Error al registrar la incidencia",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    } catch (error) {
+      console.error("Error al guardar los cambios:", error);
+    }
   };
 
   const filtrarRegistros = () => {
@@ -221,7 +290,8 @@ const SeguimientoLlamada = () => {
                             <InputTextarea
                               autoResize={true}
                               rows={5}
-                              value={registroSeleccionado?.Incidencias}
+                              onChange={handleIncidentesChange}
+                              value={incidentesEditados}
                               style={{ width: "100%" }}
                             />
                           </div>
@@ -235,6 +305,7 @@ const SeguimientoLlamada = () => {
                             <Button
                               label="Guardar"
                               style={{ marginRight: "10px" }}
+                              onClick={handleGuardarCuestionario}
                             />
                             <Button
                               label="Cancelar"
@@ -256,7 +327,7 @@ const SeguimientoLlamada = () => {
                       {registros.map((registro, index) => (
                         <div className="col-md-3 " key={index}>
                           <div className="card centrar p-3">
-                            <h2>{registro.NombreCompleto}</h2>
+                            <h2 className="email">{registro.NombreCompleto}</h2>
                             <h4>{formatearFecha(registro.FechaAsignacion)}</h4>
                             <p>{registro.Telefono}</p>
                             <button
