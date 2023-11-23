@@ -171,7 +171,7 @@ function AgregarColab() {
           </Link>
         </div>
       </div>
-      <div className="py-md-4" style={{ backgroundColor: "#F1F5F8" }}>
+      <div className="py-md-4 py-3" style={{ backgroundColor: "#F1F5F8" }}>
         <div
           className="row"
           style={{
@@ -180,11 +180,11 @@ function AgregarColab() {
             marginRight: "0px",
           }}
         >
-          <h2 className="titulo-cambaceo px-5 ">Agregar Colaborador</h2>
+          <h2 className="titulo-cambaceo px-0 px-md-5">Agregar Colaborador</h2>
         </div>
 
         <div
-          className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
+          className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-5 mt-md-4 "
           id="contenedor-cambaceo"
         >
           <Form

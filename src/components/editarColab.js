@@ -296,7 +296,7 @@ const EditarColab = () => {
               <h3 className="fs-4 text-center m-0 ">Colaboradores</h3>
             </div>
           </div>
-          <div className="container-fluid mt-5 mb-5">
+          <div className="container-fluid mt-3 mt-md-5 mb-5">
             <div className="row px-2 gy-4" id="Resultado">
               {colaboradores.map((colab, index) => (
                 <ColaboradorCard key={index} data={colab} />

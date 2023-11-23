@@ -637,6 +637,7 @@ color: #172126;
     text-align: center;
     padding-left: 0;
     margin-top: 2rem;
+    transform: translate(-10px,0);
   }
   #indicador{
     left: 15%;
@@ -758,6 +759,13 @@ transition: all 0.5s ease;
 .textoBuscaSeg{
   text-align: left;
   padding-left: 3rem;
+}
+@media screen and (max-width: 768px) {
+  .textoBuscaSeg{
+    padding: 0.3rem 0;
+    text-align: center;
+  }
+  
 }
 #contenedor{
   width: 90%;
