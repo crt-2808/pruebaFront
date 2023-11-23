@@ -1,39 +1,90 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { FileUpload } from "primereact/fileupload";
+import { Dropdown } from "primereact/dropdown";
 import axios from "axios";
 import Swal from "sweetalert2";
 import Navbar from "./navbar";
 import { ArrowLeft } from "react-bootstrap-icons";
+import { InputMask } from "primereact/inputmask";
 import { Link, useNavigate } from "react-router-dom";
 import { Row, Col, Form } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
 
 function CalendarioLlamada() {
   useAuthRedirect();
+  const userData = JSON.parse(sessionStorage.getItem("usuario"));
+  const email = userData.email;
   const navigate = useNavigate();
-  const [NombreCompleto, setNombreCompleto] = useState("");
   const [Telefono, setTelefono] = useState("");
   const [FechaAsignacion, setFecha] = useState(null);
   const [Descripcion, setDescripcion] = useState("");
   const [DocumentosReal, setDocumentos] = useState([]);
+  const [colaboradores, setColaboradores] = useState([]);
+  const [nombreColaboradorSeleccionado, setNombreColaboradorSeleccionado] =
+    useState("");
+  const [idColaboradorSeleccionado, setIdColaboradorSeleccionado] =
+    useState("");
+
+  // Función para cargar los nombres de los colaboradores
+  const cargarColaboradores = async () => {
+    try {
+      const requestBody = {
+        correoLider: email,
+      };
+      const response = await fetch(
+        "https://sarym-production-4033.up.railway.app/api/nombresColaborador",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify(requestBody),
+        }
+      );
+      const data = await response.json();
+      const colaboradoresProcesados = data.map((colaborador) => ({
+        id: colaborador.id,
+        nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
+      }));
+
+      console.log("Colaboradores: ", colaboradoresProcesados);
+      setColaboradores(colaboradoresProcesados);
+    } catch (error) {
+      console.error("Error al cargar nombres de colaboradores:", error);
+    }
+  };
+  useEffect(() => {
+    cargarColaboradores();
+  }, []);
+  const handleColaboradorChange = (e) => {
+    const [idSeleccionado, nombreCompleto] = e.value.split("_");
+    setIdColaboradorSeleccionado(idSeleccionado);
+    setNombreColaboradorSeleccionado(nombreCompleto);
+  };
 
   const handleSubmit = () => {
     // Aquí puedes enviar los datos a la base de datos MySQL utilizando Axios u otra biblioteca de HTTP.
     // Por ejemplo, puedes enviarlos a una API REST.
 
     const data = {
-      NombreCompleto,
+      NombreCompleto: nombreColaboradorSeleccionado,
+      IDColaborador: idColaboradorSeleccionado,
       Telefono,
       FechaAsignacion,
       Descripcion,
+      correoLider: email,
     };
     axios
       //.post("http://localhost:3005/guardar_datos", data)
-      .post("https://sarym-production-4033.up.railway.app/api/llamada", data)
+      .post(
+        "https://sarym-production-4033.up.railway.app/api/crearLlamada",
+        data
+      )
       .then((response) => {
         // Muestra una alerta de éxito
         Swal.fire({
@@ -66,6 +117,24 @@ function CalendarioLlamada() {
         console.error("Error al enviar los datos al servidor:", error);
       });
   };
+  const obtenerFechaHoraActual = () => {
+    const ahora = new Date();
+    const opciones = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    };
+    return ahora
+      .toLocaleString("en-US", opciones)
+      .replace(/(\d+)\/(\d+)\/(\d+),/, "$2/$1/$3");
+  };
+  const opcionesColaboradores = colaboradores.map((colaborador) => ({
+    label: colaborador.nombreCompleto,
+    value: `${colaborador.id}_${colaborador.nombreCompleto}`,
+  }));
 
   return (
     <div className="fluid">
@@ -113,10 +182,11 @@ function CalendarioLlamada() {
                 </label>
               </div>
               <div>
-                <InputText
-                  id="NombreCompleto"
-                  value={NombreCompleto}
-                  onChange={(e) => setNombreCompleto(e.target.value)}
+                <Dropdown
+                  value={`${idColaboradorSeleccionado}_${nombreColaboradorSeleccionado}`}
+                  options={opcionesColaboradores}
+                  onChange={handleColaboradorChange}
+                  placeholder="Selecciona un colaborador"
                   style={{ width: "100%" }}
                 />
               </div>
@@ -124,11 +194,14 @@ function CalendarioLlamada() {
                 <label htmlFor="Telefono">Teléfono</label>
               </div>
               <div>
-                <InputText
+                <InputMask
                   id="Telefono"
                   value={Telefono}
                   onChange={(e) => setTelefono(e.target.value)}
                   style={{ width: "100%" }}
+                  mask="(99) 9999 9999"
+                  unmask={true}
+                  placeholder="(55) 6789 5432"
                 />
               </div>
               <div className="p-field">
@@ -144,6 +217,7 @@ function CalendarioLlamada() {
                   hourFormat="12"
                   dateFormat="mm/dd/yy"
                   style={{ width: "100%" }}
+                  placeholder={obtenerFechaHoraActual()}
                 />
               </div>
             </Col>
@@ -157,6 +231,7 @@ function CalendarioLlamada() {
                   autoResize
                   value={Descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
+                  placeholder="Describe brevemente el propósito de la llamada..."
                   rows={5}
                   style={{ width: "100%" }}
                 />

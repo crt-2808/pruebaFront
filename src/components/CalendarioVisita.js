@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { InputTextarea } from "primereact/inputtextarea";
+import { Dropdown } from "primereact/dropdown";
+import { InputMask } from "primereact/inputmask";
 import { FileUpload } from "primereact/fileupload";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -15,7 +17,6 @@ import { useAuthRedirect } from "../useAuthRedirect";
 function CalendarioVisita() {
   useAuthRedirect();
   const navigate = useNavigate();
-  const [NombreCompleto, setNombreCompleto] = useState("");
   const [Telefono, setTelefono] = useState("");
   const [FechaAsignacion, setFecha] = useState(null);
   const [Direccion_Calle, setDireccion_Calle] = useState("");
@@ -26,12 +27,58 @@ function CalendarioVisita() {
   const [TipoEmpresa, setTipoEmpresa] = useState("");
   const [Sitioweb, setSitioweb] = useState("");
   const [Descripcion, setDescripcion] = useState("");
+  const userData = JSON.parse(sessionStorage.getItem("usuario"));
+  const email = userData.email;
+  const [colaboradores, setColaboradores] = useState([]);
+  const [nombreColaboradorSeleccionado, setNombreColaboradorSeleccionado] =
+    useState("");
+  const [idColaboradorSeleccionado, setIdColaboradorSeleccionado] =
+    useState("");
+
+  // Función para cargar los nombres de los colaboradores
+  const cargarColaboradores = async () => {
+    try {
+      const requestBody = {
+        correoLider: email,
+      };
+      const response = await fetch(
+        "https://sarym-production-4033.up.railway.app/api/nombresColaborador",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify(requestBody),
+        }
+      );
+      const data = await response.json();
+      const colaboradoresProcesados = data.map((colaborador) => ({
+        id: colaborador.id,
+        nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
+      }));
+
+      console.log("Colaboradores: ", colaboradoresProcesados);
+      setColaboradores(colaboradoresProcesados);
+    } catch (error) {
+      console.error("Error al cargar nombres de colaboradores:", error);
+    }
+  };
+  useEffect(() => {
+    cargarColaboradores();
+  }, []);
+  const handleColaboradorChange = (e) => {
+    const [idSeleccionado, nombreCompleto] = e.value.split("_");
+    setIdColaboradorSeleccionado(idSeleccionado);
+    setNombreColaboradorSeleccionado(nombreCompleto);
+  };
+
   const handleSubmit = () => {
     // Aquí puedes enviar los datos a la base de datos MySQL utilizando Axios u otra biblioteca de HTTP.
     // Por ejemplo, puedes enviarlos a una API REST.
 
     const data = {
-      NombreCompleto,
+      NombreCompleto: nombreColaboradorSeleccionado,
       Telefono,
       FechaAsignacion,
       Direccion_Calle,
@@ -42,15 +89,19 @@ function CalendarioVisita() {
       TipoEmpresa,
       Sitioweb,
       Descripcion,
+      correoLider: email,
+      IDColaborador: idColaboradorSeleccionado,
     };
+    console.log(data);
     axios
       .post(
-        "https://sarym-production-4033.up.railway.app/api/visitaProgramada",
+        "https://sarym-production-4033.up.railway.app/api/crearVisitaProgramada",
         data
       )
       //.post("http://localhost:3005/guardar_datos_visita", data)
       .then((response) => {
         // Muestra una alerta de éxito
+        console.log(response);
         Swal.fire({
           icon: "success",
           title: "Éxito",
@@ -81,6 +132,25 @@ function CalendarioVisita() {
         console.error("Error al enviar los datos al servidor:", error);
       });
   };
+  const obtenerFechaHoraActual = () => {
+    const ahora = new Date();
+    const opciones = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    };
+    return ahora
+      .toLocaleString("en-US", opciones)
+      .replace(/(\d+)\/(\d+)\/(\d+),/, "$2/$1/$3");
+  };
+
+  const opcionesColaboradores = colaboradores.map((colaborador) => ({
+    label: colaborador.nombreCompleto,
+    value: `${colaborador.id}_${colaborador.nombreCompleto}`,
+  }));
 
   return (
     <div className="fluid">
@@ -127,10 +197,11 @@ function CalendarioVisita() {
                 </label>
               </div>
               <div>
-                <InputText
-                  id="NombreCompleto"
-                  value={NombreCompleto}
-                  onChange={(e) => setNombreCompleto(e.target.value)}
+                <Dropdown
+                  value={`${idColaboradorSeleccionado}_${nombreColaboradorSeleccionado}`}
+                  options={opcionesColaboradores}
+                  onChange={handleColaboradorChange}
+                  placeholder="Selecciona un colaborador"
                   style={{ width: "100%" }}
                 />
               </div>
@@ -138,10 +209,13 @@ function CalendarioVisita() {
                 <label htmlFor="Telefono">Teléfono</label>
               </div>
               <div>
-                <InputText
+                <InputMask
                   id="Telefono"
                   value={Telefono}
                   onChange={(e) => setTelefono(e.target.value)}
+                  mask="(99) 9999 9999"
+                  unmask={true}
+                  placeholder="(55) 6789 5432"
                   style={{ width: "100%" }}
                 />
               </div>
@@ -157,6 +231,7 @@ function CalendarioVisita() {
                   showTime
                   hourFormat="12"
                   dateFormat="mm/dd/yy"
+                  placeholder={obtenerFechaHoraActual()}
                   style={{ width: "100%" }}
                 />
               </div>
@@ -172,6 +247,7 @@ function CalendarioVisita() {
                   value={Direccion_Calle}
                   onChange={(e) => setDireccion_Calle(e.target.value)}
                   style={{ width: "100%" }}
+                  placeholder="Av. Revolución"
                 />
               </div>
               <div className="p-field">
@@ -186,6 +262,7 @@ function CalendarioVisita() {
                   value={Direccion_Num_Ext}
                   onChange={(e) => setDireccion_Num_Ext(e.target.value)}
                   style={{ width: "100%" }}
+                  placeholder="123"
                 />
               </div>
 
@@ -201,6 +278,7 @@ function CalendarioVisita() {
                   value={Direccion_Num_Int}
                   onChange={(e) => setDireccion_Num_Int(e.target.value)}
                   style={{ width: "100%" }}
+                  placeholder=" 2B (opcional)"
                 />
               </div>
             </Col>
@@ -217,6 +295,7 @@ function CalendarioVisita() {
                   value={Direccion_CP}
                   onChange={(e) => setDireccion_CP(e.target.value)}
                   style={{ width: "100%" }}
+                  placeholder="03100"
                 />
               </div>
 
@@ -232,6 +311,7 @@ function CalendarioVisita() {
                   value={Direccion_Colonia}
                   onChange={(e) => setDireccion_Colonia(e.target.value)}
                   style={{ width: "100%" }}
+                  placeholder="Condesa"
                 />
               </div>
 
@@ -247,6 +327,7 @@ function CalendarioVisita() {
                   value={TipoEmpresa}
                   onChange={(e) => setTipoEmpresa(e.target.value)}
                   style={{ width: "100%" }}
+                  placeholder="Tech Solutions"
                 />
               </div>
 
@@ -262,6 +343,7 @@ function CalendarioVisita() {
                   value={Sitioweb}
                   onChange={(e) => setSitioweb(e.target.value)}
                   style={{ width: "100%" }}
+                  placeholder="https://www.ejemplo.com"
                 />
               </div>
 
@@ -276,6 +358,7 @@ function CalendarioVisita() {
                   onChange={(e) => setDescripcion(e.target.value)}
                   rows={5}
                   style={{ width: "100%" }}
+                  placeholder="Describe brevemente el propósito de la visita..."
                 />
               </div>
             </Col>
@@ -292,5 +375,3 @@ function CalendarioVisita() {
   );
 }
 export default CalendarioVisita;
-
-//"http://localhost:3005/guardar_datos_visita"

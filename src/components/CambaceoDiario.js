@@ -78,6 +78,8 @@ function CambaceoDiario() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const userData = JSON.parse(sessionStorage.getItem("usuario"));
+  const email = userData.email;
   const handleCancel = () => {
     // Lógica para cancelar el formulario
   };
@@ -91,9 +93,6 @@ function CambaceoDiario() {
   // Función para cargar los nombres de los colaboradores
   const cargarColaboradores = async () => {
     try {
-      const userData = JSON.parse(sessionStorage.getItem("usuario"));
-      const email = userData.email;
-
       const requestBody = {
         correoLider: email,
       };
@@ -155,6 +154,7 @@ function CambaceoDiario() {
       Documentos: "src",
       SitioWeb: "src",
       TipoEmpresa: "src",
+      correoLider: email,
     };
     data = {
       ...data,

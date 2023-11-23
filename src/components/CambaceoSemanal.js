@@ -80,12 +80,11 @@ function CambaceoSemanal() {
     useState("");
   const [nombreColaboradorSeleccionado, setNombreColaboradorSeleccionado] =
     useState("");
+  const userData = JSON.parse(sessionStorage.getItem("usuario"));
+  const email = userData.email;
   // Función para cargar los nombres de los colaboradores
   const cargarColaboradores = async () => {
     try {
-      const userData = JSON.parse(sessionStorage.getItem("usuario"));
-      const email = userData.email;
-
       const requestBody = {
         correoLider: email,
       };
@@ -145,6 +144,7 @@ function CambaceoSemanal() {
       Documentos: "src",
       Sitioweb: "src",
       TipoEmpresa: "src",
+      correoLider: email,
     };
     data = {
       ...data,

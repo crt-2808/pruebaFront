@@ -30,6 +30,12 @@ const SeguimientoVisita = () => {
 
   // Función para cargar los registros desde el servidor
   const cargarRegistros = async () => {
+    Swal.fire({
+      title: "Cargando...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+    });
+    Swal.showLoading();
     try {
       const response = await fetch(
         "https://sarym-production-4033.up.railway.app/api/visitaProgramada",
@@ -57,6 +63,7 @@ const SeguimientoVisita = () => {
       }
 
       const data = await response.json();
+      console.log(data);
       if (data.length === 0) {
         return Swal.fire({
           title: "¡Atención!",
