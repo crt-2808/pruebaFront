@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import Navbar from "./navbar";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, X } from "react-bootstrap-icons";
+import { ArrowLeft, X, Download } from "react-bootstrap-icons";
+import { Tooltip } from "primereact/tooltip";
 import usuarioAnon from "../img/imagen-de-usuario-con-fondo-negro.png";
 import Swal from "sweetalert2";
 import { Toast } from "primereact/toast";
@@ -157,6 +158,22 @@ const SeguimientoCambaceo = () => {
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
+  const handleDownload = () => {
+    console.log("Descargando...");
+    // const data = filteredData.map((colaborador) => ({
+    //   id: colaborador.id,
+    //   nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
+    // }));
+    // const csvData = data.map((item) => Object.values(item).join(","));
+    // const csvRows = ["ID,Nombre completo", ...csvData];
+    // const csvString = csvRows.join("\n");
+    // const a = document.createElement("a");
+    // a.href = "data:attachment/csv," + encodeURIComponent(csvString);
+    // a.target = "_blank";
+    // a.download = "colaboradores.csv";
+    // document.body.appendChild(a);
+    // a.click();
+  };
 
   return (
     <div className="fluid">
@@ -173,8 +190,15 @@ const SeguimientoCambaceo = () => {
               </Link>
             </div>
           </div>
-          <div className="col-12 mt-5 mb-md-1 mb-sm-0 px-4">
+          <div className="d-flex justify-content-between align-items-center col-12 mt-5 mb-md-1 mb-sm-0 px-4">
             <h1 className="textoSeguimiento mx-md-5 mx-sm-1">Seguimiento</h1>
+            <Download
+              className="descarga-cambaceo"
+              onClick={handleDownload}
+              data-pr-tooltip="Descarga el cambaceo semanal de la próxima semana"
+              data-pr-position="top"
+            />
+            <Tooltip target=".descarga-cambaceo" className="custom-tooltip" />
           </div>
           <div
             className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"

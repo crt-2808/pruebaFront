@@ -357,20 +357,34 @@ const SeguimientoVisita = () => {
                       }}
                     >
                       {registros.map((registro, index) => (
-                        <div className="col-md-3"  key={index}>
-                          <div className="card centrar p-3" style={{width:"15rem", height:"16rem", alignItems:"center", overflow:"hidden",
-                        marginBottom:"15px", 
-                        maxWidth: window.innerWidth <= 768 ? '9rem'  : '100%',
-                         }}>
-                            <h2 
-                            className="card-title"
+                        <div className="col-md-3" key={index}>
+                          <div
+                            className="card centrar p-3"
                             style={{
-                              fontSize: "1.5rem", // Tamaño predeterminado
-                              margin: 0, // Elimina cualquier margen adicional que pueda afectar
+                              width: "15rem",
+                              height: "16rem",
+                              alignItems: "center",
+                              overflow: "hidden",
+                              marginBottom: "15px",
+                              maxWidth:
+                                window.innerWidth <= 768 ? "9rem" : "100%",
+                            }}
+                          >
+                            <h2
+                              className="card-title"
+                              style={{
+                                fontSize: "1.5rem", // Tamaño predeterminado
+                                margin: 0, // Elimina cualquier margen adicional que pueda afectar
                               }}
-                            >{registro.TipoEmpresa}</h2>
-                            <h4 className="card-subtitle mb-2 text-muted">{formatearFecha(registro.FechaAsignacion)}</h4>
-                            <p className="card-text text-truncate">{registro.NombreCompleto}</p>
+                            >
+                              {registro.TipoEmpresa}
+                            </h2>
+                            <h4 className="card-subtitle mb-2 text-muted">
+                              {formatearFecha(registro.FechaAsignacion)}
+                            </h4>
+                            <p className="card-text text-truncate email">
+                              {registro.NombreCompleto}
+                            </p>
                             <button
                               className="btnDiario"
                               onClick={() => handleVerClick(registro)}

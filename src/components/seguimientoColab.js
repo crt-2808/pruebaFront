@@ -167,13 +167,17 @@ const cambaceosTemplate = (cambaceo) => {
                               </div>
                               <div class="col-md-6">
                                   <h3>Fechas Trabajadas</h3>
-                                  <h5>${cambaceo.FechaAsignacion} - <br> ${cambaceo.FechaConclusion}</h5>
+                                  <h5>${cambaceo.FechaAsignacion} - <br> ${
+    cambaceo.FechaConclusion
+  }</h5>
                               </div>
                           </div>
                           <div class="row my-md-4">
                               <div class="col-md-6">
                                   <h3>Calle</h3>
-                                  <h5>${cambaceo.Direccion_Calle} ${cambaceo.Direccion_Num_Ext}</h5>
+                                  <h5>${cambaceo.Direccion_Calle} ${
+    cambaceo.Direccion_Num_Ext
+  }</h5>
                               </div>
                               <div class="col-md-6">
                                   <h3>Colonias</h3>
@@ -188,6 +192,9 @@ const cambaceosTemplate = (cambaceo) => {
                               <div class="col-md-12">
                                   <h3>Descripción</h3>
                                   <h5>${cambaceo.Descripcion}</h5>
+                                  <br>
+                                  <h3>Incidencias</h3>
+                                  <h5>${cambaceo.Incidentes || "Ninguna"}</h5>
                               </div>
                           </div>
                       </div>
