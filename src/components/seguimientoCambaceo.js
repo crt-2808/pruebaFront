@@ -7,6 +7,7 @@ import usuarioAnon from "../img/imagen-de-usuario-con-fondo-negro.png";
 import Swal from "sweetalert2";
 import { Toast } from "primereact/toast";
 import { useAuthRedirect } from "../useAuthRedirect";
+import axios from "axios";
 import "../theme.css";
 import "primereact/resources/primereact.css"; // core css
 
@@ -19,6 +20,7 @@ const SeguimientoCambaceo = () => {
   const [search, setSearch] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [imageLoaded, setImageLoaded] = useState({});
+  const [descargando, setDescargando] = useState(false);
 
   const toast = useRef(null);
   const showToast = () => {
@@ -158,21 +160,25 @@ const SeguimientoCambaceo = () => {
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
-  const handleDownload = () => {
+  const handleDownload = async () => {
     console.log("Descargando...");
-    // const data = filteredData.map((colaborador) => ({
-    //   id: colaborador.id,
-    //   nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
-    // }));
-    // const csvData = data.map((item) => Object.values(item).join(","));
-    // const csvRows = ["ID,Nombre completo", ...csvData];
-    // const csvString = csvRows.join("\n");
-    // const a = document.createElement("a");
-    // a.href = "data:attachment/csv," + encodeURIComponent(csvString);
-    // a.target = "_blank";
-    // a.download = "colaboradores.csv";
-    // document.body.appendChild(a);
-    // a.click();
+    try {
+      setDescargando(true);
+      const response = await axios.get('http://localhost:3005/imprimirFechas', { responseType: 'blob' });
+
+      // Crear un objeto URL para el blob y simular un clic para iniciar la descarga
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'resultado_consulta.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al descargar el archivo CSV:', error.message);
+    } finally {
+      setDescargando(false);
+    }
   };
 
   return (
