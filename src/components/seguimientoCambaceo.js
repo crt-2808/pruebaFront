@@ -21,6 +21,12 @@ const SeguimientoCambaceo = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [imageLoaded, setImageLoaded] = useState({});
   const [descargando, setDescargando] = useState(false);
+  const userData = JSON.parse(sessionStorage.getItem("usuario"));
+  const email = userData.email;
+
+  const requestBody = {
+    correoLider: email,
+  };
 
   const toast = useRef(null);
   const showToast = () => {
@@ -66,12 +72,6 @@ const SeguimientoCambaceo = () => {
     });
     Swal.showLoading();
     try {
-      const userData = JSON.parse(sessionStorage.getItem("usuario"));
-      const email = userData.email;
-
-      const requestBody = {
-        correoLider: email,
-      };
       const options = {
         method: "POST",
         mode: "cors",
@@ -161,21 +161,36 @@ const SeguimientoCambaceo = () => {
     setSearch(e.target.value);
   };
   const handleDownload = async () => {
-    console.log("Descargando...");
+    Swal.fire({
+      title: "Descargando...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+    });
+    Swal.showLoading();
     try {
-      setDescargando(true);
-      const response = await axios.get('http://localhost:3005/imprimirFechas', { responseType: 'blob' });
+      const response = await axios.post(
+        "https://sarym-production-4033.up.railway.app/api/cambaceo/descargaFechas",
+        requestBody,
+        { responseType: "blob" }
+      );
+      Swal.close();
 
       // Crear un objeto URL para el blob y simular un clic para iniciar la descarga
-      const blob = new Blob([response.data], { type: 'text/csv' });
+      const blob = new Blob([response.data], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = 'resultado_consulta.csv';
+      a.download = "resultado_consulta.csv";
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error al descargar el archivo CSV:', error.message);
+      Swal.close();
+      console.error("Error al descargar el archivo CSV:", error.message);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Algo salió mal al descargar el archivo CSV!",
+      });
     } finally {
       setDescargando(false);
     }
