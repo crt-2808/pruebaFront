@@ -174,6 +174,13 @@ const SeguimientoCambaceo = () => {
         { responseType: "blob" }
       );
       Swal.close();
+      if (response.status === 204) {
+        return Swal.fire({
+          icon: "info",
+          title: "Información",
+          text: "No hay registros para la próxima semana aún.",
+        });
+      }
 
       // Crear un objeto URL para el blob y simular un clic para iniciar la descarga
       const blob = new Blob([response.data], { type: "text/csv" });
