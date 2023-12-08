@@ -13,6 +13,7 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Row, Col, Form } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
+import { useUserContext } from "../userProvider";
 
 function CalendarioVisita() {
   useAuthRedirect();
@@ -27,8 +28,8 @@ function CalendarioVisita() {
   const [TipoEmpresa, setTipoEmpresa] = useState("");
   const [Sitioweb, setSitioweb] = useState("");
   const [Descripcion, setDescripcion] = useState("");
-  const userData = JSON.parse(sessionStorage.getItem("usuario"));
-  const email = userData.email;
+  const { usuario } = useUserContext();
+  const email = usuario.email;
   const [colaboradores, setColaboradores] = useState([]);
   const [nombreColaboradorSeleccionado, setNombreColaboradorSeleccionado] =
     useState("");

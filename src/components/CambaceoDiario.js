@@ -7,6 +7,7 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuthRedirect } from "../useAuthRedirect";
+import { useUserContext } from "../userProvider";
 
 // Función para formatear las fechas
 function formatearFechas(
@@ -73,13 +74,14 @@ function formatearFechas(
 
 function CambaceoDiario() {
   useAuthRedirect();
+  const { usuario } = useUserContext();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const userData = JSON.parse(sessionStorage.getItem("usuario"));
-  const email = userData.email;
+
+  const email = usuario.email;
   const handleCancel = () => {
     // Lógica para cancelar el formulario
   };

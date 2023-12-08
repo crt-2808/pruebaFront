@@ -8,6 +8,7 @@ import { ArrowLeft, X } from "react-bootstrap-icons";
 import Navbar from "./navbar";
 import { Row, Col } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
+import { useUserContext } from "../userProvider";
 // Componente principal
 const SeguimientoVisita = () => {
   useAuthRedirect();
@@ -21,8 +22,8 @@ const SeguimientoVisita = () => {
   const [search, setSearch] = useState("");
 
   const [busqueda, setBusqueda] = useState("");
-  const userData = JSON.parse(sessionStorage.getItem("usuario"));
-  const email = userData.email;
+  const { usuario } = useUserContext();
+  const email = usuario.email;
 
   const requestBody = {
     correoLider: email,

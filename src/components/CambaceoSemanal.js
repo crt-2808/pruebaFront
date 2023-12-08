@@ -7,6 +7,7 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuthRedirect } from "../useAuthRedirect";
+import { useUserContext } from "../userProvider";
 
 function formatearFechasAsignacionYConclusion(
   FechaInicio,
@@ -80,8 +81,8 @@ function CambaceoSemanal() {
     useState("");
   const [nombreColaboradorSeleccionado, setNombreColaboradorSeleccionado] =
     useState("");
-  const userData = JSON.parse(sessionStorage.getItem("usuario"));
-  const email = userData.email;
+  const { usuario } = useUserContext();
+  const email = usuario.email;
   // Función para cargar los nombres de los colaboradores
   const cargarColaboradores = async () => {
     try {

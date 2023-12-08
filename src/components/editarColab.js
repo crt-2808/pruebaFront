@@ -5,11 +5,13 @@ import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import Usuario_sin_img from "../img/imagen-de-usuario-con-fondo-negro.png";
 import { useAuthRedirect } from "../useAuthRedirect";
+import { useUserContext } from "../userProvider";
 
 const EditarColab = () => {
   useAuthRedirect();
   const [colaboradores, setColaboradores] = useState([]);
   const [imageLoaded, setImageLoaded] = useState({});
+  const { usuario } = useUserContext();
   const fetchColaboradores = async () => {
     Swal.fire({
       title: "Cargando...",
@@ -18,8 +20,7 @@ const EditarColab = () => {
     });
     Swal.showLoading();
     try {
-      const userData = JSON.parse(sessionStorage.getItem("usuario"));
-      const email = userData.email;
+      const email = usuario.email;
 
       const requestBody = {
         correoLider: email,

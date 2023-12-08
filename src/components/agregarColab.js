@@ -93,8 +93,8 @@ function AgregarColab() {
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
-    const userData = JSON.parse(sessionStorage.getItem("usuario"));
-    const email = userData.email;
+
+    const email = usuario.email;
     formData.append("correoLider", email);
     let config = {
       method: "POST",

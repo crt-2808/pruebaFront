@@ -8,6 +8,7 @@ import { ArrowLeft, X } from "react-bootstrap-icons";
 import Navbar from "./navbar";
 import { Row, Col } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
+import { useUserContext } from "../userProvider";
 // Componente principal
 const SeguimientoLlamada = () => {
   useAuthRedirect();
@@ -21,8 +22,8 @@ const SeguimientoLlamada = () => {
   const [incidentesEditados, setIncidentesEditados] = useState("");
   const [search, setSearch] = useState("");
   const [busqueda, setBusqueda] = useState("");
-  const userData = JSON.parse(sessionStorage.getItem("usuario"));
-  const email = userData.email;
+  const { usuario } = useUserContext();
+  const email = usuario.email;
 
   const requestBody = {
     correoLider: email,
@@ -325,22 +326,37 @@ const SeguimientoLlamada = () => {
                       }}
                     >
                       {registros.map((registro, index) => (
-                        <div className="col-md-3"  key={index}>
-                             <div className="card centrar p-3" style={{width:"15rem", height:"16rem", alignItems:"center", overflow:"hidden",
-                        marginBottom:"15px", 
-                        maxWidth: window.innerWidth <= 768 ? '9rem'  : '100%',
-                         }}>
-                            <h2 
-                            className="card-title"
+                        <div className="col-md-3" key={index}>
+                          <div
+                            className="card centrar p-3"
                             style={{
-                              fontSize: "2rem", // Tamaño predeterminado
-                              margin: 0, // Elimina cualquier margen adicional que pueda afectar
-                              '@media (maxWidth: 768px)': {
-                                fontSize: '1rem', // Ajusta el tamaño del texto para pantallas más pequeñas
-                              }}}
-                            >{registro.NombreCompleto}</h2>
-                            <h4 className="card-subtitle mb-2 text-muted">{formatearFecha(registro.FechaAsignacion)}</h4>
-                            <p className="card-text text-truncate">{registro.Telefono}</p>
+                              width: "15rem",
+                              height: "16rem",
+                              alignItems: "center",
+                              overflow: "hidden",
+                              marginBottom: "15px",
+                              maxWidth:
+                                window.innerWidth <= 768 ? "9rem" : "100%",
+                            }}
+                          >
+                            <h2
+                              className="card-title"
+                              style={{
+                                fontSize: "2rem", // Tamaño predeterminado
+                                margin: 0, // Elimina cualquier margen adicional que pueda afectar
+                                "@media (maxWidth: 768px)": {
+                                  fontSize: "1rem", // Ajusta el tamaño del texto para pantallas más pequeñas
+                                },
+                              }}
+                            >
+                              {registro.NombreCompleto}
+                            </h2>
+                            <h4 className="card-subtitle mb-2 text-muted">
+                              {formatearFecha(registro.FechaAsignacion)}
+                            </h4>
+                            <p className="card-text text-truncate">
+                              {registro.Telefono}
+                            </p>
                             <button
                               className="btnDiario"
                               onClick={() => handleVerClick(registro)}

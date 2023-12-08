@@ -13,11 +13,12 @@ import { InputMask } from "primereact/inputmask";
 import { Link, useNavigate } from "react-router-dom";
 import { Row, Col, Form } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
+import { useUserContext } from "../userProvider";
 
 function CalendarioLlamada() {
   useAuthRedirect();
-  const userData = JSON.parse(sessionStorage.getItem("usuario"));
-  const email = userData.email;
+  const { usuario } = useUserContext();
+  const email = usuario.email;
   const navigate = useNavigate();
   const [Telefono, setTelefono] = useState("");
   const [FechaAsignacion, setFecha] = useState(null);

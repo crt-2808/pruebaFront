@@ -7,6 +7,7 @@ import usuarioAnon from "../img/imagen-de-usuario-con-fondo-negro.png";
 import Swal from "sweetalert2";
 import { Toast } from "primereact/toast";
 import { useAuthRedirect } from "../useAuthRedirect";
+import { useUserContext } from "../userProvider";
 import axios from "axios";
 import "../theme.css";
 import "primereact/resources/primereact.css"; // core css
@@ -21,8 +22,8 @@ const SeguimientoCambaceo = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [imageLoaded, setImageLoaded] = useState({});
   const [descargando, setDescargando] = useState(false);
-  const userData = JSON.parse(sessionStorage.getItem("usuario"));
-  const email = userData.email;
+  const { usuario } = useUserContext();
+  const email = usuario.email;
 
   const requestBody = {
     correoLider: email,
