@@ -25,6 +25,12 @@ import Mamado from "./components/mamado";
 import SeguimientoLlamada from "./components/SeguimientoLlamada";
 import SeguimientoVisita from "./components/SeguimientoVisita";
 import SeleccionColaboradores from "./components/ConfirmacionCambaceo1";
+import Land_Colab from "./components/Colaborador/land";
+import Planeador_Colab from "./components/Colaborador/planeador";
+import Cambaceo_Colab from "./components/Colaborador/Cambaceo";
+import Cambaceo_Diario_Colab from "./components/Colaborador/Cambaceo_Diario";
+import Cambaceo_Semanal_Colab from "./components/Colaborador/Cambaceo_Semanal";
+import Visita_Colab from "./components/Colaborador/Visita";
 
 
 
@@ -67,7 +73,12 @@ function App() {
             element={<SeleccionColaboradores />}
           />
           <Route path="/SeguimientoLlamada" element={<SeguimientoLlamada />} />
-
+          <Route path="/Colaborador/land" element={<Land_Colab />}/>
+          <Route path="/Colaborador/planeador" element={<Planeador_Colab />}/>
+          <Route path="/Colaborador/Cambaceo" element={<Cambaceo_Colab/>}/>
+          <Route path="/Colaborador/Cambaceo_Diario" element={<Cambaceo_Diario_Colab/>}/>
+          <Route path="/Colaborador/Cambaceo_Semanal" element={<Cambaceo_Semanal_Colab/>}/>
+          <Route path="/Colaborador/Visita_Programada" element={<Visita_Colab/>}/>
           <Route path="*" element={<Land />} />
         </Routes>
       </div>
