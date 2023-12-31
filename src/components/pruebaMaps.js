@@ -190,6 +190,7 @@ function PruebaMaps() {
 
     fetchData();
   }, []);
+  
   useEffect(() => {
     if (direccionCompleta) {
       geocodeDireccion();

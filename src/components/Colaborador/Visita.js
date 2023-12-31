@@ -12,7 +12,7 @@ const Visita_Colab = () => {
   useAuthRedirect();
   const { toggleUser, usuario } = useUserContext();
   const [registros, setRegistros] = useState([]);
-
+  const navigate=useNavigate();
   useEffect(() => {
     const getInfo = async () => {
       Swal.fire({
@@ -63,32 +63,7 @@ const Visita_Colab = () => {
   };
 
   const handleVerClick = (registro) => {
-    //// Formatea la fecha antes de mostrar el diálogo
-    //const fechaFormateada = formatearFecha(registro.FechaAsignacion);
-    //// Muestra el diálogo con SweetAlert2
-    //Swal.fire({
-    //  icon: "warning",
-    //  title: "Corrobora los datos seleccionados",
-    //  html: `
-    //    <h2>${registro.NombreCompleto}</h2>
-    //    <h4>${fechaFormateada}</h4>
-    //    <p>${registro.Telefono}</p>
-    //    <h3>Para un  <span class="text-danger">Seguimiento</span></h3>
-    //  `,
-    //  showCancelButton: true,
-    //  confirmButtonText: "Confirmar",
-    //  cancelButtonText: "Cancelar",
-    //  confirmButtonColor: "#ea4335",
-    //  cancelButtonColor: "#333333",
-    //}).then((result) => {
-    //  // Maneja la lógica después de hacer clic en Confirmar o Cancelar
-    //  if (result.isConfirmed) {
-    //    // Lógica para confirmar
-    //    setRegistroSeleccionado(registro);
-    //    setIncidentesEditados(registro.Incidentes);
-    //    setModoCuestionario(true);
-    //  }
-    //});
+    navigate("/Colaborador/pruebaMaps", {state:{registro}})
   };
   const formatearFecha = (fecha) => {
     const options = { day: "2-digit", month: "2-digit", year: "numeric" };
@@ -136,7 +111,7 @@ const Visita_Colab = () => {
       <div className="Colab">
         <div className="container-fluid px-4">
           <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
-            <Link to="/Colaborador/Cambaceo">
+            <Link to="/Colaborador/planeador">
               <ArrowLeft className="ml-4 regreso" />
               <span id="indicador">Planeador</span>
             </Link>
