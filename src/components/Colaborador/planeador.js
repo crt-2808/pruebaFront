@@ -88,7 +88,7 @@ import Llamada from "../../img/Llamada.png";
                     </div>
                     <div className="col-md-4">
                       <div className="col-md-12">
-                        <Link to="/Llamada" className="no-decoration">
+                        <Link to="/Colaborador/Llamada" className="no-decoration">
                           <div className="col-md-12">
                             <img
                               className="imgPlaneador"
