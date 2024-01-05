@@ -33,8 +33,7 @@ import Cambaceo_Semanal_Colab from "./components/Colaborador/Cambaceo_Semanal";
 import Visita_Colab from "./components/Colaborador/Visita";
 import Colab_PruebaMaps from "./components/Colaborador/pruebaMaps";
 import Llamada_Colab from "./components/Colaborador/Llamada";
-
-
+import AgregarIncidencia from "./components/Colaborador/Incidencia";
 
 function App() {
   return (
@@ -83,6 +82,7 @@ function App() {
           <Route path="/Colaborador/Visita_Programada" element={<Visita_Colab/>}/>
           <Route path="/Colaborador/PruebaMaps" element={<Colab_PruebaMaps/>}/>
           <Route path="/Colaborador/Llamada" element={<Llamada_Colab/>}/>
+          <Route path="/Colaborador/Incidencia" element={<AgregarIncidencia/>}/>
           <Route path="*" element={<Land />} />
         </Routes>
       </div>

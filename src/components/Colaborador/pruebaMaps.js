@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { ArrowLeft } from "react-bootstrap-icons";
@@ -22,6 +22,7 @@ const libraries = ["places"];
 function Colab_PruebaMaps() {
   // Almacena la informacion del registro seleccionado
   const location = useLocation();
+  const navigate=useNavigate();
   const [registro, setRegistro] = useState(null);
   const [direccionCompleta, setDireccionCompleta] = useState('');
   const [TipoEmpresa, setTipoEmpresa] = useState('');
@@ -49,7 +50,7 @@ function Colab_PruebaMaps() {
     // Verificamos si existe el objeto registro en location.state
     if (location.state && location.state.registro) {
       const { Direccion_Calle, Direccion_Num_Ext, Direccion_Num_Int, Direccion_CP, Direccion_Colonia,
-        TipoEmpresa, Telefono, FechaAsignacion, FechaConclusion, Descripcion
+        TipoEmpresa, Telefono, FechaAsignacion, FechaConclusion, Descripcion, ID
       } = location.state.registro;
 
       // Combina los campos de dirección para formar la dirección completa
@@ -63,7 +64,8 @@ function Colab_PruebaMaps() {
       setHoraInicio(horaInicio || '');
       setHoraConclusion(horaInicio || '');
       setHorario(horario || '');
-      
+
+
       // Divide la fecha para "Fecha Inicio"
       setHoraInicio(dividirFecha(FechaAsignacion));
       // Divide la fecha para "Fecha Fin"
@@ -109,6 +111,10 @@ function Colab_PruebaMaps() {
     }
   };
 
+  const handleIncidenciaClick=(registro)=>{
+
+      navigate("/Colaborador/Incidencia", { state: { registro } });
+  }
 
   useEffect(() => {
     if (direccionCompleta) {
@@ -121,9 +127,9 @@ function Colab_PruebaMaps() {
   )}`;
 
 
-
   if(registro && registro.Tipo=="Cambaceo_Diario"){
     return (
+      
       <div className="fluid">
         <Navbar style={{ backgroundColor: "##F8F9FA" }}></Navbar>
   
@@ -166,7 +172,7 @@ function Colab_PruebaMaps() {
               id="contenedor-cambaceo"
             >
               <Form>
-                <Row className="mb-5">
+                <Row className="mb-5"> 
                   <Col xs={12} md={6}>
                     <div>
                       <h5 style={{ textAlign: "left" }}>Empresa</h5>
@@ -237,6 +243,11 @@ function Colab_PruebaMaps() {
                     </div>
                   </Col>
                   <Col xs={12} md={6} className="mt-3">
+                  <Row className="mb-5" style={{textAlign:"right", marginTop:"-3.5rem"}}>
+                  <Col xs={12} md={12}>
+                    <Button variant="danger" rounded="true" style={{marginBottom:"-2.7rem"}} onClick={()=>handleIncidenciaClick(registro)}>Agregar Incidencia</Button>
+                  </Col>
+                  </Row>
                   <GoogleMap
                       mapContainerStyle={containerStyle}
                       center={direccionCoords || center}
@@ -400,6 +411,11 @@ function Colab_PruebaMaps() {
                     </div>
                   </Col>
                   <Col xs={12} md={6} className="mt-3">
+                  <Row className="mb-5" style={{textAlign:"right", marginTop:"-3.5rem"}}>
+                  <Col xs={12} md={12}>
+                    <Button variant="danger" rounded="true" style={{marginBottom:"-2.7rem"}} onClick={()=>handleIncidenciaClick(registro)}>Agregar Incidencia</Button>
+                  </Col>
+                  </Row>
                   <GoogleMap
                       mapContainerStyle={containerStyle}
                       center={direccionCoords || center}
@@ -550,6 +566,11 @@ function Colab_PruebaMaps() {
                     </div>
                   </Col>
                   <Col xs={12} md={6} className="mt-3">
+                  <Row className="mb-5" style={{textAlign:"right", marginTop:"-3.5rem"}}>
+                  <Col xs={12} md={12}>
+                    <Button variant="danger" rounded="true" style={{marginBottom:"-2.7rem"}} onClick={()=>handleIncidenciaClick(registro)}>Agregar Incidencia</Button>
+                  </Col>
+                  </Row>
                   <GoogleMap
                       mapContainerStyle={containerStyle}
                       center={direccionCoords || center}

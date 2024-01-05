@@ -63,7 +63,7 @@ const Llamada_Colab = () => {
   };
 
   const handleVerClick = (registro) => {
-    navigate("/Colaborador/pruebaMaps", {state:{registro}})
+    navigate("/Colaborador/Incidencia", {state:{registro}})
   };
   const formatearFecha = (fecha) => {
     const options = { day: "2-digit", month: "2-digit", year: "numeric" };
