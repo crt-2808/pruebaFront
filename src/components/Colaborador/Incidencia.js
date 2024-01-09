@@ -18,7 +18,7 @@ const AgregarIncidencia = () => {
   const [direccionCompleta, setDireccionCompleta] = useState("");
   const [fechaAsignacion, setFechaAsignacion] = useState("");
   const [incidentes, setIncidentes] = useState("");
-
+  const [tipo, setTipo]=useState("");
   useEffect(() => {
     if (location.state && location.state.registro) {
       const { ID } = location.state.registro;
@@ -40,6 +40,7 @@ const AgregarIncidencia = () => {
             setDireccionCompleta(construirDireccionCompleta(primerElemento));
             setFechaAsignacion(formatoFecha(primerElemento.FechaAsignacion));
             setIncidentes(primerElemento.Incidentes);
+            setTipo(primerElemento.Tipo)
           }
         })
         .catch((error) => {
@@ -142,7 +143,7 @@ const AgregarIncidencia = () => {
             marginRight: "0px",
           }}
         >
-          <h2 className="titulo-cambaceo px-5 ">Incidencia</h2>
+          <h2 className="titulo-cambaceo px-5 ">Incidencia de {tipo.replace(/_/g, ' ')}</h2>
         </div>
 
         <div
@@ -231,9 +232,6 @@ const AgregarIncidencia = () => {
                     rows={10}
                   />
                 </div>
-                <button type="button" class="btn btn-danger btn-lg" style={{marginRight:"25px"}}>
-                  Cancelar
-                </button>
                 <button type="button" class="btn btn-success btn-lg" onClick={manejoIncidencia}>
                   Agregar
                 </button>

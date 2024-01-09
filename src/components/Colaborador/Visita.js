@@ -32,7 +32,29 @@ const Visita_Colab = () => {
 
         // Verificar si hay registros en la respuesta
         if (response.data && response.data.length > 0) {
-          setRegistros(response.data);
+          // Obtener la fecha de inicio del mes
+          const now = new Date();
+          const inicioMes = new Date(now.getFullYear(), now.getMonth(), 1);
+
+          // Filtrar registros dentro del rango mensual
+          const registrosMes = response.data.filter((registro) => {
+            const fechaAsignacion = new Date(registro.FechaAsignacion);
+            return fechaAsignacion >= inicioMes;
+          });
+
+          // Actualizar los registros con los filtrados por mes
+          setRegistros(registrosMes);
+
+          // Mostrar alerta si no hay registros para el mes actual
+          if (registrosMes.length === 0) {
+            Swal.fire({
+              icon: "info",
+              title: "No hay registros para este mes",
+              text: "No se encontraron registros para mostrar en el mes actual.",
+            });
+          }
+
+          // Resto del código...
         } else {
           // Mostrar alerta si no hay registros
           Swal.fire({
@@ -41,7 +63,7 @@ const Visita_Colab = () => {
             text: "No se encontraron registros para mostrar.",
           });
         }
-      } catch (error) {
+      }catch (error) {
         console.error(
           "Error al obtener datos del procedimiento GetInfo:",
           error
@@ -75,35 +97,15 @@ const Visita_Colab = () => {
     const fechaConclusion = new Date(registro.FechaConclusion);
 
     if (fechaActual > fechaConclusion) {
-      return <div className="alerta-esquina alerta-success">Terminado</div>;
+      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-success"><h6>Terminado</h6></div>;
     } else if (
       fechaActual >= fechaAsignacion &&
       fechaActual <= fechaConclusion
     ) {
-      return <div className="alerta-esquina alerta-warning">En curso</div>;
+      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-warning"><h6>En curso</h6></div>;
     } else {
-      return <div className="alerta-esquina alerta-info">Programada</div>;
+      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-secondary"><h6>Programada</h6></div>;
     }
-  };
-  const alertaEsquina = (registro) => {
-    <div
-      className="alerta-esquina"
-      style={{
-        color: "white",
-        backgroundColor: {
-          terminado: "green",
-          enCurso: "yellow",
-          programada: "gray",
-        }[registro.Estado],
-        padding: "5px 10px",
-        borderRadius: "5px",
-        position: "absolute",
-        top: "5px",
-        right: "5px",
-      }}
-    >
-      {registro.Estado}
-    </div>;
   };
   return (
     <div className="fluid">

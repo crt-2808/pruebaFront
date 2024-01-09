@@ -14,21 +14,21 @@ const lowerCaseAllWordsExceptFirstLetters = (string) =>
     (word) => `${word.slice(0, 1)}${word.slice(1).toLowerCase()}`
   );
 
-
-
-  const Land_Colab = () => {
+const Land_Colab = () => {
   useAuthRedirect();
   const { toggleUser, usuario } = useUserContext();
   console.log(usuario);
 
   const [liderData, setLiderData] = useState(null);
+  const [showPhone, setShowPhone] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3005/lider_info",
-        {params:{usuario},
-      });
+        const response = await axios.get("http://localhost:3005/lider_info", {
+          params: { usuario },
+        });
 
         setLiderData(response.data);
         console.log("Datos del líder:", response.data);
@@ -46,21 +46,25 @@ const lowerCaseAllWordsExceptFirstLetters = (string) =>
       mode: "cors",
     };
   }, []);
+  useEffect(() => {
+    // Ocultar el teléfono después de 10 segundos
+    const timeoutId = setTimeout(() => {
+      setShowPhone(false);
+    }, 10000);
 
+    // Limpieza del temporizador al desmontar el componente
+    return () => clearTimeout(timeoutId);
+  }, [showPhone]);
 
-
-  
   return (
     <div className="fluid color-land">
       <Navbar></Navbar>
       <div className="container land pt-4 pb-4  d-flex" id="landing-p">
         <div className="row w-100">
-          <div className="col-12 mt-2 mb-md-3 mb-sm-0">
-            
-          </div>
+          <div className="col-12 mt-2 mb-md-3 mb-sm-0"></div>
 
           <div className="col-12 mt-4 p-0">
-          <h1 className="bienvenidoText">
+            <h1 className="bienvenidoText">
               Bienvenido &nbsp;
               {usuario &&
                 upperCaseFirstLetter(
@@ -74,11 +78,22 @@ const lowerCaseAllWordsExceptFirstLetters = (string) =>
                     <div className="col-12">
                       <h4 className="subTituloLand">Lider</h4>
                       {liderData && (
-                      <div>
-                        <h4>{liderData[0].Nombre} {liderData[0].Apellido_pat} {liderData[0].Apellido_mat}</h4>
-                        <h5>Correo: {liderData[0].Correo}</h5>
-                      </div>
-                    )}
+                        <div>
+                          <h4>
+                            {liderData[0].Nombre} {liderData[0].Apellido_pat}{" "}
+                            {liderData[0].Apellido_mat}
+                          </h4>
+                          <h5>Correo: {liderData[0].Correo}</h5>
+                          <h5>
+                            Teléfono: {showPhone ? liderData[0].Telefono : "********"}
+                            {!showPhone && (
+                              <button onClick={() => setShowPhone(true)}>
+                                Revelar
+                              </button>
+                            )}
+                          </h5>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -90,7 +105,10 @@ const lowerCaseAllWordsExceptFirstLetters = (string) =>
                     <div className="col-12">
                       <div className="row pt-5">
                         <div className="col-md-12">
-                          <Link to="/Colaborador/planeador" className="no-decoration">
+                          <Link
+                            to="/Colaborador/planeador"
+                            className="no-decoration"
+                          >
                             <img src={Planeador} alt="Boton-Editar"></img>
                             <p className="placeBtn">Entrar</p>
                           </Link>

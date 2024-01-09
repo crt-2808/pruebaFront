@@ -32,7 +32,31 @@ const Cambaceo_Diario_Colab = () => {
 
         // Verificar si hay registros en la respuesta
         if (response.data && response.data.length > 0) {
-          setRegistros(response.data);
+          // Obtener la fecha de inicio de la semana (lunes)
+          const now = new Date();
+          const inicioSemana = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)
+          );
+  
+          // Filtrar registros dentro del rango semanal
+          const registrosSemana = response.data.filter((registro) => {
+            const fechaAsignacion = new Date(registro.FechaAsignacion);
+            return fechaAsignacion >= inicioSemana;
+          });
+  
+          // Actualizar los registros con los filtrados por semana
+          setRegistros(registrosSemana);
+          if (registrosSemana.length === 0) {
+            Swal.fire({
+              icon: "info",
+              title: "No hay registros para esta semana",
+              text: "No se encontraron registros para mostrar en la semana actual.",
+            });
+          }
+  
+          // Resto del código...
         } else {
           // Mostrar alerta si no hay registros
           Swal.fire({
@@ -75,35 +99,15 @@ const Cambaceo_Diario_Colab = () => {
     const fechaConclusion = new Date(registro.FechaConclusion);
 
     if (fechaActual > fechaConclusion) {
-      return <div className="alerta-esquina alerta-success">Terminado</div>;
+      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-success"><h6>Terminado</h6></div>;
     } else if (
       fechaActual >= fechaAsignacion &&
       fechaActual <= fechaConclusion
     ) {
-      return <div className="alerta-esquina alerta-warning">En curso</div>;
+      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-warning"><h6>En curso</h6></div>;
     } else {
-      return <div className="alerta-esquina alerta-info">Programada</div>;
+      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-secondary"><h6>Programada</h6></div>;
     }
-  };
-  const alertaEsquina = (registro) => {
-    <div
-      className="alerta-esquina"
-      style={{
-        color: "white",
-        backgroundColor: {
-          terminado: "green",
-          enCurso: "yellow",
-          programada: "gray",
-        }[registro.Estado],
-        padding: "5px 10px",
-        borderRadius: "5px",
-        position: "absolute",
-        top: "5px",
-        right: "5px",
-      }}
-    >
-      {registro.Estado}
-    </div>;
   };
   return (
     <div className="fluid">
@@ -210,5 +214,4 @@ const Cambaceo_Diario_Colab = () => {
     </div>
   );
 };
-
 export default Cambaceo_Diario_Colab;
