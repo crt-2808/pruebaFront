@@ -3,6 +3,7 @@ import Navbar from "./navbar";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import { showNotification } from "../utils/utils";
 import Usuario_sin_img from "../img/imagen-de-usuario-con-fondo-negro.png";
 import { useAuthRedirect } from "../useAuthRedirect";
 import { useUserContext } from "../userProvider";
@@ -39,42 +40,21 @@ const EditarColab = () => {
       Swal.close();
       if (!response.ok) {
         console.log("Error: ", response);
-        return Swal.fire({
-          icon: "error",
-          title: "Se produjo un error",
-          text: "UDA",
-          timer: 2200,
-          timerProgressBar: true,
-          backdrop: `
-      rgba(36,32,32,0.65)
-      
-    `,
-        });
+        return showNotification("error", "Se produjo un error", "UDA");
       }
 
       const data = await response.json();
       if (data.length === 0) {
-        return Swal.fire({
-          title: "¡Atención!",
-          text: "Todavía no hay ningún colaborador registrado en tu equipo.",
-          icon: "info",
-          confirmButtonText: "Entendido",
-        });
+        return showNotification(
+          "info",
+          "Todavía no hay ningún colaborador registrado en tu equipo.",
+          "UDA"
+        );
       }
       setColaboradores(data);
     } catch (error) {
       console.error(error);
-      return Swal.fire({
-        icon: "error",
-        title: "Se produjo un error",
-        text: "UDA",
-        timer: 2200,
-        timerProgressBar: true,
-        backdrop: `
-    rgba(36,32,32,0.65)
-    
-  `,
-      });
+      return showNotification("error", "Se produjo un error", "UDA");
     }
   };
   useEffect(() => {
@@ -223,35 +203,33 @@ const EditarColab = () => {
                 return colab;
               });
               setColaboradores(updatedColaboradores);
-              Swal.fire({
-                title: "Editado!",
-                text: `Has editado al colaborador.`,
-                icon: "success",
-                timer: 2000,
-                timerProgressBar: true,
-              });
+              showNotification(
+                "success",
+                "Editado!",
+                "Has editado al colaborador."
+              );
             } else {
-              Swal.fire(
+              showNotification(
+                "error",
                 "Error!",
-                `Ha ocurrido un error al actualizar al colaborador ${colaborador.Nombre}.`,
-                "error"
+                `Ha ocurrido un error al actualizar al colaborador ${colaborador.Nombre}.`
               );
             }
           } catch (error) {
             console.log(error);
-            return Swal.fire("Error!", `Ha ocurrido un error.`, "error");
+            return showNotification("error", "Se produjo un error", "UDA");
           }
         }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(
+        showNotification(
+          "info",
           "Cancelado",
-          "No se ha modificado ningun colaborador :)",
-          "warning"
+          "No se ha modificado ningun colaborador."
         );
       }
     } catch (error) {
       console.log(error);
-      Swal.fire("Error!", `Ha ocurrido un error.`, "error");
+      showNotification("error", "Se produjo un error", "UDA");
     }
   };
 

@@ -6,52 +6,8 @@ import Swal from "sweetalert2";
 import { Calendar } from "primereact/calendar";
 import "../theme.css";
 import "primereact/resources/primereact.css"; // core css
-import { addLocale } from "primereact/api";
 import { useAuthRedirect } from "../useAuthRedirect";
-addLocale("es", {
-  firstDayOfWeek: 1,
-  dayNames: [
-    "Domingo",
-    "Lunes",
-    "Martes",
-    "Miércoles",
-    "Jueves",
-    "Viernes",
-    "Sábado",
-  ],
-  dayNamesShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-  dayNamesMin: ["D", "L", "M", "X", "J", "V", "S"],
-  monthNames: [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ],
-  monthNamesShort: [
-    "ene",
-    "feb",
-    "mar",
-    "abr",
-    "may",
-    "jun",
-    "jul",
-    "ago",
-    "sep",
-    "oct",
-    "nov",
-    "dic",
-  ],
-  today: "Hoy",
-  clear: "Limpiar",
-});
+import { CalendarioEsp } from "../utils/calendarLocale";
 const exportToCSV = (data) => {
   const csvData =
     `Nombre,Fecha Inicio,Fecha Fin,Calle,Colonia,Incidencias\n` +
@@ -206,6 +162,7 @@ const cambaceosTemplate = (cambaceo) => {
 };
 const SeguimientoColab = () => {
   useAuthRedirect();
+  CalendarioEsp();
   const navigate = useNavigate();
   const { id } = useParams();
   console.log(id);

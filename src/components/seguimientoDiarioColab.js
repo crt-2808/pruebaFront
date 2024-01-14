@@ -6,51 +6,7 @@ import Swal from "sweetalert2";
 import { Calendar } from "primereact/calendar";
 import "../theme.css";
 import "primereact/resources/primereact.css"; // core css
-import { addLocale } from "primereact/api";
-addLocale("es", {
-  firstDayOfWeek: 1,
-  dayNames: [
-    "Domingo",
-    "Lunes",
-    "Martes",
-    "Miércoles",
-    "Jueves",
-    "Viernes",
-    "Sábado",
-  ],
-  dayNamesShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-  dayNamesMin: ["D", "L", "M", "X", "J", "V", "S"],
-  monthNames: [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ],
-  monthNamesShort: [
-    "ene",
-    "feb",
-    "mar",
-    "abr",
-    "may",
-    "jun",
-    "jul",
-    "ago",
-    "sep",
-    "oct",
-    "nov",
-    "dic",
-  ],
-  today: "Hoy",
-  clear: "Limpiar",
-});
+import { CalendarioEsp } from "../utils/calendarLocale";
 const convierteFecha = (fecha) => {
   const dateObj = new Date(fecha);
   const year = dateObj.getUTCFullYear();
@@ -208,6 +164,7 @@ const cambaceosTemplate = (cambaceo) => {
 };
 const SeguimientoDiarioColab = () => {
   const navigate = useNavigate();
+  CalendarioEsp();
   const { id } = useParams();
 
   const [Diario, setDiario] = useState(null);

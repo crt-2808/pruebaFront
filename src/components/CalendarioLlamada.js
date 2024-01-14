@@ -14,9 +14,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { Row, Col, Form } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
 import { useUserContext } from "../userProvider";
+import { formatearFecha } from "../utils/utils";
+import { CalendarioEsp } from "../utils/calendarLocale";
 
 function CalendarioLlamada() {
   useAuthRedirect();
+  CalendarioEsp();
   const { usuario } = useUserContext();
   const email = usuario.email;
   const navigate = useNavigate();
@@ -71,12 +74,14 @@ function CalendarioLlamada() {
   const handleSubmit = () => {
     // Aquí puedes enviar los datos a la base de datos MySQL utilizando Axios u otra biblioteca de HTTP.
     // Por ejemplo, puedes enviarlos a una API REST.
-
+    // Formatear la fecha y hora
+    const fechaAsignacionFormateada = formatearFecha(FechaAsignacion);
+    console.log("Fecha y hora formateada:", fechaAsignacionFormateada);
     const data = {
       NombreCompleto: nombreColaboradorSeleccionado,
       IDColaborador: idColaboradorSeleccionado,
       Telefono,
-      FechaAsignacion,
+      FechaAsignacion: fechaAsignacionFormateada,
       Descripcion,
       correoLider: email,
     };
@@ -216,7 +221,8 @@ function CalendarioLlamada() {
                   showIcon
                   showTime
                   hourFormat="12"
-                  dateFormat="mm/dd/yy"
+                  dateFormat="dd/mm/yy"
+                  locale="es"
                   style={{ width: "100%" }}
                   placeholder={obtenerFechaHoraActual()}
                 />

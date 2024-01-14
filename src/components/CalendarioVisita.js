@@ -5,18 +5,20 @@ import { Calendar } from "primereact/calendar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { InputMask } from "primereact/inputmask";
-import { FileUpload } from "primereact/fileupload";
 import axios from "axios";
 import Swal from "sweetalert2";
 import Navbar from "./navbar";
+import { formatearFecha } from "../utils/utils";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Row, Col, Form } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
 import { useUserContext } from "../userProvider";
+import { CalendarioEsp } from "../utils/calendarLocale";
 
 function CalendarioVisita() {
   useAuthRedirect();
+  CalendarioEsp();
   const navigate = useNavigate();
   const [Telefono, setTelefono] = useState("");
   const [FechaAsignacion, setFecha] = useState(null);
@@ -35,7 +37,6 @@ function CalendarioVisita() {
     useState("");
   const [idColaboradorSeleccionado, setIdColaboradorSeleccionado] =
     useState("");
-
   // Función para cargar los nombres de los colaboradores
   const cargarColaboradores = async () => {
     try {
@@ -77,11 +78,12 @@ function CalendarioVisita() {
   const handleSubmit = () => {
     // Aquí puedes enviar los datos a la base de datos MySQL utilizando Axios u otra biblioteca de HTTP.
     // Por ejemplo, puedes enviarlos a una API REST.
+    const fechaAsignacionFormateada = formatearFecha(FechaAsignacion);
 
     const data = {
       NombreCompleto: nombreColaboradorSeleccionado,
       Telefono,
-      FechaAsignacion,
+      FechaAsignacion: fechaAsignacionFormateada,
       Direccion_Calle,
       Direccion_Num_Ext,
       Direccion_Num_Int,
@@ -231,9 +233,10 @@ function CalendarioVisita() {
                   showIcon
                   showTime
                   hourFormat="12"
-                  dateFormat="mm/dd/yy"
+                  dateFormat="dd/mm/yy"
                   placeholder={obtenerFechaHoraActual()}
                   style={{ width: "100%" }}
+                  locale="es"
                 />
               </div>
               <div className="p-field">
