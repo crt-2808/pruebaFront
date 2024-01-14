@@ -5,7 +5,7 @@ import { ArrowLeft } from "react-bootstrap-icons";
 import { InputTextarea } from "primereact/inputtextarea";
 import Navbar from "../navbar";
 import { Link } from "react-router-dom";
-import { Form, Button, Row, Col } from "react-bootstrap";
+import { Form, Row, Col } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 const AgregarIncidencia = () => {
@@ -114,6 +114,9 @@ const AgregarIncidencia = () => {
       });
   };
 
+  const abrirAplicacionTelefono = () => {
+    window.location.href = `tel:${telefono}`;
+  };
   return (
     <div className="fluid">
       <Navbar style={{ backgroundColor: "##F8F9FA" }}></Navbar>
@@ -157,7 +160,7 @@ const AgregarIncidencia = () => {
                   <h5 style={{ textAlign: "left" }}>ID</h5>
                   <InputTextarea
                     type="text"
-                    placeholder="Ingresa tu nombre completo"
+                    placeholder="El campo no es obligatorio"
                     value={idRegistro}
                     disabled
                     className="w-100"
@@ -168,18 +171,18 @@ const AgregarIncidencia = () => {
                   <h5 style={{ textAlign: "left" }}>Nombre</h5>
                   <InputTextarea
                     type="text"
-                    placeholder="Ingresa tu nombre completo"
+                    placeholder="El campo no es obligatorio"
                     value={nombreCompleto}
                     disabled
                     className="w-100"
                     rows={1}
-                  />
+                  />  
                 </div>
                 <div>
                   <h5 style={{ textAlign: "left" }}>Empresa</h5>
                   <InputTextarea
                     type="text"
-                    placeholder="Ingresa tu nombre completo"
+                    placeholder="El campo no es obligatorio"
                     value={tipoEmpresa}
                     disabled
                     className="w-100"
@@ -188,20 +191,23 @@ const AgregarIncidencia = () => {
                 </div>
                 <div>
                   <h5 style={{ textAlign: "left" }}>Telefono</h5>
+                  <a  style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }} href={`tel:${telefono}`} onClick={abrirAplicacionTelefono}> 
                   <InputTextarea
                     type="text"
-                    placeholder="Ingresa tu nombre completo"
+                    placeholder="El campo no es obligatorio"
                     value={telefono}
                     disabled
                     className="w-100"
                     rows={1}
+                    style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
                   />
+                  </a>
                 </div>
                 <div>
                   <h5 style={{ textAlign: "left" }}>Direccion</h5>
                   <InputTextarea
                     type="text"
-                    placeholder="Ingresa tu nombre completo"
+                    placeholder="El campo no es obligatorio"
                     value={direccionCompleta}
                     disabled
                     className="w-100"
@@ -212,7 +218,7 @@ const AgregarIncidencia = () => {
                   <h5 style={{ textAlign: "left" }}>Fecha</h5>
                   <InputTextarea
                     type="text"
-                    placeholder="Ingresa tu nombre completo"
+                    placeholder="El campo no es obligatorio"
                     value={fechaAsignacion}
                     disabled
                     className="w-100"
