@@ -887,9 +887,18 @@ border-radius: 53px;
   transition: all 500ms ease;
  
 }
-.editar{
-  width: 1.2rem;
+.editar, .basura{
+  width: 1.5rem;
+  font-size: 1.5rem;
   cursor: pointer;
+  transition: fill 300ms ease;
+  margin: 0 0.3rem;
+}
+.editar:hover {
+  fill: #6c63ff;
+}
+.basura:hover{
+  fill: #ea4335;
 }
 .card{
   transition: background-color 500ms ease, color;
