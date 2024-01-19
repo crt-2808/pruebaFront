@@ -3,20 +3,19 @@ import logo from "../img/logo final.png";
 import ceth from "../img/Logo Ceth.jpg";
 import latino from "../img/logo Latino.jpg";
 import univic from "../img/logo univic (2).jpg";
-import { BiUserCircle } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../userProvider";
 import { useGoogleLogout } from "react-google-login";
-
-const clientId =
-  "422356463744-6ph6gvs0ge55fqli9nkv09lhfpu0amjv.apps.googleusercontent.com";
+import { clientId } from "../utils/googleAuth";
 
 const Navbar = () => {
   const { toggleUser } = useUserContext();
   const navigate = useNavigate();
   const onLogoutSuccess = () => {
-    console.log("logout");
-    navigate("/");
+    sessionStorage.removeItem("jwtToken");
+    toggleUser(null);
+    sessionStorage.removeItem("usuario");
+    sessionStorage.removeItem("userRole");
   };
   const onFailure = () => {
     console.log("logout fail");

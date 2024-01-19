@@ -8,24 +8,25 @@ import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useUserContext } from "../userProvider";
 import { useAuthRedirect } from "../useAuthRedirect";
+import { API_URL, fetchWithToken } from "../utils/api";
 
-const checkIfIdExists = async (id) => {
-  try {
-    const response = await fetch(
-      `https://sarym-production-4033.up.railway.app/api/colaborador/${id}`
-    );
-    const data = await response.json();
-    console.log("Data:", data);
+// const checkIfIdExists = async (id) => {
+//   try {
+//     const response = await fetch(
+//       `${API_URL}/colaborador/${id}`
+//     );
+//     const data = await response.json();
+//     console.log("Data:", data);
 
-    if (response.ok && data.length > 0) {
-      return true;
-    }
-    return false;
-  } catch (error) {
-    console.error("Error checking ID:", error);
-    return false;
-  }
-};
+//     if (response.ok && data.length > 0) {
+//       return true;
+//     }
+//     return false;
+//   } catch (error) {
+//     console.error("Error checking ID:", error);
+//     return false;
+//   }
+// };
 
 function AgregarColab() {
   useAuthRedirect();
@@ -57,15 +58,15 @@ function AgregarColab() {
       `,
       });
     }
-    const idExists = await checkIfIdExists(data.ID_Colab);
-    console.log("ID exists:", idExists);
-    if (idExists) {
-      return Swal.fire({
-        icon: "error",
-        title: "ID_Colab ya existe",
-        text: "Por favor, ingresa un ID_Colab diferente.",
-      });
-    }
+    // const idExists = await checkIfIdExists(data.ID_Colab);
+    // console.log("ID exists:", idExists);
+    // if (idExists) {
+    //   return Swal.fire({
+    //     icon: "error",
+    //     title: "ID_Colab ya existe",
+    //     text: "Por favor, ingresa un ID_Colab diferente.",
+    //   });
+    // }
     let inputElem = document.getElementById("FotoColab");
     let file = inputElem.files[0];
     let blob = file.slice(0);
@@ -76,7 +77,7 @@ function AgregarColab() {
 
     // const imagen = fotoColab[0];
     // data.FotoColab = imagen;
-    formData.append("ID_Colab", data.ID_Colab);
+    // formData.append("ID_Colab", data.ID_Colab);
     formData.append("Nombre", data.Nombre);
     formData.append("Apellido_pat", data.Apellido_pat);
     formData.append("Apellido_mat", data.Apellido_mat);
@@ -94,18 +95,12 @@ function AgregarColab() {
       console.log(key, value);
     }
 
-    const email = usuario.email;
-    formData.append("correoLider", email);
     let config = {
       method: "POST",
-      mode: "cors",
-      body: formData,
+      body: formData, // formData contiene los datos del formulario
     };
     try {
-      let res = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/crearColaborador",
-        config
-      );
+      let res = await fetchWithToken(`${API_URL}/createColaborador`, config);
       Swal.close();
       if (!res.ok) {
         return Swal.fire({
@@ -121,6 +116,18 @@ function AgregarColab() {
         });
       }
       let json = await res.json();
+      if (res.status === 400 && json.message === "El correo ya está tomado") {
+        return Swal.fire({
+          icon: "error",
+          title: "El correo ya está tomado",
+          text: "UDA",
+          timer: 1200,
+          timerProgressBar: true,
+          backdrop: `
+          rgba(36,32,32,0.65)
+          `,
+        });
+      }
       console.log(json);
       Swal.fire({
         icon: "success",

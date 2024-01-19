@@ -2,31 +2,26 @@ import React from "react";
 import { useEffect } from "react";
 import img_ejemplo from "../img/undraw_Blog_post_re_fy5x.png";
 import Navbar from "./navbar";
-import { GoogleLogin, GoogleLogout } from "react-google-login";
+import { GoogleLogin } from "react-google-login";
 import { gapi } from "gapi-script";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../userProvider";
 import { useAuthRedirect } from "../useAuthRedirect";
-const clientId =
-  "422356463744-6ph6gvs0ge55fqli9nkv09lhfpu0amjv.apps.googleusercontent.com";
+import { API_URL } from "../utils/api";
+import { initGoogleAuth, clientId } from "../utils/googleAuth";
 
 function Login() {
   useAuthRedirect();
   const navigate = useNavigate();
   useEffect(() => {
-    const initClient = () => {
-      gapi.auth2.init({
-        clientId: clientId,
-        scope: "",
-      });
-    };
-    gapi.load("client:auth2", initClient);
+    initGoogleAuth();
+    gapi.load("client:auth2", initGoogleAuth);
     const usuario = document.querySelector("#username");
     const dominios = ["uda.edu.mx"];
     const label = document.querySelector(".first");
     usuario.addEventListener("input", () => {
       const dominio = usuario.value.split("@");
-      if (dominio[1] == dominios[0] || usuario.value == "") {
+      if (dominio[1] === dominios[0] || usuario.value === "") {
         label.classList.remove("dominio-incorrecto");
       } else {
         label.classList.add("dominio-incorrecto");
@@ -35,21 +30,39 @@ function Login() {
   });
   const { toggleUser, usuario } = useUserContext();
 
-  const onSuccess = (res) => {
+  const onSuccess = async (res) => {
     console.log(res.profileObj);
-    // setProfile(res.profileObj);
-    toggleUser(res.profileObj);
-    sessionStorage.setItem("usuario", JSON.stringify(res.profileObj));
-    setTimeout(() => {
-      navigate("/land");
-    }, 100);
+    try {
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ Correo: res.profileObj.email }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error en la autenticación");
+      }
+
+      const { token, role } = await response.json(); // Obtener el JWT del backend y el rol del usuario
+      sessionStorage.setItem("jwtToken", token); // Guardar el JWT en el almacenamiento de sesión
+      sessionStorage.setItem("userRole", role); // Guardar el rol del usuario en el almacenamiento de sesión
+      toggleUser(res.profileObj);
+
+      setTimeout(() => {
+        navigate("/land");
+      }, 100);
+    } catch (error) {
+      console.error("Error en la autenticación:", error);
+    }
   };
 
   const onFailure = (err) => {
     console.log("failed", err);
   };
   const logOut = () => {
-    // setProfile(null);
+    sessionStorage.removeItem("jwtToken");
     toggleUser(null);
     sessionStorage.removeItem("usuario");
   };

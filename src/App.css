@@ -933,3 +933,24 @@ border-radius: 53px;
 }
 
 /* ------------------ Colab Card --------------------- */
+
+.user-status {
+  position: relative;
+  display: inline-block;
+}
+.status-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 17px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+.status-indicator.active {
+  background-color: green;
+}
+
+.status-indicator.inactive {
+background-color: red;
+}

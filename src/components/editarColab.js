@@ -6,13 +6,14 @@ import Swal from "sweetalert2";
 import { showNotification } from "../utils/utils";
 import Usuario_sin_img from "../img/imagen-de-usuario-con-fondo-negro.png";
 import { useAuthRedirect } from "../useAuthRedirect";
-import { useUserContext } from "../userProvider";
+import { API_URL, fetchWithToken } from "../utils/api";
+import { getUserRole, isUserAdmin } from "../utils/auth";
 
 const EditarColab = () => {
   useAuthRedirect();
   const [colaboradores, setColaboradores] = useState([]);
   const [imageLoaded, setImageLoaded] = useState({});
-  const { usuario } = useUserContext();
+  const isAdmin = isUserAdmin();
   const fetchColaboradores = async () => {
     Swal.fire({
       title: "Cargando...",
@@ -21,29 +22,25 @@ const EditarColab = () => {
     });
     Swal.showLoading();
     try {
-      const email = usuario.email;
-
-      const requestBody = {
-        correoLider: email,
-      };
-      const response = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/colaborador",
-        {
-          method: "POST",
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      const response = await fetchWithToken(`${API_URL}/colaborador`, {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       Swal.close();
+      if (!response) {
+        // Si fetchWithToken redirige al usuario, no continuamos el flujo
+        return;
+      }
       if (!response.ok) {
         console.log("Error: ", response);
         return showNotification("error", "Se produjo un error", "UDA");
       }
 
       const data = await response.json();
+      console.log("Colaboradores: ", data);
       if (data.length === 0) {
         return showNotification(
           "info",
@@ -51,7 +48,12 @@ const EditarColab = () => {
           "UDA"
         );
       }
-      setColaboradores(data);
+      // Ordenar colaboradores: activos primero, inactivos después
+      const colaboradoresOrdenados = data.sort((a, b) => {
+        return b.Activo - a.Activo;
+      });
+
+      setColaboradores(colaboradoresOrdenados);
     } catch (error) {
       console.error(error);
       return showNotification("error", "Se produjo un error", "UDA");
@@ -92,8 +94,44 @@ const EditarColab = () => {
       });
 
       if (confirmResult.isConfirmed) {
-        // Aquí va el código para dar de baja al colaborador
-        Swal.fire("Success", "Has dado de baja a un colaborador", "success");
+        Swal.fire({
+          title: "Cargando...",
+          text: "Por favor espera un momento",
+          allowOutsideClick: false,
+        });
+        Swal.showLoading();
+        const baja = await fetchWithToken(
+          `${API_URL}/bajaColaborador/${colaborador.idUsuario}`,
+          {
+            method: "PUT",
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ razon }),
+          }
+        );
+        Swal.close();
+        if (!baja.ok) {
+          console.log("Error: ", baja);
+          return showNotification(
+            "error",
+            "Se produjo un error",
+            "No se pudo dar de baja al colaborador"
+          );
+        }
+        const updatedColaboradores = colaboradores.map((colab) => {
+          if (colab.idUsuario === colaborador.idUsuario) {
+            return { ...colab, Activo: 0, RazonBaja: razones[razon] };
+          }
+          return colab;
+        });
+        setColaboradores(updatedColaboradores);
+        return Swal.fire(
+          "Success",
+          "Has dado de baja a un colaborador",
+          "success"
+        );
       }
     }
   };
@@ -204,8 +242,6 @@ const EditarColab = () => {
               Apellido_mat: getVal("apellidoMatUp"),
               Correo: getVal("correoUp"),
               Telefono: getVal("telefonoUp"),
-              IDEquipo: colaborador.IDEquipo,
-              IDLider: colaborador.IDLider,
             };
             console.log("Valores:", valoresUp);
 
@@ -223,8 +259,8 @@ const EditarColab = () => {
               allowOutsideClick: false,
             });
             Swal.showLoading();
-            const response = await fetch(
-              `https://sarym-production-4033.up.railway.app/api/colaborador/${colaborador.ID_Colab}`,
+            const response = await fetchWithToken(
+              `${API_URL}/updateColaborador/${colaborador.ID_Colab}`,
               updateOpt
             );
             Swal.close();
@@ -268,32 +304,65 @@ const EditarColab = () => {
   };
 
   const ColaboradorCard = ({ data }) => {
+    const isActive = data.Activo === 1;
     return (
       <div className="col-md-3">
         <div className="card centrar p-3">
-          <img
-            src={data.Imagen || Usuario_sin_img}
-            onError={(e) => (e.target.src = Usuario_sin_img)}
-            alt="Colaborador"
-            className="img-fluid"
-            id="img-card"
-          />
+          <div className="user-status">
+            <img
+              src={data.Imagen || Usuario_sin_img}
+              onError={(e) => (e.target.src = Usuario_sin_img)}
+              alt="Colaborador"
+              className="img-fluid"
+              id="img-card"
+            />
+            <span
+              className={`status-indicator ${isActive ? "active" : "inactive"}`}
+            ></span>
+          </div>
           <h3>{data.Nombre}</h3>
           <h4>{`${data.Apellido_pat} ${data.Apellido_mat}`}</h4>
           <h6 className="email"> {data.Correo}</h6>
           <h6>{data.Telefono}</h6>
-          <div className="col-12 centrar">
-            <Pencil
-              className="editar"
-              value={data.ID_Colab}
-              onClick={() => handleEditClick(data)}
-            />
-            <Trash
-              className="basura"
-              value={data.ID_Colab}
-              onClick={() => handleDeleteClick(data)}
-            />
-          </div>
+          {!isActive && (
+            <div>
+              <strong>Razón de Baja:</strong>
+              <p>{data.RazonBaja || "No especificada"}</p>
+            </div>
+          )}
+          {isAdmin && (
+            <div>
+              <strong>Creado por:</strong>
+              <p>{data.creado_por || "No especificada"}</p>
+              <strong>Fecha creación:</strong>
+              <p>{data.fecha_creacion || "No especificada"}</p>
+
+              {data.fecha_modificacion && (
+                <div>
+                  <strong>Fecha modificación:</strong>
+                  <p>{data.fecha_modificacion}</p>
+                </div>
+              )}
+
+              <strong>Id Usuario:</strong>
+              <p>{data.idUsuario || "No especificado"}</p>
+            </div>
+          )}
+
+          {isActive && (
+            <div className="col-12 centrar">
+              <Pencil
+                className="editar"
+                value={data.ID_Colab}
+                onClick={() => handleEditClick(data)}
+              />
+              <Trash
+                className="basura"
+                value={data.ID_Colab}
+                onClick={() => handleDeleteClick(data)}
+              />
+            </div>
+          )}
         </div>
       </div>
     );

@@ -15,6 +15,10 @@ const UserProvider = ({children}) => {
     const savedUser = sessionStorage.getItem('usuario');
     return savedUser ? JSON.parse(savedUser) : null;
   });
+  const [jwtToken, setJwtToken] = useState(() => {
+    // Recuperar el JWT de sessionStorage
+    return sessionStorage.getItem('jwtToken');
+  });
   const toggleUser = (us) => {
     console.log(us);
     setusuario(us);
@@ -24,6 +28,11 @@ const UserProvider = ({children}) => {
     } else {
         // Si el usuario no está establecido (es decir, null), eliminarlo de sessionStorage
         sessionStorage.removeItem('usuario');
+        // También hay que eliminar el JWT
+        sessionStorage.removeItem('jwtToken');
+        setJwtToken(null);
+        sessionStorage.removeItem('userRole');
+
     }
   }
   
