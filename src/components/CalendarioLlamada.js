@@ -16,6 +16,7 @@ import { useAuthRedirect } from "../useAuthRedirect";
 import { useUserContext } from "../userProvider";
 import { formatearFecha } from "../utils/utils";
 import { CalendarioEsp } from "../utils/calendarLocale";
+import { API_URL, fetchWithToken } from "../utils/api";
 
 function CalendarioLlamada() {
   useAuthRedirect();
@@ -36,23 +37,15 @@ function CalendarioLlamada() {
   // Función para cargar los nombres de los colaboradores
   const cargarColaboradores = async () => {
     try {
-      const requestBody = {
-        correoLider: email,
-      };
-      const response = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/nombresColaborador",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify(requestBody),
-        }
-      );
+      const response = await fetchWithToken(`${API_URL}/nombresColaborador`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       const colaboradoresProcesados = data.map((colaborador) => ({
-        id: colaborador.id,
+        id: colaborador.idUsuario,
         nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
       }));
 
@@ -79,18 +72,18 @@ function CalendarioLlamada() {
     console.log("Fecha y hora formateada:", fechaAsignacionFormateada);
     const data = {
       NombreCompleto: nombreColaboradorSeleccionado,
-      IDColaborador: idColaboradorSeleccionado,
+      idUsuario: idColaboradorSeleccionado,
       Telefono,
       FechaAsignacion: fechaAsignacionFormateada,
       Descripcion,
-      correoLider: email,
     };
-    axios
-      //.post("http://localhost:3005/guardar_datos", data)
-      .post(
-        "https://sarym-production-4033.up.railway.app/api/crearLlamada",
-        data
-      )
+    fetchWithToken(`${API_URL}/crearLlamada`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
       .then((response) => {
         // Muestra una alerta de éxito
         Swal.fire({

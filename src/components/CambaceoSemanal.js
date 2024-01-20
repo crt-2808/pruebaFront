@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuthRedirect } from "../useAuthRedirect";
 import { useUserContext } from "../userProvider";
+import { API_URL, fetchWithToken } from "../utils/api";
 
 function formatearFechasAsignacionYConclusion(
   FechaInicio,
@@ -86,23 +87,15 @@ function CambaceoSemanal() {
   // Función para cargar los nombres de los colaboradores
   const cargarColaboradores = async () => {
     try {
-      const requestBody = {
-        correoLider: email,
-      };
-      const response = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/nombresColaborador",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify(requestBody),
-        }
-      );
+      const response = await fetchWithToken(`${API_URL}/nombresColaborador`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       const colaboradoresProcesados = data.map((colaborador) => ({
-        id: colaborador.id,
+        id: colaborador.idUsuario,
         nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
       }));
 
@@ -138,14 +131,13 @@ function CambaceoSemanal() {
     console.log(Object.keys(data).length);
     data = {
       ...data,
-      IDColaborador: idColaboradorSeleccionado,
+      idUsuario: idColaboradorSeleccionado,
       NombreCompleto: nombreColaboradorSeleccionado,
       Activo: 1,
       Tipo: "Cambaceo_Semanal",
       Documentos: "src",
       Sitioweb: "src",
       TipoEmpresa: "src",
-      correoLider: email,
     };
     data = {
       ...data,
@@ -182,10 +174,7 @@ function CambaceoSemanal() {
           allowOutsideClick: false,
         });
         Swal.showLoading();
-        let res = await fetch(
-          "https://sarym-production-4033.up.railway.app/api/cambaceo",
-          config
-        );
+        let res = await fetchWithToken(`${API_URL}/createCambaceo`, config);
         Swal.close();
         let json = await res.json();
         console.log(json);

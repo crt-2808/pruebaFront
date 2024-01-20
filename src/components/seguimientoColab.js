@@ -8,6 +8,7 @@ import "../theme.css";
 import "primereact/resources/primereact.css"; // core css
 import { useAuthRedirect } from "../useAuthRedirect";
 import { CalendarioEsp } from "../utils/calendarLocale";
+import { API_URL, fetchWithToken } from "../utils/api";
 const exportToCSV = (data) => {
   const csvData =
     `Nombre,Fecha Inicio,Fecha Fin,Calle,Colonia,Incidencias\n` +
@@ -172,16 +173,13 @@ const SeguimientoColab = () => {
     const incidencias = document.getElementById(`incidencias-${id}`).value;
     console.log(incidencias);
     try {
-      const response = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/cambaceo/incidencia",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id, incidencia: incidencias }),
-        }
-      );
+      const response = await fetchWithToken(`${API_URL}/incidencias`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, incidencia: incidencias }),
+      });
 
       if (!response.ok) {
         Swal.fire({
@@ -251,10 +249,7 @@ const SeguimientoColab = () => {
         mode: "cors",
         body: JSON.stringify(data),
       };
-      let res = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/cambaceo/seguimientoSemanal",
-        config
-      );
+      let res = await fetchWithToken(`${API_URL}/seguimientoSemanal`, config);
       Swal.close();
       let cambaceos = await res.json();
       cambaceos = cambaceos.map((cambaceo) => {

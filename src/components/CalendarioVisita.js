@@ -15,6 +15,7 @@ import { Row, Col, Form } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
 import { useUserContext } from "../userProvider";
 import { CalendarioEsp } from "../utils/calendarLocale";
+import { API_URL, fetchWithToken } from "../utils/api";
 
 function CalendarioVisita() {
   useAuthRedirect();
@@ -40,23 +41,15 @@ function CalendarioVisita() {
   // Función para cargar los nombres de los colaboradores
   const cargarColaboradores = async () => {
     try {
-      const requestBody = {
-        correoLider: email,
-      };
-      const response = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/nombresColaborador",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify(requestBody),
-        }
-      );
+      const response = await fetchWithToken(`${API_URL}/nombresColaborador`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       const colaboradoresProcesados = data.map((colaborador) => ({
-        id: colaborador.id,
+        id: colaborador.idUsuario,
         nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
       }));
 
@@ -92,16 +85,16 @@ function CalendarioVisita() {
       TipoEmpresa,
       Sitioweb,
       Descripcion,
-      correoLider: email,
-      IDColaborador: idColaboradorSeleccionado,
+      idUsuario: idColaboradorSeleccionado,
     };
     console.log(data);
-    axios
-      .post(
-        "https://sarym-production-4033.up.railway.app/api/crearVisitaProgramada",
-        data
-      )
-      //.post("http://localhost:3005/guardar_datos_visita", data)
+    fetchWithToken(`${API_URL}/crearVisitaProgramada`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
       .then((response) => {
         // Muestra una alerta de éxito
         console.log(response);

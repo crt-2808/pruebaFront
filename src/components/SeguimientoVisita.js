@@ -9,6 +9,7 @@ import Navbar from "./navbar";
 import { Row, Col } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
 import { useUserContext } from "../userProvider";
+import { API_URL, fetchWithToken } from "../utils/api";
 // Componente principal
 const SeguimientoVisita = () => {
   useAuthRedirect();
@@ -22,12 +23,6 @@ const SeguimientoVisita = () => {
   const [search, setSearch] = useState("");
 
   const [busqueda, setBusqueda] = useState("");
-  const { usuario } = useUserContext();
-  const email = usuario.email;
-
-  const requestBody = {
-    correoLider: email,
-  };
 
   // Función para cargar los registros desde el servidor
   const cargarRegistros = async () => {
@@ -38,16 +33,12 @@ const SeguimientoVisita = () => {
     });
     Swal.showLoading();
     try {
-      const response = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/visitaProgramada",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      const response = await fetchWithToken(`${API_URL}/visitaProgramada`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       Swal.close();
       // Muestra el mensaje de espera al cargar registros
@@ -146,7 +137,7 @@ const SeguimientoVisita = () => {
     const envioIncidentes = { incidencia: incidentesEditados };
     try {
       const response = await fetch(
-        `https://sarym-production-4033.up.railway.app/api/planeador/${registroSeleccionado.ID}`,
+        `${API_URL}/incidencia/${registroSeleccionado.ID}`,
         {
           method: "PUT",
           headers: {

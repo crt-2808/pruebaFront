@@ -7,6 +7,7 @@ import { Calendar } from "primereact/calendar";
 import "../theme.css";
 import "primereact/resources/primereact.css"; // core css
 import { CalendarioEsp } from "../utils/calendarLocale";
+import { API_URL, fetchWithToken } from "../utils/api";
 const convierteFecha = (fecha) => {
   const dateObj = new Date(fecha);
   const year = dateObj.getUTCFullYear();
@@ -173,16 +174,13 @@ const SeguimientoDiarioColab = () => {
     const incidencias = document.getElementById(`incidencias-${id}`).value;
     console.log(incidencias);
     try {
-      const response = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/cambaceo/incidencia",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id, incidencia: incidencias }),
-        }
-      );
+      const response = await fetchWithToken(`${API_URL}/incidencias`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, incidencia: incidencias }),
+      });
 
       if (!response.ok) {
         Swal.fire({
@@ -252,10 +250,7 @@ const SeguimientoDiarioColab = () => {
     });
     Swal.showLoading();
 
-    let res = await fetch(
-      "https://sarym-production-4033.up.railway.app/api/cambaceo/seguimientoDiario",
-      config
-    );
+    let res = await fetchWithToken(`${API_URL}/seguimientoDiario`, config);
 
     Swal.close();
 

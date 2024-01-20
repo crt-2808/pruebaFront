@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import img_ejemplo from "../img/undraw_Blog_post_re_fy5x.png";
 import Navbar from "./navbar";
 import { GoogleLogin } from "react-google-login";
@@ -9,10 +9,20 @@ import { useUserContext } from "../userProvider";
 import { useAuthRedirect } from "../useAuthRedirect";
 import { API_URL } from "../utils/api";
 import { initGoogleAuth, clientId } from "../utils/googleAuth";
+import { Toast } from "primereact/toast";
 
 function Login() {
   useAuthRedirect();
   const navigate = useNavigate();
+  const [tokenVencido, setTokenVencido] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const showTokenExpiredToast = () => {
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 5000);
+  };
+
   useEffect(() => {
     initGoogleAuth();
     gapi.load("client:auth2", initGoogleAuth);
@@ -27,7 +37,21 @@ function Login() {
         label.classList.add("dominio-incorrecto");
       }
     });
-  });
+    // Verificar si el token está vencido aquí
+    const isTokenExpired = () => {
+      const jwtToken = sessionStorage.getItem("jwtToken");
+      if (jwtToken) {
+        const tokenData = JSON.parse(atob(jwtToken.split(".")[1]));
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        return tokenData.exp < currentTimestamp;
+      }
+      return true;
+    };
+    if (isTokenExpired()) {
+      setTokenVencido(true);
+      showTokenExpiredToast();
+    }
+  }, []);
   const { toggleUser, usuario } = useUserContext();
 
   const onSuccess = async (res) => {
@@ -74,6 +98,15 @@ function Login() {
   return (
     <div className="fluid">
       <Navbar></Navbar>
+      <Toast
+        position="top-right"
+        baseZIndex={1000}
+        visible={showToast.toString()}
+        severity="warn"
+      >
+        Tu sesión ha expirado. Por favor, vuelve a entrar o actualiza la página.
+      </Toast>
+
       <div className="container fluid">
         <div className="content">
           <div className="container">

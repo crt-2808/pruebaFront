@@ -7,10 +7,10 @@ import usuarioAnon from "../img/imagen-de-usuario-con-fondo-negro.png";
 import Swal from "sweetalert2";
 import { Toast } from "primereact/toast";
 import { useAuthRedirect } from "../useAuthRedirect";
-import { useUserContext } from "../userProvider";
 import axios from "axios";
 import "../theme.css";
 import "primereact/resources/primereact.css"; // core css
+import { API_URL, fetchWithToken } from "../utils/api";
 
 const SeguimientoCambaceo = () => {
   useAuthRedirect();
@@ -22,12 +22,6 @@ const SeguimientoCambaceo = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [imageLoaded, setImageLoaded] = useState({});
   const [descargando, setDescargando] = useState(false);
-  const { usuario } = useUserContext();
-  const email = usuario.email;
-
-  const requestBody = {
-    correoLider: email,
-  };
 
   const toast = useRef(null);
   const showToast = () => {
@@ -42,15 +36,27 @@ const SeguimientoCambaceo = () => {
     e.target.src = usuarioAnon; // imagen predeterminada
   };
   const generateSwalTemplate = (colaborador, type) => {
+    console.log(colaborador);
+    const isActive = colaborador.Activo === 1;
     return `
       <h3>Has seleccionado</h3>
       <div class='row centrar' style='overflow: hidden;'>
         <div class='col-md-8 col-xs-6'>
           <div class='card centrar p-3 mt-3'>
-            
-              <img src='${
-                colaborador.Imagen
-              }' class='img-fluid' id='img-card' alt="imagen de colaborador" onerror="this.onerror=null; this.src='${usuarioAnon}';">
+            <div className="user-status">
+              <img
+                src='${colaborador.Imagen || usuarioAnon}'
+                alt="imagen de colaborador"
+                onerror="this.onerror=null; this.src='${usuarioAnon}';"
+                className="img-fluid"
+                id="img-card"
+              />
+              <span
+                className={'status-indicator ${
+                  isActive ? "active" : "inactive"
+                }'}
+              ></span>
+            </div>
             <h3>${colaborador.Nombre}</h3>
             <h4>${
               colaborador.Apellido_pat + " " + colaborador.Apellido_mat
@@ -74,23 +80,17 @@ const SeguimientoCambaceo = () => {
     Swal.showLoading();
     try {
       const options = {
-        method: "POST",
+        method: "GET",
         mode: "cors",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestBody),
       };
-      const response = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/colaborador",
-        options
-      );
+      const response = await fetchWithToken(`${API_URL}/colaborador`, options);
       Swal.close();
-      if (
-        response.status == 500 ||
-        response.status == 404 ||
-        response.status == 400
-      ) {
+      const errorStatusCodes = [500, 404, 400];
+
+      if (errorStatusCodes.includes(response.status)) {
         return Swal.fire({
           icon: "error",
           title: "Se produjo un error",
@@ -99,10 +99,10 @@ const SeguimientoCambaceo = () => {
           timerProgressBar: true,
           backdrop: `
       rgba(36,32,32,0.65)
-      
     `,
         });
       }
+
       const data = await response.json();
       if (data.length === 0) {
         return Swal.fire({
@@ -144,7 +144,7 @@ const SeguimientoCambaceo = () => {
       cancelButtonColor: "#333333",
     }).then((result) => {
       if (result.isConfirmed) {
-        navigate(`/SeguimientoCambaceo/${type}/${colaborador.id}`);
+        navigate(`/SeguimientoCambaceo/${type}/${colaborador.idUsuario}`);
       }
     });
   };
@@ -169,11 +169,14 @@ const SeguimientoCambaceo = () => {
     });
     Swal.showLoading();
     try {
-      const response = await axios.post(
-        "https://sarym-production-4033.up.railway.app/api/cambaceo/descargaFechas",
-        requestBody,
-        { responseType: "blob" }
-      );
+      const response = await fetch(`${API_URL}/descargarFechas`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ responseType: "blob" }),
+      });
+      console.log(response);
       Swal.close();
       if (response.status === 204) {
         return Swal.fire({
@@ -261,81 +264,76 @@ const SeguimientoCambaceo = () => {
               <div className="container-fluid mt-5 mb-2">
                 <div className="row px-2 gy-4" id="Resultado">
                   {filteredData.length > 0 ? (
-                    filteredData.map((colaborador, index) => (
-                      <div className="col-md-3 " key={index}>
-                        <div className="card centrar p-3">
-                          <div
-                            className="loader-container"
-                            style={{
-                              display: imageLoaded[colaborador.id]
-                                ? "none"
-                                : "block",
-                            }}
-                          >
-                            <span className="loader"></span>
-                            <div className="loader-text">
-                              Cargando imagen del colaborador...
+                    filteredData.map((colaborador, index) => {
+                      const isActive = colaborador.Activo === 1; // Obtener isActive aquí
+                      return (
+                        <div className="col-md-3 " key={index}>
+                          <div className="card centrar p-3">
+                            <div className="user-status">
+                              <img
+                                src={colaborador.Imagen}
+                                className={`img-fluid fade-in ${
+                                  imageLoaded[colaborador.id] ? "loaded" : ""
+                                }`}
+                                id="img-card"
+                                alt="imagen de colaborador"
+                                onError={handleImageError}
+                                onLoad={() =>
+                                  setImageLoaded((prevState) => ({
+                                    ...prevState,
+                                    [colaborador.id]: true,
+                                  }))
+                                }
+                                style={
+                                  imageLoaded[colaborador.id]
+                                    ? { opacity: 1, visibility: "visible" }
+                                    : {
+                                        opacity: 0,
+                                        visibility: "hidden",
+                                        display: "none",
+                                      }
+                                }
+                              />
+                              <span
+                                className={`status-indicator ${
+                                  isActive ? "active" : "inactive"
+                                }`}
+                              ></span>
                             </div>
-                          </div>
-
-                          <img
-                            src={colaborador.Imagen}
-                            className={`img-fluid fade-in ${
-                              imageLoaded[colaborador.id] ? "loaded" : ""
-                            }`}
-                            id="img-card"
-                            alt="imagen de colaborador"
-                            onError={handleImageError}
-                            onLoad={() =>
-                              setImageLoaded((prevState) => ({
-                                ...prevState,
-                                [colaborador.id]: true,
-                              }))
-                            }
-                            style={
-                              imageLoaded[colaborador.id]
-                                ? { opacity: 1, visibility: "visible" }
-                                : {
-                                    opacity: 0,
-                                    visibility: "hidden",
-                                    display: "none",
-                                  }
-                            }
-                          />
-
-                          <h3>{colaborador.Nombre}</h3>
-                          <h4>
-                            {colaborador.Apellido_pat +
-                              " " +
-                              colaborador.Apellido_mat}
-                          </h4>
-                          <h6 className="email">{colaborador.Correo}</h6>
-                          <h6>{colaborador.Telefono}</h6>
-                          <div className="col-md-12">
-                            <div className="row">
-                              <div className="col-md-12">
-                                <button
-                                  className="btnDiario"
-                                  onClick={() =>
-                                    handleClick("Diario", colaborador)
-                                  }
-                                >
-                                  Diario
-                                </button>
-                                <button
-                                  className="btnSemanal mt-md-2 mt-sm-0"
-                                  onClick={() =>
-                                    handleClick("Semanal", colaborador)
-                                  }
-                                >
-                                  Semanal
-                                </button>
+                            <h3>{colaborador.Nombre}</h3>
+                            <h4>
+                              {colaborador.Apellido_pat +
+                                " " +
+                                colaborador.Apellido_mat}
+                            </h4>
+                            <h6 className="email">{colaborador.Correo}</h6>
+                            <h6>{colaborador.Telefono}</h6>
+                            <div className="col-md-12">
+                              <div className="row">
+                                <div className="col-md-12">
+                                  <button
+                                    className="btnDiario"
+                                    onClick={() =>
+                                      handleClick("Diario", colaborador)
+                                    }
+                                  >
+                                    Diario
+                                  </button>
+                                  <button
+                                    className="btnSemanal mt-md-2 mt-sm-0"
+                                    onClick={() =>
+                                      handleClick("Semanal", colaborador)
+                                    }
+                                  >
+                                    Semanal
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   ) : (
                     <p>
                       No se encontró ningún colaborador con el nombre "{search}

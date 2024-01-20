@@ -260,7 +260,7 @@ const EditarColab = () => {
             });
             Swal.showLoading();
             const response = await fetchWithToken(
-              `${API_URL}/updateColaborador/${colaborador.ID_Colab}`,
+              `${API_URL}/updateColaborador/${colaborador.idUsuario}`,
               updateOpt
             );
             Swal.close();

@@ -47,7 +47,7 @@ const Land = () => {
       <Navbar></Navbar>
       <div className="container land pt-4 pb-4  d-flex" id="landing-p">
         <div className="row w-100">
-          <div className="col-12 mt-2 mb-md-3 mb-sm-0">
+          <div className="col-12 mt-2 mb-md-3 mb-sm-0 d-sm-block d-md-flex justify-content-sm-between align-items-center text-center">
             <h1 className="bienvenidoText">
               Bienvenido &nbsp;
               {usuario &&
@@ -55,6 +55,9 @@ const Land = () => {
                   lowerCaseAllWordsExceptFirstLetters(usuario.givenName)
                 )}
             </h1>
+            <Link to="/crearLider" className="no-decoration">
+              <button className="btn-exportar">Agregar Lider</button>
+            </Link>
           </div>
 
           <div className="col-12 mt-4 p-0">

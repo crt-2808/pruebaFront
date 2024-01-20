@@ -9,6 +9,7 @@ import Navbar from "./navbar";
 import { Row, Col } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
 import { useUserContext } from "../userProvider";
+import { API_URL, fetchWithToken } from "../utils/api";
 // Componente principal
 const SeguimientoLlamada = () => {
   useAuthRedirect();
@@ -22,12 +23,6 @@ const SeguimientoLlamada = () => {
   const [incidentesEditados, setIncidentesEditados] = useState("");
   const [search, setSearch] = useState("");
   const [busqueda, setBusqueda] = useState("");
-  const { usuario } = useUserContext();
-  const email = usuario.email;
-
-  const requestBody = {
-    correoLider: email,
-  };
 
   // Función para cargar los registros desde el servidor
   const cargarRegistros = async () => {
@@ -38,16 +33,12 @@ const SeguimientoLlamada = () => {
     });
     Swal.showLoading();
     try {
-      const response = await fetch(
-        "https://sarym-production-4033.up.railway.app/api/llamada",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      const response = await fetchWithToken(`${API_URL}/llamada`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       Swal.close();
       if (!response.ok) {
@@ -70,6 +61,7 @@ const SeguimientoLlamada = () => {
         });
       }
       setRegistros(data);
+      console.log("Registros: ", data);
       setMostrarEspera(false);
     } catch (error) {
       console.error("Error al obtener registros:", error);
@@ -91,6 +83,9 @@ const SeguimientoLlamada = () => {
 
   // Función para formatear la fecha en un formato legible
   const formatearFecha = (fecha) => {
+    if (!fecha) {
+      return ""; // Devuelve una cadena vacía si la fecha es nula o no válida
+    }
     const options = { day: "2-digit", month: "2-digit", year: "numeric" };
     return new Intl.DateTimeFormat("es-ES", options).format(new Date(fecha));
   };
