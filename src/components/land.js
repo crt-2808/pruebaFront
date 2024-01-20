@@ -6,6 +6,7 @@ import Agregar from "../img/Agregar.png";
 import Editar from "../img/boton-editar.png";
 import Planeador from "../img/Planeador.png";
 import { useAuthRedirect } from "../useAuthRedirect";
+import { isUserAdmin } from "../utils/auth";
 const upperCaseFirstLetter = (string) =>
   `${string.slice(0, 1).toUpperCase()}${string.slice(1)}`;
 
@@ -16,6 +17,7 @@ const lowerCaseAllWordsExceptFirstLetters = (string) =>
   );
 
 const Land = () => {
+  const isAdmin = isUserAdmin();
   useAuthRedirect();
   const { toggleUser, usuario } = useUserContext();
 
@@ -55,9 +57,11 @@ const Land = () => {
                   lowerCaseAllWordsExceptFirstLetters(usuario.givenName)
                 )}
             </h1>
-            <Link to="/crearLider" className="no-decoration">
-              <button className="btn-exportar">Agregar Lider</button>
-            </Link>
+            {isAdmin && (
+              <Link to="/crearLider" className="no-decoration">
+                <button className="btn-exportar">Agregar Lider</button>
+              </Link>
+            )}
           </div>
 
           <div className="col-12 mt-4 p-0">
