@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import logo from "../img/logo final.png";
 import ceth from "../img/Logo Ceth.jpg";
 import latino from "../img/logo Latino.jpg";
@@ -7,73 +7,82 @@ import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../userProvider";
 import { useGoogleLogout } from "react-google-login";
 import { clientId } from "../utils/googleAuth";
+import Swal from "sweetalert2";
+
+const Logo = ({ src, alt, className }) => (
+  <img src={src} className={`align-top logo ${className}`} alt={alt} />
+);
+
+const UserProfile = ({ user, onLogout }) => {
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const toggleMenu = () => setMenuVisible(!menuVisible);
+  const userDetails = () => {
+    Swal.fire({
+      title: `${user.name}`,
+      html:
+        `<img src="${user.imageUrl}" class="usuario mb-3" alt="Imagen de perfil" style="width:80px; height:80px;border-radius: 50%;">` +
+        `<p>Email: ${user.email}</p>`,
+      showCloseButton: true,
+      focusConfirm: false,
+    });
+  };
+
+  return (
+    <div>
+      {user ? (
+        <img
+          src={user.imageUrl}
+          alt="Imagen de perfil"
+          referrerPolicy="no-referrer"
+          className="usuario"
+          id="usuario"
+          onClick={toggleMenu}
+        />
+      ) : (
+        <div className="usuario"></div>
+      )}
+      <div className={`user-menu ${menuVisible ? "activo" : ""}`}>
+        <div onClick={userDetails}>Mi perfil</div>
+        <div onClick={onLogout}>Cerrar sesión</div>
+      </div>
+    </div>
+  );
+};
 
 const Navbar = () => {
-  const { toggleUser } = useUserContext();
+  const { usuario, toggleUser } = useUserContext();
   const navigate = useNavigate();
   const onLogoutSuccess = () => {
     sessionStorage.removeItem("jwtToken");
     toggleUser(null);
-    sessionStorage.removeItem("usuario");
-    sessionStorage.removeItem("userRole");
+    navigate("/");
   };
-  const onFailure = () => {
-    console.log("logout fail");
-  };
+
   const { signOut } = useGoogleLogout({
     clientId,
-    onLogoutSuccess: onLogoutSuccess,
-    onFailure: onFailure,
+    onLogoutSuccess,
+    onFailure: () => console.log("logout fail"),
   });
-  useEffect(() => {
-    const usuarioIcon = document.querySelector(".usuario");
-    var cont = 0;
-    usuarioIcon.addEventListener("click", () => {
-      const menu = document.querySelector(".user-menu");
-      // menu.classList.toggle("activo");
-      if (cont == 0) {
-        menu.classList.add("activo");
-        cont++;
-      } else {
-        menu.classList.remove("activo");
-        cont = 0;
-      }
-    });
-    const cerrar = document.querySelector("#logout");
-    cerrar.addEventListener("click", () => {
-      toggleUser(null);
-      signOut();
-    });
-  }, []);
-  const { usuario } = useUserContext();
+
+  const handleLogout = () => {
+    toggleUser(null);
+    signOut();
+  };
+
   return (
     <nav
-      className="navbar nav__list navbar-light fluid  justify-content-between"
+      className="navbar nav__list navbar-light fluid justify-content-between"
       id="navbar"
     >
       <a className="navbar-brand" href={usuario ? "/land" : "/"}>
-        <img src={logo} className=" align-top logo nav__item" alt="" />
-        <img src={ceth} className=" align-top logo ceth nav__item" alt="" />
-        <img src={latino} className=" align-top logo latino nav__item" alt="" />
-        <img src={univic} className=" align-top logo univic nav__item" alt="" />
+        <Logo src={logo} alt="" className="nav__item" />
+        <Logo src={ceth} alt="" className="ceth nav__item" />
+        <Logo src={latino} alt="" className="latino nav__item" />
+        <Logo src={univic} alt="" className="univic nav__item" />
       </a>
       <div className="col-md-1">
-        {/* <BiUserCircle className="usuario" /> */}
-        {usuario ? (
-          <img
-            src={usuario.imageUrl}
-            alt="Imagen de perfil"
-            referrerPolicy="no-referrer"
-            className="usuario"
-            id="usuario"
-          ></img>
-        ) : (
-          <div className="usuario"></div>
-        )}
-      </div>
-      <div className="user-menu">
-        <div>Mi perfil</div>
-        <div id="logout">Cerrar sesión</div>
+        <UserProfile user={usuario} onLogout={handleLogout} />
       </div>
     </nav>
   );

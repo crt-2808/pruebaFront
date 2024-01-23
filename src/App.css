@@ -954,3 +954,7 @@ border-radius: 53px;
 .status-indicator.inactive {
 background-color: red;
 }
+
+svg.p-icon.p-checkbox-icon.p-c:hover{
+  color: black;
+}

@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { FileUpload } from "primereact/fileupload";
-import { Dropdown } from "primereact/dropdown";
-import axios from "axios";
 import Swal from "sweetalert2";
 import Navbar from "./navbar";
 import { ArrowLeft } from "react-bootstrap-icons";
@@ -13,27 +10,23 @@ import { InputMask } from "primereact/inputmask";
 import { Link, useNavigate } from "react-router-dom";
 import { Row, Col, Form } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
-import { useUserContext } from "../userProvider";
 import { formatearFecha } from "../utils/utils";
 import { CalendarioEsp } from "../utils/calendarLocale";
 import { API_URL, fetchWithToken } from "../utils/api";
+import { MultiSelect } from "primereact/multiselect";
 
 function CalendarioLlamada() {
   useAuthRedirect();
   CalendarioEsp();
-  const { usuario } = useUserContext();
-  const email = usuario.email;
   const navigate = useNavigate();
   const [Telefono, setTelefono] = useState("");
   const [FechaAsignacion, setFecha] = useState(null);
   const [Descripcion, setDescripcion] = useState("");
   const [DocumentosReal, setDocumentos] = useState([]);
   const [colaboradores, setColaboradores] = useState([]);
-  const [nombreColaboradorSeleccionado, setNombreColaboradorSeleccionado] =
-    useState("");
-  const [idColaboradorSeleccionado, setIdColaboradorSeleccionado] =
-    useState("");
-
+  const [colaboradoresSeleccionados, setColaboradoresSeleccionados] = useState(
+    []
+  );
   // Función para cargar los nombres de los colaboradores
   const cargarColaboradores = async () => {
     try {
@@ -58,10 +51,14 @@ function CalendarioLlamada() {
   useEffect(() => {
     cargarColaboradores();
   }, []);
-  const handleColaboradorChange = (e) => {
-    const [idSeleccionado, nombreCompleto] = e.value.split("_");
-    setIdColaboradorSeleccionado(idSeleccionado);
-    setNombreColaboradorSeleccionado(nombreCompleto);
+  // const handleColaboradorChange = (e) => {
+  //   const [idSeleccionado, nombreCompleto] = e.value.split("_");
+  //   setIdColaboradorSeleccionado(idSeleccionado);
+  //   setNombreColaboradorSeleccionado(nombreCompleto);
+  // };
+  const handleColaboradoresChange = (e) => {
+    setColaboradoresSeleccionados(e.value);
+    console.log("Colaboradores seleccionados:", e.value);
   };
 
   const handleSubmit = () => {
@@ -71,8 +68,8 @@ function CalendarioLlamada() {
     const fechaAsignacionFormateada = formatearFecha(FechaAsignacion);
     console.log("Fecha y hora formateada:", fechaAsignacionFormateada);
     const data = {
-      NombreCompleto: nombreColaboradorSeleccionado,
-      idUsuario: idColaboradorSeleccionado,
+      // NombreCompleto: nombreColaboradorSeleccionado,
+      // idUsuario: idColaboradorSeleccionado,
       Telefono,
       FechaAsignacion: fechaAsignacionFormateada,
       Descripcion,
@@ -134,6 +131,26 @@ function CalendarioLlamada() {
     label: colaborador.nombreCompleto,
     value: `${colaborador.id}_${colaborador.nombreCompleto}`,
   }));
+  const panelFooterTemplate = () => {
+    const length = colaboradoresSeleccionados
+      ? colaboradoresSeleccionados.length
+      : 0;
+
+    return (
+      <div className="py-2 px-3">
+        {length === 0 ? (
+          <>
+            <b>Ningún</b> colaborador seleccionado
+          </>
+        ) : (
+          <>
+            <b>{length}</b> colaborador{length > 1 ? "es" : ""} seleccionado
+            {length > 1 ? "s" : ""}.
+          </>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="fluid">
@@ -157,7 +174,7 @@ function CalendarioLlamada() {
       </div>
       <div className="py-md-4 py-3" style={{ backgroundColor: "#F1F5F8" }}>
         <div
-          className="row"
+          className="row mt-4 mt-md-0"
           style={{
             marginLeft: "35px",
             marginBottom: "-50px",
@@ -181,12 +198,15 @@ function CalendarioLlamada() {
                 </label>
               </div>
               <div>
-                <Dropdown
-                  value={`${idColaboradorSeleccionado}_${nombreColaboradorSeleccionado}`}
+                <MultiSelect
+                  value={colaboradoresSeleccionados}
                   options={opcionesColaboradores}
-                  onChange={handleColaboradorChange}
-                  placeholder="Selecciona un colaborador"
+                  onChange={handleColaboradoresChange}
+                  panelFooterTemplate={panelFooterTemplate}
+                  placeholder="Selecciona colaboradores"
+                  display="chip"
                   style={{ width: "100%" }}
+                  filter
                 />
               </div>
               <div className="p-field">
