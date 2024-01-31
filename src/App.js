@@ -34,6 +34,7 @@ import Visita_Colab from "./components/Colaborador/Visita";
 import Colab_PruebaMaps from "./components/Colaborador/pruebaMaps";
 import Llamada_Colab from "./components/Colaborador/Llamada";
 import AgregarIncidencia from "./components/Colaborador/Incidencia";
+import PruebaMapsLeaflet from "./components/Prueba/pruebaMapsLeaflet";
 
 function App() {
   return (
@@ -74,16 +75,32 @@ function App() {
             element={<SeleccionColaboradores />}
           />
           <Route path="/SeguimientoLlamada" element={<SeguimientoLlamada />} />
-          <Route path="/Colaborador/land" element={<Land_Colab />}/>
-          <Route path="/Colaborador/planeador" element={<Planeador_Colab />}/>
-          <Route path="/Colaborador/Cambaceo" element={<Cambaceo_Colab/>}/>
-          <Route path="/Colaborador/Cambaceo_Diario" element={<Cambaceo_Diario_Colab/>}/>
-          <Route path="/Colaborador/Cambaceo_Semanal" element={<Cambaceo_Semanal_Colab/>}/>
-          <Route path="/Colaborador/Visita_Programada" element={<Visita_Colab/>}/>
-          <Route path="/Colaborador/PruebaMaps" element={<Colab_PruebaMaps/>}/>
-          <Route path="/Colaborador/Llamada" element={<Llamada_Colab/>}/>
-          <Route path="/Colaborador/Incidencia" element={<AgregarIncidencia/>}/>
+          <Route path="/Colaborador/land" element={<Land_Colab />} />
+          <Route path="/Colaborador/planeador" element={<Planeador_Colab />} />
+          <Route path="/Colaborador/Cambaceo" element={<Cambaceo_Colab />} />
+          <Route
+            path="/Colaborador/Cambaceo_Diario"
+            element={<Cambaceo_Diario_Colab />}
+          />
+          <Route
+            path="/Colaborador/Cambaceo_Semanal"
+            element={<Cambaceo_Semanal_Colab />}
+          />
+          <Route
+            path="/Colaborador/Visita_Programada"
+            element={<Visita_Colab />}
+          />
+          <Route
+            path="/Colaborador/PruebaMaps"
+            element={<Colab_PruebaMaps />}
+          />
+          <Route path="/Colaborador/Llamada" element={<Llamada_Colab />} />
+          <Route
+            path="/Colaborador/Incidencia"
+            element={<AgregarIncidencia />}
+          />
           <Route path="*" element={<Land />} />
+          <Route path="/prueba/mapa" element={<PruebaMapsLeaflet />} />
         </Routes>
       </div>
     </UserProvider>
