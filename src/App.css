@@ -261,6 +261,9 @@ border-radius: 44px;
   align-items: center;
   justify-content: center;
 }
+.cursor-pointer {
+  cursor: pointer;
+}
 
 label {
   font-size: 14px;
