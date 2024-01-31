@@ -72,10 +72,18 @@ function Login() {
       const { token, role } = await response.json(); // Obtener el JWT del backend y el rol del usuario
       sessionStorage.setItem("jwtToken", token); // Guardar el JWT en el almacenamiento de sesión
       sessionStorage.setItem("userRole", role); // Guardar el rol del usuario en el almacenamiento de sesión
+      console.log("este es el role",role)
       toggleUser(res.profileObj);
 
       setTimeout(() => {
-        navigate("/land");
+        const userRole=sessionStorage.getItem("userRole");
+        console.log("Este es el userRole",userRole)
+        if (userRole=="admin"||userRole=="lider"){
+          navigate("/land");
+        }else if (userRole=="colaborador"){
+          navigate("/Colaborador/land")
+        }
+        
       }, 100);
     } catch (error) {
       console.error("Error en la autenticación:", error);
