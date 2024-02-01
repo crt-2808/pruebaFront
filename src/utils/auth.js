@@ -11,7 +11,3 @@ export const isAuthenticated = () => {
   return token !== null && token !== undefined;
   
 };
-export const hasPermission = (requiredPermission) => {
-  const userRole = getUserRole();
-  return userRole === requiredPermission;
-};
