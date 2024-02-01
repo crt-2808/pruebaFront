@@ -12,7 +12,7 @@ import { API_URL, fetchWithToken } from "../utils/api";
 const checkIfCorreoExists = async (correo) => {
   try {
     const response = await fetchWithToken(
-      `${API_URL}/colaboradorExiste${correo}`,
+      `${API_URL}/colaboradorExiste/${correo}`,
       {
         method: "GET",
         headers: {
