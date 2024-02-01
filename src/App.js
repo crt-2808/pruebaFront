@@ -35,7 +35,7 @@ import Colab_PruebaMaps from "./components/Colaborador/pruebaMaps";
 import Llamada_Colab from "./components/Colaborador/Llamada";
 import AgregarIncidencia from "./components/Colaborador/Incidencia";
 import PruebaMapsLeaflet from "./components/Prueba/pruebaMapsLeaflet";
-
+import NotFound from "./components/unAuthorized";
 import ProtectedRoutes from "./utils/ProtectedRoute";
 
 /*
@@ -96,6 +96,7 @@ function App() {
           
           <Route path="*" element={<Land />} />
           <Route path="/prueba/mapa" element={<PruebaMapsLeaflet />} />
+          <Route path="/unAuthorized" element={<NotFound/>}/>
         </Routes>
       </div>
     </UserProvider>
