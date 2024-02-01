@@ -36,12 +36,29 @@ import Llamada_Colab from "./components/Colaborador/Llamada";
 import AgregarIncidencia from "./components/Colaborador/Incidencia";
 import PruebaMapsLeaflet from "./components/Prueba/pruebaMapsLeaflet";
 
+import { Navigate } from "react-router-dom";
+//Middleware
+import { isAuthenticated, hasPermission } from "./utils/auth";
+
+
+
+
+const ProtectedRoute=({children})=>{
+  const {userAuth}=isAuthenticated();
+  if(!isAuthenticated){
+    return <Navigate to="/login" />
+  }
+  return children
+}
+
 function App() {
   return (
     <UserProvider>
       <div className="App">
         <Routes>
-          <Route index path="/" exact element={<Login />} />
+          
+          <Route index path="/" exact element={<Login />} /> 
+          {/*Ruta de lider o admin */}
           <Route path="/land" element={<Land />} />
           <Route path="/agregarColab" element={<AgregarColab />} />
           <Route path="/editarColab" element={<EditarColab />} />
@@ -75,32 +92,48 @@ function App() {
             element={<SeleccionColaboradores />}
           />
           <Route path="/SeguimientoLlamada" element={<SeguimientoLlamada />} />
-          <Route path="/Colaborador/land" element={<Land_Colab />} />
-          <Route path="/Colaborador/planeador" element={<Planeador_Colab />} />
-          <Route path="/Colaborador/Cambaceo" element={<Cambaceo_Colab />} />
+
+
+          {/*Ruta de los colaboradores */}
+          <Route path="/Colaborador/land" element={<ProtectedRoute><Land_Colab /></ProtectedRoute>} />
+          <Route path="/Colaborador/planeador" element={<ProtectedRoute><Planeador_Colab /></ProtectedRoute>} />
+          <Route path="/Colaborador/Cambaceo" element={<ProtectedRoute><Cambaceo_Colab /></ProtectedRoute>} />
           <Route
             path="/Colaborador/Cambaceo_Diario"
-            element={<Cambaceo_Diario_Colab />}
+            element={<ProtectedRoute><Cambaceo_Diario_Colab /></ProtectedRoute>}
           />
           <Route
             path="/Colaborador/Cambaceo_Semanal"
-            element={<Cambaceo_Semanal_Colab />}
+            element={<ProtectedRoute><Cambaceo_Semanal_Colab /></ProtectedRoute>}
           />
           <Route
             path="/Colaborador/Visita_Programada"
-            element={<Visita_Colab />}
+            element={<ProtectedRoute><Visita_Colab /></ProtectedRoute>}
           />
           <Route
             path="/Colaborador/PruebaMaps"
-            element={<Colab_PruebaMaps />}
+            element={<ProtectedRoute><Colab_PruebaMaps /></ProtectedRoute>}
           />
-          <Route path="/Colaborador/Llamada" element={<Llamada_Colab />} />
+          <Route path="/Colaborador/Llamada" element={<ProtectedRoute><Llamada_Colab /></ProtectedRoute>} />
           <Route
             path="/Colaborador/Incidencia"
-            element={<AgregarIncidencia />}
+            element={<ProtectedRoute><AgregarIncidencia /></ProtectedRoute>}
           />
+
           <Route path="*" element={<Land />} />
           <Route path="/prueba/mapa" element={<PruebaMapsLeaflet />} />
+
+
+          {/*Lo que intente*/}
+          {/*  
+          <PrivateRoute path="/land" requiredRole="admin">
+            <Land />
+          </PrivateRoute>
+          <PrivateRoute path="/agregarColab" requiredRole="admin">
+            <AgregarColab />
+          </PrivateRoute>
+          */}
+
         </Routes>
       </div>
     </UserProvider>
