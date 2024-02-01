@@ -77,7 +77,6 @@ function Login() {
 
       setTimeout(() => {
         const userRole=sessionStorage.getItem("userRole");
-        console.log("Este es el userRole",userRole)
         if (userRole=="admin"||userRole=="lider"){
           navigate("/land");
         }else if (userRole=="colaborador"){
