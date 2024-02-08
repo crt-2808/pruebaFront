@@ -218,9 +218,9 @@ function CrearLider() {
                     style={{ width: "100%" }}
                     className={errors["Apellido_Pat"] ? "p-invalid" : ""}
                   />
-                  {errors["Apellido_Pat"] && (
+                  {errors.Apellido_Pat && (
                     <small className="p-error">
-                      {errors["Apellido-Pat"].message}
+                      {errors.Apellido_Pat.message}
                     </small>
                   )}
                 </div>
@@ -240,9 +240,9 @@ function CrearLider() {
                     style={{ width: "100%" }}
                     className={errors["Apellido-Mat"] ? "p-invalid" : ""}
                   />
-                  {errors["Apellido_Mat"] && (
+                  {errors.Apellido_Mat && (
                     <small className="p-error">
-                      {errors["Apellido_Mat"].message}
+                      {errors.Apellido_Mat.message}
                     </small>
                   )}
                 </div>
