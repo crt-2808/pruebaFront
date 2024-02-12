@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import Map, { Marker } from 'react-map-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
+import axios from "axios";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -10,14 +13,9 @@ import Swal from "sweetalert2";
 import "../../theme.css";
 import "primereact/resources/primereact.css"; // core css
 import { addLocale } from "primereact/api";
-// import { Button } from 'primereact/button';
 
-// import Autocomplete from "react-google-autocomplete";
-const containerStyle = {
-  width: "100%",
-  height: "480px",
-};
-const libraries = ["places"];
+const mapboxToken ='pk.eyJ1IjoiZGllZ28tdWRhIiwiYSI6ImNscnp0bDg3ZTIxcm8ya3J6emI5YzB6dzIifQ.XfVLD6ewyxMC63V_hUKtRQ';
+const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
 
 function Colab_PruebaMaps() {
   // Almacena la informacion del registro seleccionado
@@ -31,6 +29,14 @@ function Colab_PruebaMaps() {
   const [horaInicio, setHoraInicio] = useState('');
   const [horario, setHorario] = useState('');
   const [horaConlcusion, setHoraConclusion]=useState('');
+
+  const [coordinates, setCoordinates] = useState({
+    latitude: 26.084241,
+    longitude: -98.303863,
+  });
+
+
+
   const dividirFecha = (fecha) => {
     const fechaObj = new Date(fecha);
     const dia = fechaObj.getDate();
@@ -56,7 +62,8 @@ function Colab_PruebaMaps() {
       // Combina los campos de dirección para formar la dirección completa
       const direccionCompletaConcatenada = `${Direccion_Calle || ''} ${Direccion_Num_Ext || ''} ${Direccion_Num_Int || ''}, ${Direccion_CP || ''} ${Direccion_Colonia || ''}`;
       setDireccionCompleta(direccionCompletaConcatenada);
-      geocodeDireccion();
+      obtenerCoordenadas(direccionCompleta)
+
 
       setTipoEmpresa(TipoEmpresa || '');
       setTelefono(Telefono || '');
@@ -81,46 +88,72 @@ function Colab_PruebaMaps() {
   
   // Componentes de la direccion
   const [map, setMap] = useState(null);
-  const [direccion, setDireccion] = useState("");
-  const [direccionCoords, setDireccionCoords] = useState(null);
-  const [center, setCenter] = useState({
-    lat: 23.3557,
-    lng: -99.1845,
-  });
   const onLoad=(map)=>{
     setMap(map);
   }
   const onUnmount=()=>{
     setMap(null);
   }
-  const geocodeDireccion=async()=>{
-    try{
-      const response=await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-          direccionCompleta
-        )}&key=AIzaSyCYTnjfbc1xKJkFQxnEXtx1yLVgKu2K3IY`
-      );
-      const data= await response.json();
-      if(data.results && data.results.length >0){
-        const location=data.results[0].geometry.location;
-        setDireccionCoords(location);
-        setCenter(location);
+
+  const obtenerCoordenadas = async (direccionCompleta) => {
+    try {
+      const response = await geocodingClient
+        .forwardGeocode({
+          query: direccionCompleta,
+          limit: 1,
+          language: ['es'],
+        })
+        .send();
+
+      if (response && response.body && response.body.features && response.body.features.length > 0) {
+        const { center } = response.body.features[0];
+        setCoordinates({ latitude: center[1], longitude: center[0] });
+      } else {
+        console.error('No se encontraron coordenadas para la dirección proporcionada.');
       }
-    }catch(error){
-      console.log("Error al geocodificar la direccion: ", error)
+    } catch (error) {
+      console.error('Error al obtener coordenadas:', error);
     }
   };
 
-  const handleIncidenciaClick=(registro)=>{
 
+  const handleIncidenciaClick=(registro)=>{
       navigate("/Colaborador/Incidencia", { state: { registro } });
   }
 
   useEffect(() => {
+    const obtenerCoordenadas = async (direccionCompleta) => {
+      try {
+        const response = await geocodingClient
+          .forwardGeocode({
+            query: direccionCompleta,
+            limit: 1,
+            language: ['es'],
+          })
+          .send();
+  
+          console.log('Respuesta de geocodificación:', response.body)
+
+        if (response && response.body && response.body.features && response.body.features.length > 0) {
+          const { center } = response.body.features[0];
+          setCoordinates({ latitude: center[1], longitude: center[0] });
+        } else {
+          console.error('No se encontraron coordenadas para la dirección proporcionada.');
+        }
+      } catch (error) {
+        console.error('Error al obtener coordenadas:', error);
+      }
+    };
+
+
+
     if (direccionCompleta) {
-      geocodeDireccion();
+      obtenerCoordenadas(direccionCompleta);
     }
   }, [direccionCompleta]); // Dependencia de direccionCompleta
+  
+  
+  
   // URL de Google Maps
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     direccionCompleta
@@ -141,7 +174,7 @@ function Colab_PruebaMaps() {
               backgroundColor: "#F1F5F8",
             }}
           >
-            <Link to="/Colaborador/Cambaceo_Diario">
+            <Link to="/cambaceoDiario">
               <ArrowLeft className="ml-4 regreso" />
               <span style={{ marginBottom: "100px" }} id="indicador">
                 Menu Cambaceo
@@ -149,10 +182,7 @@ function Colab_PruebaMaps() {
             </Link>
           </div>
         </div>
-        <LoadScript
-          googleMapsApiKey="AIzaSyCYTnjfbc1xKJkFQxnEXtx1yLVgKu2K3IY"
-          libraries={libraries}
-        >
+        
   
   
           <div className="py-md-4" style={{ backgroundColor: "#F1F5F8" }}>
@@ -178,7 +208,7 @@ function Colab_PruebaMaps() {
                       <h5 style={{ textAlign: "left" }}>Empresa</h5>
                       <InputTextarea
                         type="text"
-                        placeholder="Ingresa tu nombre completo"
+                        placeholder="El campo no es obligatorio"
                         value={TipoEmpresa}
                         disabled
                         className="w-100"
@@ -189,7 +219,7 @@ function Colab_PruebaMaps() {
                       <h5 style={{ textAlign: "left" }}>Telefono</h5>
                       <InputTextarea
                         type="text"
-                        placeholder="Ingresa tu telefono"
+placeholder="El campo no es obligatorio"
                         value={Telefono}
                         disabled
                         className="w-100"
@@ -201,7 +231,7 @@ function Colab_PruebaMaps() {
   
                       <InputTextarea
                         type="text"
-                        placeholder="Ingresa tu dirección"
+placeholder="El campo no es obligatorio"
                         value={direccionCompleta ||" "}
                         disabled
                         className="w-100"
@@ -211,7 +241,7 @@ function Colab_PruebaMaps() {
                       <h5 style={{ textAlign: "left" }}>Descripcion</h5>
                       <InputTextarea
                         rows={4}
-                        placeholder="Descripcion de la actividad diaria"
+placeholder="El campo no es obligatorio"
                         value={Descripcion}
                         disabled
                         className="w-100"
@@ -248,15 +278,31 @@ function Colab_PruebaMaps() {
                     <Button variant="danger" rounded="true" style={{marginBottom:"-2.7rem"}} onClick={()=>handleIncidenciaClick(registro)}>Agregar Incidencia</Button>
                   </Col>
                   </Row>
-                  <GoogleMap
-                      mapContainerStyle={containerStyle}
-                      center={direccionCoords || center}
-                      zoom={16}
-                      onLoad={onLoad}
-                      onUnmount={onUnmount}
-                    >
-                      {direccionCoords && <Marker position={direccionCoords} />}
-                    </GoogleMap>
+                  <Map
+                  viewState={{
+                    longitude: coordinates.longitude,
+                    latitude: coordinates.latitude,
+                    zoom: 16,
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '480px',
+                    borderRadius: '8px',
+                  }}
+                  mapStyle='mapbox://styles/mapbox/streets-v11'
+                  onStyleLoad={(map) => {
+                    map.setLayoutProperty('country-label', 'text-field', [
+                      'get',
+                      'name_es',
+                    ]);
+                  }}
+                  mapboxAccessToken={mapboxToken}
+                >
+                  <Marker
+                    longitude={coordinates.longitude}
+                    latitude={coordinates.latitude}
+                  />
+                </Map>
                     <Row>
                       <div
                         style={{ marginTop: "20px" }}
@@ -280,7 +326,6 @@ function Colab_PruebaMaps() {
               </Form>
             </div>
           </div>
-          </LoadScript>
       </div>
     );
   }else if(registro && registro.Tipo=="Cambaceo_Semanal"){
@@ -296,7 +341,7 @@ function Colab_PruebaMaps() {
               backgroundColor: "#F1F5F8",
             }}
           >
-            <Link to="/Colaborador/Cambaceo_Semanal">
+            <Link to="/cambaceoSemanal">
               <ArrowLeft className="ml-4 regreso" />
               <span style={{ marginBottom: "100px" }} id="indicador">
                 Menu Cambaceo
@@ -304,10 +349,7 @@ function Colab_PruebaMaps() {
             </Link>
           </div>
         </div>
-        <LoadScript
-          googleMapsApiKey="AIzaSyCYTnjfbc1xKJkFQxnEXtx1yLVgKu2K3IY"
-          libraries={libraries}
-        >
+        
   
   
           <div className="py-md-4" style={{ backgroundColor: "#F1F5F8" }}>
@@ -333,7 +375,7 @@ function Colab_PruebaMaps() {
                       <h5 style={{ textAlign: "left" }}>Empresa</h5>
                       <InputTextarea
                         type="text"
-                        placeholder="Ingresa tu nombre completo"
+                        placeholder="El campo no es obligatorio"
                         value={TipoEmpresa}
                         disabled
                         className="w-100"
@@ -344,7 +386,7 @@ function Colab_PruebaMaps() {
                       <h5 style={{ textAlign: "left" }}>Telefono</h5>
                       <InputTextarea
                         type="text"
-                        placeholder="Ingresa tu telefono"
+placeholder="El campo no es obligatorio"
                         value={Telefono}
                         disabled
                         className="w-100"
@@ -356,7 +398,7 @@ function Colab_PruebaMaps() {
   
                       <InputTextarea
                         type="text"
-                        placeholder="Ingresa tu dirección"
+placeholder="El campo no es obligatorio"
                         value={direccionCompleta ||" "}
                         disabled
                         className="w-100"
@@ -366,7 +408,7 @@ function Colab_PruebaMaps() {
                       <h5 style={{ textAlign: "left" }}>Descripcion</h5>
                       <InputTextarea
                         rows={4}
-                        placeholder="Descripcion de la actividad diaria"
+placeholder="El campo no es obligatorio"
                         value={Descripcion}
                         disabled
                         className="w-100"
@@ -416,15 +458,31 @@ function Colab_PruebaMaps() {
                     <Button variant="danger" rounded="true" style={{marginBottom:"-2.7rem"}} onClick={()=>handleIncidenciaClick(registro)}>Agregar Incidencia</Button>
                   </Col>
                   </Row>
-                  <GoogleMap
-                      mapContainerStyle={containerStyle}
-                      center={direccionCoords || center}
-                      zoom={16}
-                      onLoad={onLoad}
-                      onUnmount={onUnmount}
-                    >
-                      {direccionCoords && <Marker position={direccionCoords} />}
-                    </GoogleMap>
+                  <Map
+                  viewState={{
+                    longitude: coordinates.longitude,
+                    latitude: coordinates.latitude,
+                    zoom: 16,
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '480px',
+                    borderRadius: '8px',
+                  }}
+                  mapStyle='mapbox://styles/mapbox/streets-v11'
+                  onStyleLoad={(map) => {
+                    map.setLayoutProperty('country-label', 'text-field', [
+                      'get',
+                      'name_es',
+                    ]);
+                  }}
+                  mapboxAccessToken={mapboxToken}
+                >
+                  <Marker
+                    longitude={coordinates.longitude}
+                    latitude={coordinates.latitude}
+                  />
+                </Map>
                     <Row>
                       <div
                         style={{ marginTop: "20px" }}
@@ -448,7 +506,6 @@ function Colab_PruebaMaps() {
               </Form>
             </div>
           </div>
-          </LoadScript>
       </div>
     );
   }else{
@@ -464,7 +521,7 @@ function Colab_PruebaMaps() {
               backgroundColor: "#F1F5F8",
             }}
           >
-            <Link to="/Colaborador/Visita_Programada">
+            <Link to="/visitaProgramada">
               <ArrowLeft className="ml-4 regreso" />
               <span style={{ marginBottom: "100px" }} id="indicador">
                 Menu Visita
@@ -472,10 +529,7 @@ function Colab_PruebaMaps() {
             </Link>
           </div>
         </div>
-        <LoadScript
-          googleMapsApiKey="AIzaSyCYTnjfbc1xKJkFQxnEXtx1yLVgKu2K3IY"
-          libraries={libraries}
-        >
+        
   
   
           <div className="py-md-4" style={{ backgroundColor: "#F1F5F8" }}>
@@ -501,7 +555,7 @@ function Colab_PruebaMaps() {
                       <h5 style={{ textAlign: "left" }}>Empresa</h5>
                       <InputTextarea
                         type="text"
-                        placeholder="Ingresa tu nombre completo"
+                        placeholder="El campo no es obligatorio"
                         value={TipoEmpresa}
                         disabled
                         className="w-100"
@@ -512,7 +566,7 @@ function Colab_PruebaMaps() {
                       <h5 style={{ textAlign: "left" }}>Telefono</h5>
                       <InputTextarea
                         type="text"
-                        placeholder="Ingresa tu telefono"
+placeholder="El campo no es obligatorio"
                         value={Telefono}
                         disabled
                         className="w-100"
@@ -524,7 +578,7 @@ function Colab_PruebaMaps() {
   
                       <InputTextarea
                         type="text"
-                        placeholder="Ingresa tu dirección"
+placeholder="El campo no es obligatorio"
                         value={direccionCompleta ||" "}
                         disabled
                         className="w-100"
@@ -534,7 +588,7 @@ function Colab_PruebaMaps() {
                       <h5 style={{ textAlign: "left" }}>Descripcion</h5>
                       <InputTextarea
                         rows={4}
-                        placeholder="Descripcion de la actividad diaria"
+placeholder="El campo no es obligatorio"
                         value={Descripcion}
                         disabled
                         className="w-100"
@@ -570,17 +624,34 @@ function Colab_PruebaMaps() {
                   <Col xs={12} md={12}>
                     <Button variant="danger" rounded="true" style={{marginBottom:"-2.7rem"}} onClick={()=>handleIncidenciaClick(registro)}>Agregar Incidencia</Button>
                   </Col>
+                  
                   </Row>
-                  <GoogleMap
-                      mapContainerStyle={containerStyle}
-                      center={direccionCoords || center}
-                      zoom={16}
-                      onLoad={onLoad}
-                      onUnmount={onUnmount}
-                    >
-                      {direccionCoords && <Marker position={direccionCoords} />}
-                    </GoogleMap>
                     <Row>
+                    <Map
+                  viewState={{
+                    longitude: coordinates.longitude,
+                    latitude: coordinates.latitude,
+                    zoom: 16,
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '480px',
+                    borderRadius: '8px',
+                  }}
+                  mapStyle='mapbox://styles/mapbox/streets-v11'
+                  onStyleLoad={(map) => {
+                    map.setLayoutProperty('country-label', 'text-field', [
+                      'get',
+                      'name_es',
+                    ]);
+                  }}
+                  mapboxAccessToken={mapboxToken}
+                >
+                  <Marker
+                    longitude={coordinates.longitude}
+                    latitude={coordinates.latitude}
+                  />
+                </Map>
                       <div
                         style={{ marginTop: "20px" }}
                         className="d-flex justify-content-end"
@@ -603,7 +674,7 @@ function Colab_PruebaMaps() {
               </Form>
             </div>
           </div>
-          </LoadScript>
+
       </div>
     );
   }

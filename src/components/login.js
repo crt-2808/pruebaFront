@@ -77,10 +77,10 @@ function Login() {
 
       setTimeout(() => {
         const userRole=sessionStorage.getItem("userRole");
-        if (userRole=="admin"||userRole=="lider"){
+        if (userRole=="admin"||userRole=="lider"||userRole=="colaborador"){
           navigate("/land");
-        }else if (userRole=="colaborador"){
-          navigate("/Colaborador/land")
+        }else{
+          navigate("/login")
         }
         
       }, 100);

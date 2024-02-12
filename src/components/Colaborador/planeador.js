@@ -10,29 +10,20 @@ import Cambaceo from "../../img/Cambaceo.png";
 import Visita from "../../img/Visita.png";
 import Llamada from "../../img/Llamada.png";
 
-
-
-
-
   const Planeador_Colab = () => {
   useAuthRedirect();
   const { toggleUser, usuario } = useUserContext();
   console.log(usuario);
-
   useEffect(() => {
     const options = {
       method: "GET",
       mode: "cors",
     };
-  }, []);
-
-
-
-  
+  }, []);  
   return (
     <div className="fluid">
       <Navbar></Navbar>
-      <Link to="/Colaborador/land">
+      <Link to="/land">
         <ArrowLeft className="ml-4 regreso" />
         <span id="indicador">Inicio</span>
       </Link>
@@ -54,7 +45,7 @@ import Llamada from "../../img/Llamada.png";
                   <div className="row no-padding pt-5 pl-0 pr-0">
                     <div className="col-md-4 ">
                       <div className="col-md-12">
-                        <Link to="/Colaborador/Cambaceo" className="no-decoration">
+                        <Link to="/cambaceo" className="no-decoration">
                           <div className="col-md-12">
                             <img
                               className="imgPlaneador"
@@ -70,7 +61,7 @@ import Llamada from "../../img/Llamada.png";
                     </div>
                     <div className="col-md-4">
                       <div className="col-md-12">
-                        <Link to="/Colaborador/Visita_Programada" className="no-decoration">
+                        <Link to="/visitaProgramada" className="no-decoration">
                           <div className="col-md-12">
                             <img
                               className="imgPlaneador"
@@ -88,7 +79,7 @@ import Llamada from "../../img/Llamada.png";
                     </div>
                     <div className="col-md-4">
                       <div className="col-md-12">
-                        <Link to="/Colaborador/Llamada" className="no-decoration">
+                        <Link to="/llamada" className="no-decoration">
                           <div className="col-md-12">
                             <img
                               className="imgPlaneador"

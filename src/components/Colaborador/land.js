@@ -106,7 +106,7 @@
                         <div className="row pt-5">
                           <div className="col-md-12">
                             <Link
-                              to="/Colaborador/planeador"
+                              to="/planeador"
                               className="no-decoration"
                             >
                               <img src={Planeador} alt="Boton-Editar"></img>

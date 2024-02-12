@@ -34,7 +34,7 @@ const Planeador = () => {
                   <div className="row no-padding pt-5 pl-0 pr-0">
                     <div className="col-md-4 ">
                       <div className="col-md-12">
-                        <Link to="/Cambaceo" className="no-decoration">
+                        <Link to="/cambaceo" className="no-decoration">
                           <div className="col-md-12">
                             <img
                               className="imgPlaneador"
@@ -50,7 +50,7 @@ const Planeador = () => {
                     </div>
                     <div className="col-md-4">
                       <div className="col-md-12">
-                        <Link to="/VisitaProgramada" className="no-decoration">
+                        <Link to="/visitaProgramada" className="no-decoration">
                           <div className="col-md-12">
                             <img
                               className="imgPlaneador"
@@ -68,7 +68,7 @@ const Planeador = () => {
                     </div>
                     <div className="col-md-4">
                       <div className="col-md-12">
-                        <Link to="/Llamada" className="no-decoration">
+                        <Link to="/llamada" className="no-decoration">
                           <div className="col-md-12">
                             <img
                               className="imgPlaneador"

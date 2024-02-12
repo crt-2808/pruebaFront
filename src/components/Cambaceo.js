@@ -34,13 +34,13 @@ const Cambaceo = () => {
               id="opcionesCambaceo"
             >
               <div className="col-md-4">
-                <Link to="/CambaceoDiario" className="links-cambaceo">
+                <Link to="/cambaceoDiario" className="links-cambaceo">
                   <img src={Diario} alt="Imagen Ilustrativa"></img>
                   <h3 className="opcionCambaceo">Diario</h3>
                 </Link>
               </div>
               <div className="col-md-4">
-                <Link to="/CambaceoSemanal" className="links-cambaceo">
+                <Link to="/cambaceoSemanal" className="links-cambaceo">
                   <img src={Semanal} alt="Imagen Ilustrativa"></img>
                   <h3 className="opcionCambaceo">Semanal</h3>
                 </Link>

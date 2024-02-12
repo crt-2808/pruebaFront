@@ -111,7 +111,7 @@ const Cambaceo_Semanal_Colab = () => {
       <div className="Colab">
         <div className="container-fluid px-4">
           <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
-            <Link to="/Colaborador/Cambaceo">
+            <Link to="/cambaceo">
               <ArrowLeft className="ml-4 regreso" />
               <span id="indicador">Menu Cambaceo</span>
             </Link>

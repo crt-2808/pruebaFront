@@ -21,7 +21,8 @@ const AgregarIncidencia = () => {
   const [tipo, setTipo]=useState("");
   useEffect(() => {
     if (location.state && location.state.registro) {
-      const { ID } = location.state.registro;
+      console.log("Esto es el id que tienes que enviar",location.state.registro.idPlanificador)
+      const ID = location.state.registro.idPlanificador;
       setIDRegistro(ID || 0);
 
       // Realiza la solicitud al backend
@@ -100,7 +101,7 @@ const AgregarIncidencia = () => {
         });
       })
       .finally(
-        navigate("/Colaborador/land")
+        navigate("/land")
       )
       .catch((error) => {
         console.error("Error al agregar incidencia:", error);
@@ -129,7 +130,7 @@ const AgregarIncidencia = () => {
             backgroundColor: "#F1F5F8",
           }}
         >
-          <Link to="/Colaborador/Planeador">
+          <Link to="/planeador">
             <ArrowLeft className="ml-4 regreso" />
             <span style={{ marginBottom: "100px" }} id="indicador">
               Planeador

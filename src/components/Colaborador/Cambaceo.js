@@ -27,7 +27,7 @@ useAuthRedirect();
         <div className="container-fluid px-4">
           <div className="row table_space mt-4">
             <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
-              <Link to="/Colaborador/planeador">
+              <Link to="/planeador">
                 <ArrowLeft className="ml-4 regreso" />
                 <span id="indicador">Planeador</span>
               </Link>
@@ -45,13 +45,13 @@ useAuthRedirect();
               id="opcionesCambaceo"
             >
               <div className="col-md-6">
-                <Link to="/Colaborador/Cambaceo_Diario" className="links-cambaceo">
+                <Link to="/cambaceoDiario" className="links-cambaceo">
                   <img src={Diario} alt="Imagen Ilustrativa"></img>
                   <h3 className="opcionCambaceo">Diario</h3>
                 </Link>
               </div>
               <div className="col-md-6">
-                <Link to="/Colaborador/Cambaceo_Semanal" className="links-cambaceo">
+                <Link to="/cambaceoSemanal" className="links-cambaceo">
                   <img src={Semanal} alt="Imagen Ilustrativa"></img>
                   <h3 className="opcionCambaceo">Semanal</h3>
                 </Link>
