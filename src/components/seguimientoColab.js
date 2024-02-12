@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import Navbar from "./navbar";
-import { ArrowLeft } from "react-bootstrap-icons";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import Swal from "sweetalert2";
-import { Calendar } from "primereact/calendar";
-import "../theme.css";
-import "primereact/resources/primereact.css"; // core css
-import { useAuthRedirect } from "../useAuthRedirect";
-import { CalendarioEsp } from "../utils/calendarLocale";
-import { API_URL, fetchWithToken } from "../utils/api";
+import React, { useEffect, useState } from 'react';
+import Navbar from './navbar';
+import { ArrowLeft } from 'react-bootstrap-icons';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { Calendar } from 'primereact/calendar';
+import '../theme.css';
+import 'primereact/resources/primereact.css'; // core css
+import { useAuthRedirect } from '../useAuthRedirect';
+import { CalendarioEsp } from '../utils/calendarLocale';
+import { API_URL, fetchWithToken } from '../utils/api';
 const exportToCSV = (data) => {
   const csvData =
     `Nombre,Fecha Inicio,Fecha Fin,Calle,Colonia,Incidencias\n` +
@@ -19,16 +19,16 @@ const exportToCSV = (data) => {
             item.FechaConclusion
           },"${item.Direccion_Calle} ${item.Direccion_Num_Ext}","${
             item.Direccion_Colonia
-          }","${item.Incidentes || "Ninguna"}"`
+          }","${item.Incidentes || 'Ninguna'}"`
       )
-      .join("\n");
+      .join('\n');
 
-  const blob = new Blob([csvData], { type: "text/csv" });
+  const blob = new Blob([csvData], { type: 'text/csv' });
   const url = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.style.display = "none";
+  const a = document.createElement('a');
+  a.style.display = 'none';
   a.href = url;
-  a.download = "seguimiento.csv";
+  a.download = 'seguimiento.csv';
 
   document.body.appendChild(a);
   a.click();
@@ -37,11 +37,11 @@ const exportToCSV = (data) => {
 
 const formateoFecha = (fechaI) => {
   const year = fechaI.getFullYear();
-  const month = ("0" + (fechaI.getMonth() + 1)).slice(-2);
-  const day = ("0" + fechaI.getDate()).slice(-2);
-  const hours = ("0" + fechaI.getHours()).slice(-2);
-  const minutes = ("0" + fechaI.getMinutes()).slice(-2);
-  const seconds = ("0" + fechaI.getSeconds()).slice(-2);
+  const month = ('0' + (fechaI.getMonth() + 1)).slice(-2);
+  const day = ('0' + fechaI.getDate()).slice(-2);
+  const hours = ('0' + fechaI.getHours()).slice(-2);
+  const minutes = ('0' + fechaI.getMinutes()).slice(-2);
+  const seconds = ('0' + fechaI.getSeconds()).slice(-2);
   const FechaNueva = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   return FechaNueva;
 };
@@ -90,7 +90,7 @@ const cambaceosColabTemplate = (cambaceo) => {
                                   <textarea id="incidencias-${
                                     cambaceo.ID
                                   }" rows='5' style="border: 1px solid #f44336;" class="form-control">${
-    cambaceo.Incidentes || "Ninguna"
+    cambaceo.Incidentes || 'Ninguna'
   }</textarea>
         <button id="guardar-${
           cambaceo.ID
@@ -130,16 +130,14 @@ const cambaceosTemplate = (cambaceo) => {
                               </div>
                           </div>
                           <div class="row my-md-4">
-                              <div class="col-md-6">
-                                  <h3>Calle</h3>
-                                  <h5>${cambaceo.Direccion_Calle} ${
-    cambaceo.Direccion_Num_Ext
-  }</h5>
-                              </div>
-                              <div class="col-md-6">
-                                  <h3>Colonias</h3>
-                                  <h5>${cambaceo.Direccion_Colonia}</h5>
-                              </div>
+                          <div class="col-md-6">
+                          <h3>Dirección</h3>
+                          <h5>${cambaceo.Direccion}</h5>
+                      </div>
+                      <div class="col-md-6">
+                          <h3>Telefono</h3>
+                          <h5>${cambaceo.Telefono}</h5>
+                      </div>
                           </div>
                       </div>
                   </div>
@@ -151,7 +149,7 @@ const cambaceosTemplate = (cambaceo) => {
                                   <h5>${cambaceo.Descripcion}</h5>
                                   <br>
                                   <h3>Incidencias</h3>
-                                  <h5>${cambaceo.Incidentes || "Ninguna"}</h5>
+                                  <h5>${cambaceo.Incidentes || 'Ninguna'}</h5>
                               </div>
                           </div>
                       </div>
@@ -174,18 +172,18 @@ const SeguimientoColab = () => {
     console.log(incidencias);
     try {
       const response = await fetchWithToken(`${API_URL}/incidencias`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ id, incidencia: incidencias }),
       });
 
       if (!response.ok) {
         Swal.fire({
-          icon: "error",
-          title: "Se produjo un error",
-          text: "UDA",
+          icon: 'error',
+          title: 'Se produjo un error',
+          text: 'UDA',
           timer: 1200,
           timerProgressBar: true,
           backdrop: `
@@ -196,24 +194,24 @@ const SeguimientoColab = () => {
       }
 
       let data;
-      if (response.headers.get("content-length") !== "0") {
+      if (response.headers.get('content-length') !== '0') {
         data = await response.json();
       } else {
-        data = "No content";
+        data = 'No content';
       }
 
-      console.log("Incidencias guardadas:", data);
+      console.log('Incidencias guardadas:', data);
       Swal.fire({
-        icon: "success",
-        title: "¡Incidencias actualizadas!",
+        icon: 'success',
+        title: '¡Incidencias actualizadas!',
         showConfirmButton: false,
         timer: 1500,
       });
     } catch (error) {
-      console.error("Error al guardar las incidencias:", error);
+      console.error('Error al guardar las incidencias:', error);
       Swal.fire({
-        icon: "error",
-        title: "Error al guardar las incidencias",
+        icon: 'error',
+        title: 'Error al guardar las incidencias',
         text: error.toString(),
       });
     }
@@ -221,32 +219,32 @@ const SeguimientoColab = () => {
   const colabInfo = async () => {
     const FechaInicio = formateoFecha(SemanalInicio);
     const FechaFin = formateoFecha(SemanalFin);
-    const Tipo = "Cambaceo_Semanal";
-    console.log("Fecha Inicio", FechaInicio);
-    console.log("Fecha Fin", FechaFin);
+    const Tipo = 'Cambaceo_Semanal';
+    console.log('Fecha Inicio', FechaInicio);
+    console.log('Fecha Fin', FechaFin);
 
     let data = { FechaInicio, FechaFin, Tipo, id };
-    console.log("Data", data);
+    console.log('Data', data);
     if (SemanalInicio === null || SemanalFin === null) {
       Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Por favor, ingresa un rango de fechas",
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Por favor, ingresa un rango de fechas',
       });
     } else {
       Swal.fire({
-        title: "Cargando...",
-        text: "Por favor espera un momento",
+        title: 'Cargando...',
+        text: 'Por favor espera un momento',
         allowOutsideClick: false,
       });
       Swal.showLoading();
       let config = {
-        method: "POST",
+        method: 'POST',
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        mode: "cors",
+        mode: 'cors',
         body: JSON.stringify(data),
       };
       let res = await fetchWithToken(`${API_URL}/seguimientoSemanal`, config);
@@ -257,21 +255,21 @@ const SeguimientoColab = () => {
         const fechaFin = new Date(cambaceo.FechaConclusion);
 
         cambaceo.FechaAsignacion = `${fechaInicio.getUTCFullYear()}-${(
-          "0" +
+          '0' +
           (fechaInicio.getUTCMonth() + 1)
-        ).slice(-2)}-${("0" + fechaInicio.getUTCDate()).slice(-2)} ${(
-          "0" + fechaInicio.getUTCHours()
-        ).slice(-2)}:${("0" + fechaInicio.getUTCMinutes()).slice(-2)}:${(
-          "0" + fechaInicio.getUTCSeconds()
+        ).slice(-2)}-${('0' + fechaInicio.getUTCDate()).slice(-2)} ${(
+          '0' + fechaInicio.getUTCHours()
+        ).slice(-2)}:${('0' + fechaInicio.getUTCMinutes()).slice(-2)}:${(
+          '0' + fechaInicio.getUTCSeconds()
         ).slice(-2)}`;
 
         cambaceo.FechaConclusion = `${fechaFin.getUTCFullYear()}-${(
-          "0" +
+          '0' +
           (fechaFin.getUTCMonth() + 1)
-        ).slice(-2)}-${("0" + fechaFin.getUTCDate()).slice(-2)} ${(
-          "0" + fechaFin.getUTCHours()
-        ).slice(-2)}:${("0" + fechaFin.getUTCMinutes()).slice(-2)}:${(
-          "0" + fechaFin.getUTCSeconds()
+        ).slice(-2)}-${('0' + fechaFin.getUTCDate()).slice(-2)} ${(
+          '0' + fechaFin.getUTCHours()
+        ).slice(-2)}:${('0' + fechaFin.getUTCMinutes()).slice(-2)}:${(
+          '0' + fechaFin.getUTCSeconds()
         ).slice(-2)}`;
 
         return cambaceo;
@@ -282,16 +280,16 @@ const SeguimientoColab = () => {
         (Array.isArray(cambaceos) && cambaceos.length === 0)
       ) {
         return Swal.fire({
-          icon: "info",
-          title: "Información",
-          text: "No hay nada reportado para esas fechas",
+          icon: 'info',
+          title: 'Información',
+          text: 'No hay nada reportado para esas fechas',
         });
       }
       if (res.status == 500 || res.status == 404 || res.status == 400) {
         return Swal.fire({
-          icon: "error",
-          title: "Se produjo un error",
-          text: "UDA",
+          icon: 'error',
+          title: 'Se produjo un error',
+          text: 'UDA',
           timer: 1200,
           timerProgressBar: true,
           backdrop: `
@@ -301,23 +299,23 @@ const SeguimientoColab = () => {
         });
       }
       let templates = cambaceos.map(cambaceosTemplate);
-      let combinedTemplate = templates.join("");
+      let combinedTemplate = templates.join('');
 
       Swal.fire({
         width: 2100,
         showCancelButton: true,
-        cancelButtonText: "Regresar",
+        cancelButtonText: 'Regresar',
         showConfirmButton: true,
-        confirmButtonText: "Exportar",
-        confirmButtonColor: "#ea4335",
-        cancelButtonColor: "#333333",
+        confirmButtonText: 'Exportar',
+        confirmButtonColor: '#ea4335',
+        cancelButtonColor: '#333333',
         html: combinedTemplate,
       }).then(async (result) => {
         if (result.isConfirmed) {
           exportToCSV(cambaceos);
-          console.log("Confirmado");
+          console.log('Confirmado');
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-          console.log("Cancelado");
+          console.log('Cancelado');
         }
       });
     }
@@ -327,57 +325,57 @@ const SeguimientoColab = () => {
     window.guardarIncidencia = guardarIncidencia;
   }, []);
   return (
-    <div className="fluid">
+    <div className='fluid'>
       <Navbar></Navbar>
-      <div className="Colab">
-        <div className="container-fluid px-4">
-          <div className="row table_space mt-4">
-            <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
-              <Link to="/SeguimientoCambaceo">
-                <ArrowLeft className="ml-4 regreso" />
-                <span id="indicador">Seguimiento</span>
+      <div className='Colab'>
+        <div className='container-fluid px-4'>
+          <div className='row table_space mt-4'>
+            <div className='col-md-12 d-flex justify-content-center align-items-center mb-3'>
+              <Link to='/SeguimientoCambaceo'>
+                <ArrowLeft className='ml-4 regreso' />
+                <span id='indicador'>Seguimiento</span>
               </Link>
             </div>
           </div>
           <div
-            className="container-fluid mt-md-5 mb-md-5 px-md-5 py-md-3 p-3 mb-4 mt-4"
-            id="contenedor"
+            className='container-fluid mt-md-5 mb-md-5 px-md-5 py-md-3 p-3 mb-4 mt-4'
+            id='contenedor'
           >
-            <div className="row">
-              <h2 className="titulo-cambaceo ">Seguimiento</h2>
+            <div className='row'>
+              <h2 className='titulo-cambaceo '>Seguimiento</h2>
             </div>
-            <div className="row">
-              <div className="col-md-12">
-                <div className="row centrar">
+            <div className='row'>
+              <div className='col-md-12'>
+                <div className='row centrar'>
                   <h3>Seleccione el rango de fechas</h3>
-                  <div className="row centrar" style={{ overflow: "hidden" }}>
-                    <div className="col-md-6">
-                      <div className="col-md-12">
+                  <div className='row centrar' style={{ overflow: 'hidden' }}>
+                    <div className='col-md-6'>
+                      <div className='col-md-12'>
                         <Calendar
-                          id="SemanalInicio"
+                          id='SemanalInicio'
                           value={SemanalInicio}
                           onChange={(e) => {
                             setSemanalInicio(e.value);
                           }}
-                          locale="es"
-                          className="custom-calendar"
+                          locale='es'
+                          className='custom-calendar'
                           showIcon
                           touchUI
-                          placeholder="Ingresa la fecha de inicio"
+                          placeholder='Ingresa la fecha de inicio'
                         />
                       </div>
-                      <div className="col-md-12">
+                      <div className='col-md-12'>
                         <Calendar
-                          id="SemanalFin"
+                          id='SemanalFin'
                           value={SemanalFin}
                           onChange={(e) => {
                             setSemanalFin(e.value);
                           }}
-                          locale="es"
-                          className="custom-calendar"
+                          locale='es'
+                          className='custom-calendar'
                           showIcon
                           touchUI
-                          placeholder="Ingresa la fecha de fin"
+                          placeholder='Ingresa la fecha de fin'
                           minDate={
                             SemanalInicio
                               ? new Date(SemanalInicio.getTime() + 86400000)
@@ -386,15 +384,15 @@ const SeguimientoColab = () => {
                         />
                       </div>
                     </div>
-                    <div className="row mt-3">
-                      <div className="col-md-12 justify-content-end d-flex">
-                        <div className="col-md-4">
-                          <Link to="/SeguimientoCambaceo">
-                            <button className="btn-regreso">Cancelar</button>
+                    <div className='row mt-3'>
+                      <div className='col-md-12 justify-content-end d-flex'>
+                        <div className='col-md-4'>
+                          <Link to='/SeguimientoCambaceo'>
+                            <button className='btn-regreso'>Cancelar</button>
                           </Link>
                           <button
-                            className="btn-exportar"
-                            id="Buscar"
+                            className='btn-exportar'
+                            id='Buscar'
                             onClick={colabInfo}
                           >
                             Buscar
