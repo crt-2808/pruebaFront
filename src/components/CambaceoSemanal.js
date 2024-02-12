@@ -1,176 +1,208 @@
-import React, { useState, useEffect } from "react";
-import { Row, Col, Form } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import { useForm } from "react-hook-form";
-import Navbar from "./navbar";
-import { ArrowLeft } from "react-bootstrap-icons";
-import { Link, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
-import { useAuthRedirect } from "../useAuthRedirect";
-import { useUserContext } from "../userProvider";
-import { API_URL, fetchWithToken } from "../utils/api";
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import Map, { Marker } from 'react-map-gl';
+import { InputText } from 'primereact/inputtext';
+import { InputTextarea } from 'primereact/inputtextarea';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import 'primeicons/primeicons.css'; //iconos
+import { MultiSelect } from 'primereact/multiselect';
+import { Button } from 'primereact/button';
+import { ListBox } from 'primereact/listbox';
+import { Form, Row, Col } from 'react-bootstrap';
+import { ArrowLeft } from 'react-bootstrap-icons';
+import Navbar from './navbar';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { Calendar } from 'primereact/calendar';
+import '../theme.css';
+import 'primereact/resources/primereact.css'; // core css
+import { CalendarioEsp } from '../utils/calendarLocale';
+import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
+import { fetchWithToken } from '../utils/api';
+import { API_URL } from '../utils/api';
 
-function formatearFechasAsignacionYConclusion(
-  FechaInicio,
-  FechaFin,
-  HoraInicio,
-  HoraFin
-) {
-  console.log(FechaInicio);
-  // Convertir las fechas de inicio y fin en objetos Date
-
-  const fechaInicioObj = new Date(`${FechaInicio}T${HoraInicio}:00Z`);
-  console.log("Fecha modificada: ", fechaInicioObj);
-  const fechaFinObj = new Date(`${FechaFin}T${HoraFin}:00Z`);
-
-  // Extraer las horas y minutos de HoraInicio y HoraFin
-  const [horaInicio, minutoInicio] = HoraInicio.split(":");
-  console.log(horaInicio, minutoInicio);
-  const [horaFin, minutoFin] = HoraFin.split(":");
-  console.log(horaFin, minutoFin);
-  // Establecer las horas y minutos en las fechas de inicio y fin
-  fechaInicioObj.setHours(horaInicio, minutoInicio, 0);
-  fechaFinObj.setHours(horaFin, minutoFin, 0);
-  console.log(fechaInicioObj, fechaFinObj);
-  // Formatear las fechas en el formato deseado manualmente
-  const FechaAsignacion =
-    fechaInicioObj.getFullYear() +
-    "-" +
-    (fechaInicioObj.getMonth() + 1).toString().padStart(2, "0") +
-    "-" +
-    fechaInicioObj.getDate().toString().padStart(2, "0") +
-    " " +
-    fechaInicioObj.getHours().toString().padStart(2, "0") +
-    ":" +
-    fechaInicioObj.getMinutes().toString().padStart(2, "0") +
-    ":" +
-    fechaInicioObj.getSeconds().toString().padStart(2, "0");
-
-  console.log("FechaAsignacion:", FechaAsignacion);
-
-  const FechaConclusion =
-    fechaFinObj.getFullYear() +
-    "-" +
-    (fechaFinObj.getMonth() + 1).toString().padStart(2, "0") +
-    "-" +
-    fechaFinObj.getDate().toString().padStart(2, "0") +
-    " " +
-    fechaFinObj.getHours().toString().padStart(2, "0") +
-    ":" +
-    fechaFinObj.getMinutes().toString().padStart(2, "0") +
-    ":" +
-    fechaFinObj.getSeconds().toString().padStart(2, "0");
-
-  console.log("FechaConclusion:", FechaConclusion);
-  // Devolver las fechas formateadas
-  return { FechaAsignacion, FechaConclusion };
-}
+const mapboxToken =
+  'pk.eyJ1IjoiZGllZ28tdWRhIiwiYSI6ImNscnp0bDg3ZTIxcm8ya3J6emI5YzB6dzIifQ.XfVLD6ewyxMC63V_hUKtRQ';
+const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
 
 function CambaceoSemanal() {
-  useAuthRedirect();
+  CalendarioEsp();
+  const navigate = useNavigate();
+  const [address, setAddress] = useState('');
+  const [coordinates, setCoordinates] = useState({
+    latitude: 26.084241,
+    longitude: -98.303863,
+  });
+  const [suggestions, setSuggestions] = useState([]);
+  // Función asíncrona para geocodificación
+  const fetchGeocoding = async (address) => {
+    try {
+      const response = await geocodingClient
+        .forwardGeocode({
+          query: address,
+          limit: 5,
+          language: ['es'],
+        })
+        .send();
+
+      const matches = response.body.features;
+      setSuggestions(matches);
+    } catch (error) {
+      console.error('Error en la geocodificación', error);
+      setSuggestions([]);
+    }
+  };
+
+  // Uso de useEffect para llamar a la función
+  useEffect(() => {
+    if (address.length > 0) {
+      fetchGeocoding(address);
+    } else {
+      setSuggestions([]);
+    }
+  }, [address]);
+  const handleSelect = (feature) => {
+    setAddress(feature.place_name);
+    setCoordinates({
+      latitude: feature.center[1],
+      longitude: feature.center[0],
+    });
+    setSuggestions([]);
+    setIsFocused(false);
+  };
+
+  const listboxSuggestions = suggestions.map((suggestion) => ({
+    label: suggestion.place_name,
+    value: suggestion,
+  }));
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+  const handleBlur = () => {
+    setTimeout(() => {
+      if (!address.trim()) {
+        setIsFocused(false);
+      }
+    }, 200);
+  };
+  const onMarkerDragEnd = async (event) => {
+    const newCoords = {
+      longitude: event.lngLat.lng,
+      latitude: event.lngLat.lat,
+    };
+
+    setCoordinates({ ...coordinates, ...newCoords });
+
+    // Realizar geocodificación inversa
+    try {
+      const response = await geocodingClient
+        .reverseGeocode({
+          query: [newCoords.longitude, newCoords.latitude],
+          limit: 1,
+        })
+        .send();
+
+      if (response && response.body && response.body.features.length > 0) {
+        setAddress(response.body.features[0].place_name);
+      }
+    } catch (error) {
+      console.error('Error al obtener la dirección', error);
+    }
+  };
+
+  const [fechaInicio, setfechaInicio] = useState(null);
+  const [fechaFin, setfechaFin] = useState(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const handleCancel = () => {
-    // Lógica para cancelar el formulario
-  };
-  const navigate = useNavigate();
   const [colaboradores, setColaboradores] = useState([]);
-  const [idColaboradorSeleccionado, setIdColaboradorSeleccionado] =
-    useState("");
-  const [nombreColaboradorSeleccionado, setNombreColaboradorSeleccionado] =
-    useState("");
-  const { usuario } = useUserContext();
-  const email = usuario.email;
-  // Función para cargar los nombres de los colaboradores
-  const cargarColaboradores = async () => {
-    try {
-      const response = await fetchWithToken(`${API_URL}/nombresColaborador`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      const colaboradoresProcesados = data.map((colaborador) => ({
-        id: colaborador.idUsuario,
-        nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
-      }));
+  const [colaboradoresSeleccionados, setColaboradoresSeleccionados] = useState(
+    []
+  );
+  const handleAddressChange = (e) => {
+    setAddress(e.target.value);
+  };
+  const clearAddress = () => {
+    setAddress('');
+  };
 
-      console.log("Colaboradores: ", colaboradoresProcesados);
-      setColaboradores(colaboradoresProcesados);
-    } catch (error) {
-      console.error("Error al cargar nombres de colaboradores:", error);
-    }
-  };
-  useEffect(() => {
-    cargarColaboradores();
-  }, []);
-  // Manejador para cuando se selecciona un colaborador
-  const handleColaboradorChange = (event) => {
-    const [idSeleccionado, nombreCompleto] = event.target.value.split("_");
-    setIdColaboradorSeleccionado(idSeleccionado);
-    setNombreColaboradorSeleccionado(nombreCompleto); // Guardar el nombre completo en un estado separado
-  };
   const onSubmit = async (data) => {
-    if (data == undefined) {
-      return Swal.fire({
-        icon: "error",
-        title: "Se requiere llenar el formulario",
-        text: "UDA",
+    if (!data || !address || !fechaInicio) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Se requiere llenar el formulario',
+        text: 'Completa todos los campos obligatorios',
         timer: 1200,
         timerProgressBar: true,
-        backdrop: `
-        rgba(36,32,32,0.65)
-        
-      `,
+        backdrop: 'rgba(36,32,32,0.65)',
       });
+      return;
     }
-    console.log(Object.keys(data).length);
-    data = {
-      ...data,
-      idUsuario: idColaboradorSeleccionado,
-      NombreCompleto: nombreColaboradorSeleccionado,
-      Activo: 1,
-      Tipo: "Cambaceo_Semanal",
-      Documentos: "src",
-      Sitioweb: "src",
-      TipoEmpresa: "src",
-    };
-    data = {
-      ...data,
-      ...formatearFechasAsignacionYConclusion(
-        data.FechaInicio,
-        data.FechaFin,
-        data.HoraInicio,
-        data.HoraFin
-      ),
-    };
-    // Eliminar las variables originales
-    delete data.FechaInicio;
-    delete data.FechaFin;
-    delete data.HoraInicio;
-    delete data.HoraFin;
-
-    console.log("Nuevo: \n", data);
-    //                  Falta esto            FechasSeguimiento es de la fechaasiganada del cambaceo Daily
-    //  Documentos, IDColaborador 'Dinamico', Incidentes, FechaSeguimiento,
     try {
+      console.log(data);
+      console.log('Inicio: ' + fechaInicio);
+      const fechaAsignacion = new Date(fechaInicio);
+      const fechaConclucion = new Date(fechaFin);
+      const FechaAsignacion = formateoFecha(fechaAsignacion);
+      const FechaConclucion = formateoFecha(fechaConclucion);
+
+      // let inputElem = document.getElementById("documentoCambaceo");
+      // let file = inputElem.files[0];
+      // let blob = file.slice(0);
+      // const imagen = new File([blob], `${file.name}`);
+      // const formData = new FormData();
+      // const geocoder = new window.google.maps.Geocoder();
+      // geocoder.geocode({ address: data.address }, (results, status) => {
+      //   if (status === "OK") {
+      //     setMarkerPosition(results[0].geometry.location);
+      //   } else {
+      //     console.error("Error en la búsqueda de dirección");
+      //   }
+      // });
+      const idsUsuariosSeleccionados = colaboradoresSeleccionados.map(
+        (colaboradorSeleccionado) => {
+          const [id] = colaboradorSeleccionado.split('_');
+          return id;
+        }
+      );
+      data = {
+        ...data,
+        FechaAsignacion: FechaAsignacion,
+        FechaConclusion: FechaConclucion,
+        Direccion: address,
+        idUsuarios: idsUsuariosSeleccionados,
+        Activo: 1,
+        Tipo: 'Cambaceo_Semanal',
+        Documentos: 'src',
+        SitioWeb: 'src',
+        TipoEmpresa: 'src',
+        // documentoCambaceo: imagen,
+      };
+      // Eliminar propiedades de 'data'
+      // delete data.FechaInicio;
+      // delete data.HoraInicio;
+      // delete data.HoraFin;
+      // console.log(data);
+      // formData.append('Direccion', address);
+      // formData.append('Descripcion', data.Descripcion);
+      // formData.append('FechaAsignacion', data.FechaAsignacion);
+      // formData.append('FechaConclucion', data.FechaConclucion);
+      // formData.append("documentoCambaceo", imagen);
       let config = {
-        method: "POST",
+        method: 'POST',
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        mode: "cors",
         body: JSON.stringify(data),
       };
       try {
         Swal.fire({
-          title: "Cargando...",
-          text: "Por favor espera un momento",
+          title: 'Cargando...',
+          text: 'Por favor espera un momento',
           allowOutsideClick: false,
         });
         Swal.showLoading();
@@ -178,23 +210,10 @@ function CambaceoSemanal() {
         Swal.close();
         let json = await res.json();
         console.log(json);
-        if (res.status == 500 || res.status == 400 || res.status == 404) {
-          return Swal.fire({
-            icon: "error",
-            title: "Se produjo un error",
-            text: "UDA",
-            timer: 1200,
-            timerProgressBar: true,
-            backdrop: `
-            rgba(36,32,32,0.65)
-            
-          `,
-          });
-        }
         Swal.fire({
-          icon: "success",
-          title: "Se agregó tu cambaceo semanal correctamente",
-          text: "UDA",
+          icon: 'success',
+          title: 'Se agregó tu cambaceo diario correctamente',
+          text: 'UDA',
           timer: 1200,
           timerProgressBar: true,
           backdrop: `
@@ -202,14 +221,14 @@ function CambaceoSemanal() {
           
         `,
         }).then(() => {
-          navigate("/Cambaceo");
+          navigate('/Cambaceo');
         });
       } catch (error) {
         console.log(error);
         return Swal.fire({
-          icon: "error",
-          title: "Se produjo un error",
-          text: "UDA",
+          icon: 'error',
+          title: 'Se produjo un error',
+          text: 'UDA',
           timer: 1200,
           timerProgressBar: true,
           backdrop: `
@@ -219,182 +238,273 @@ function CambaceoSemanal() {
         });
       }
     } catch (error) {
+      console.log('Error al enviar los datos al servidor:', error);
       return Swal.fire({
-        icon: "error",
-        title: "Se produjo un error",
-        text: "UDA",
+        icon: 'error',
+        title: 'Se requiere llenar el formulario',
+        text: 'UDA',
         timer: 1200,
         timerProgressBar: true,
         backdrop: `
         rgba(36,32,32,0.65)
-        
       `,
       });
     }
   };
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-  return (
-    <div className="fluid">
-      <Navbar style={{ backgroundColor: "##F8F9FA" }}></Navbar>
+  const handleColaboradoresChange = (e) => {
+    setColaboradoresSeleccionados(e.value);
+    console.log('Colaboradores seleccionados:', e.value);
+  };
+  const cargarColaboradores = async () => {
+    try {
+      const response = await fetchWithToken(`${API_URL}/nombresColaborador`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      const colaboradoresProcesados = data.map((colaborador) => ({
+        id: colaborador.idUsuario,
+        nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
+      }));
 
-      <div style={{ backgroundColor: "#F1F5F8" }}>
+      console.log('Colaboradores: ', colaboradoresProcesados);
+      setColaboradores(colaboradoresProcesados);
+    } catch (error) {
+      console.error('Error al cargar nombres de colaboradores:', error);
+    }
+  };
+  useEffect(() => {
+    cargarColaboradores();
+  }, []);
+  const opcionesColaboradores = colaboradores.map((colaborador) => ({
+    label: colaborador.nombreCompleto,
+    value: `${colaborador.id}_${colaborador.nombreCompleto}`,
+  }));
+  const panelFooterTemplate = () => {
+    const length = colaboradoresSeleccionados
+      ? colaboradoresSeleccionados.length
+      : 0;
+
+    return (
+      <div className='py-2 px-3'>
+        {length === 0 ? (
+          <>
+            <b>Ningún</b> colaborador seleccionado
+          </>
+        ) : (
+          <>
+            <b>{length}</b> colaborador{length > 1 ? 'es' : ''} seleccionado
+            {length > 1 ? 's' : ''}.
+          </>
+        )}
+      </div>
+    );
+  };
+  const formateoFecha = (fechaI) => {
+    const year = fechaI.getFullYear();
+    const month = ('0' + (fechaI.getMonth() + 1)).slice(-2);
+    const day = ('0' + fechaI.getDate()).slice(-2);
+    const hours = ('0' + fechaI.getHours()).slice(-2);
+    const minutes = ('0' + fechaI.getMinutes()).slice(-2);
+    const seconds = ('0' + fechaI.getSeconds()).slice(-2);
+    const FechaNueva = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    return FechaNueva;
+  };
+
+  return (
+    <div className='fluid'>
+      <Navbar style={{ backgroundColor: '##F8F9FA' }}></Navbar>
+
+      <div style={{ backgroundColor: '#F1F5F8' }}>
         <div
           style={{
-            paddingTop: "10px",
-            paddingBottom: "10px",
-            backgroundColor: "#F1F5F8",
+            paddingTop: '10px',
+            paddingBottom: '10px',
+            backgroundColor: '#F1F5F8',
           }}
         >
-          <Link to="/Cambaceo">
-            <ArrowLeft className="ml-4 regreso" />
-            <span style={{ marginBottom: "100px" }} id="indicador">
+          <Link to='/Cambaceo'>
+            <ArrowLeft className='ml-4 regreso' />
+            <span style={{ marginBottom: '100px' }} id='indicador'>
               Menu Cambaceo
             </span>
           </Link>
         </div>
       </div>
-      <div style={{ backgroundColor: "#F1F5F8", padding: "1.5rem 0" }}>
-        <div className="row px-5">
-          <h2 className="titulo-cambaceo px-5 ">Cambaceo Semanal</h2>
+
+      <div
+        className='py-md-4'
+        style={{ backgroundColor: '#F1F5F8', padding: '1.5rem 0' }}
+      >
+        <div className='col-12 px-5'>
+          <h2 className='titulo-cambaceo px-5 '>Cambaceo Semanal</h2>
         </div>
 
         <div
-          className="container-fluid mt-md-2 mb-md-5 p-md-5 p-3 mb-4 mt-4"
-          id="contenedor-cambaceo"
-          style={{ marginBottom: "0px" }}
+          className='container-fluid mt-md-2 mb-md-5 p-md-5 p-3 mb-4 mt-4'
+          id='contenedor-cambaceo'
         >
-          <Form
-            onSubmit={handleSubmit(onSubmit)}
-            // encType="multipart/form-data"
-            method="post"
-            id="form"
-          >
-            <Row className="mb-5">
+          <Form onSubmit={handleSubmit(onSubmit)} className='mt-2 mt-md-0'>
+            <Row className='mb-2'>
               <Col xs={12} md={6}>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">
-                    Nombre Completo
-                  </Form.Label>
-                  <Form.Control as="select" onChange={handleColaboradorChange}>
-                    <option value="">Selecciona un colaborador</option>
-                    {colaboradores.map((colaborador) => (
-                      <option
-                        key={colaborador.id}
-                        value={`${colaborador.id}_${colaborador.nombreCompleto}`}
-                      >
-                        {colaborador.nombreCompleto}
-                      </option>
-                    ))}
-                  </Form.Control>
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="telefono">Telefono</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el telefono de contacto"
-                    {...register("Telefono", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="dateInput">Fecha Inicio</Form.Label>
-                  <Form.Control
-                    type="date"
-                    {...register("FechaInicio", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="dateInput">Fecha Fin</Form.Label>
-                  <Form.Control
-                    type="date"
-                    {...register("FechaFin", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="timeInput">Hora Inicio</Form.Label>
-                  <Form.Control
-                    type="time"
-                    {...register("HoraInicio", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="timeInput">Hora Fin</Form.Label>
-                  <Form.Control
-                    type="time"
-                    {...register("HoraFin", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="Calle">Calle</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa la calle de la cita"
-                    {...register("Direccion_Calle", { required: true })}
-                  />
-                </Form.Group>
+                <div>
+                  <Form.Group>
+                    <h5 style={{ textAlign: 'left' }}>Nombre </h5>
+                    <MultiSelect
+                      value={colaboradoresSeleccionados}
+                      options={opcionesColaboradores}
+                      onChange={handleColaboradoresChange}
+                      panelFooterTemplate={panelFooterTemplate}
+                      placeholder='Selecciona colaboradores'
+                      display='chip'
+                      style={{ width: '100%' }}
+                      filter
+                    />
+                  </Form.Group>
+                </div>
+                <div style={{ marginTop: '15px' }}>
+                  <Form.Group>
+                    <h5 style={{ textAlign: 'left' }}>Dirección</h5>
+                    <span
+                      className='p-input-icon-right'
+                      style={{ width: '100%' }}
+                    >
+                      {address && (
+                        <i
+                          className='pi pi-times cursor-pointer'
+                          onClick={clearAddress}
+                        />
+                      )}
+                      <InputText
+                        value={address}
+                        onChange={handleAddressChange}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                        placeholder='Buscar dirección...'
+                        className='p-inputtext-sm p-d-block p-mb-2'
+                        style={{ width: '100%' }}
+                      />
+                    </span>
+                    {isFocused && suggestions.length > 0 && (
+                      <ListBox
+                        options={listboxSuggestions}
+                        onChange={(e) => handleSelect(e.value)}
+                        optionLabel='label'
+                        style={{ width: '100%' }}
+                      />
+                    )}
+                  </Form.Group>
+                </div>
+                <div style={{ marginTop: '15px' }}>
+                  <Form.Group>
+                    <h5 style={{ textAlign: 'left' }}>Descripcion</h5>
+                    <InputTextarea
+                      autoResize
+                      rows={4}
+                      cols={30}
+                      placeholder='Descripcion de la actividad diaria'
+                      {...register('Descripcion', {
+                        required: 'La descripción es obligatoria',
+                      })}
+                      style={{ width: '100%' }}
+                    />
+                    {errors.Descripcion && (
+                      <small className='p-error'>
+                        {errors.Descripcion.message}
+                      </small>
+                    )}
+                  </Form.Group>
+                </div>
+                <div style={{ marginTop: '15px' }}>
+                  <Row>
+                    <Col>
+                      <Form.Group>
+                        <h6 style={{ textAlign: 'left' }}>Fecha Inicio</h6>
+                        <Calendar
+                          id='calendar-24h-inicio'
+                          value={fechaInicio}
+                          onChange={(e) => setfechaInicio(e.value)}
+                          touchUI
+                          placeholder='Ingresa la fecha'
+                          locale='es'
+                          dateFormat='dd/mm/yy'
+                          className='custom-calendar'
+                          showIcon
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                </div>
+                <div style={{ marginTop: '15px' }}>
+                  <Row>
+                    <Col>
+                      <Form.Group>
+                        <h6 style={{ textAlign: 'left' }}>Fecha Fin</h6>
+                        <Calendar
+                          id='calendar-24h-fin'
+                          value={fechaFin}
+                          className='custom-calendar'
+                          onChange={(e) => setfechaFin(e.value)}
+                          showTime
+                          hourFormat='24'
+                          placeholder='Fecha Fin'
+                          dateFormat='dd/mm/yy'
+                          locale='es'
+                          minDate={
+                            fechaInicio
+                              ? new Date(fechaInicio.getTime() + 60000)
+                              : null
+                          }
+                          showIcon
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                </div>
               </Col>
-              <Col xs={12} md={6}>
-                <Form.Group>
-                  <Form.Label htmlFor="Exterior">Numero Exterior</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el numero exterior"
-                    {...register("Direccion_Num_Ext", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">
-                    Numero Interior
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el numero interior"
-                    {...register("Direccion_Num_Int", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">
-                    Codigo Postal
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el codigo postal"
-                    {...register("Direccion_CP", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label htmlFor="NombreCompleto">Colonia</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa la colonia"
-                    {...register("Direccion_Colonia", { required: true })}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label
-                    htmlFor="Descripcion"
-                    style={{ textAlign: "left" }}
-                  >
-                    Descripcion
-                  </Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={4}
-                    placeholder="Descripcion de la actividad diaria"
-                    {...register("Descripcion", { required: true })}
-                    type="text"
-                  />
-                </Form.Group>
-                <Button
-                  type="submit"
-                  value="Enviar"
-                  variant="success"
-                  size="lg"
-                  style={{ marginTop: "25px" }}
+              <Col xs={12} md={6} className='mt-4 mt-md-0'>
+                <Map
+                  viewState={{
+                    longitude: coordinates.longitude,
+                    latitude: coordinates.latitude,
+                    zoom: 16,
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '480px',
+                    borderRadius: '8px',
+                  }}
+                  mapStyle='mapbox://styles/mapbox/streets-v11'
+                  onStyleLoad={(map) => {
+                    map.setLayoutProperty('country-label', 'text-field', [
+                      'get',
+                      'name_es',
+                    ]);
+                  }}
+                  mapboxAccessToken={mapboxToken}
                 >
-                  Confirmar
-                </Button>
+                  <Marker
+                    longitude={coordinates.longitude}
+                    latitude={coordinates.latitude}
+                    draggable
+                    onDragEnd={onMarkerDragEnd}
+                  />
+                </Map>
+                <Row>
+                  <div style={{ marginTop: '20px' }}>
+                    <Button
+                      type='submit'
+                      value='Enviar'
+                      style={{ float: 'right', borderRadius: '20px' }}
+                      variant='outline-danger'
+                      size='lg'
+                    >
+                      Agregar
+                    </Button>
+                  </div>
+                </Row>
               </Col>
             </Row>
           </Form>
