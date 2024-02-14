@@ -295,7 +295,7 @@ function CalendarioVisita() {
             <Col xs={12} md={6}>
               <div className='p-field'>
                 <label htmlFor='NombreCompleto'>
-                  Nombre Completo
+                  Colaboradores
                   <br />
                 </label>
               </div>

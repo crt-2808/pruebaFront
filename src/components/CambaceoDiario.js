@@ -361,7 +361,7 @@ function CambaceoDiario() {
               <Col xs={12} md={6}>
                 <div>
                   <Form.Group>
-                    <h5 style={{ textAlign: 'left' }}>Nombre </h5>
+                    <h5 style={{ textAlign: 'left' }}>Colaboradores </h5>
                     <MultiSelect
                       value={colaboradoresSeleccionados}
                       options={opcionesColaboradores}
