@@ -19,6 +19,7 @@ const UserProvider = ({children}) => {
     // Recuperar el JWT de sessionStorage
     return sessionStorage.getItem('jwtToken');
   });
+  const [isBlocked, setIsBlocked] = useState(false);
   const toggleUser = (us) => {
     console.log(us);
     setusuario(us);
@@ -35,9 +36,12 @@ const UserProvider = ({children}) => {
 
     }
   }
+  const toggleUserBlocked = (blocked) => {
+    setIsBlocked(blocked);
+};
   
     return (
-      <userContext.Provider value={{usuario,toggleUser}}>
+      <userContext.Provider value={{usuario,toggleUser, isBlocked, toggleUserBlocked}}>
            {children}
       </userContext.Provider>
     )

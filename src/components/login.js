@@ -10,7 +10,15 @@ import { useAuthRedirect } from '../useAuthRedirect';
 import { API_URL } from '../utils/api';
 import { initGoogleAuth, clientId } from '../utils/googleAuth';
 import { Toast } from 'primereact/toast';
-
+import Swal from 'sweetalert2';
+const mostrarMensajeUsuarioNoRegistrado = () => {
+  Swal.fire({
+    title: 'Usuario No Registrado',
+    text: 'Tu cuenta de Google no está registrada en nuestra aplicación. Por favor, contacta con el equipo de soporte.',
+    icon: 'error',
+    confirmButtonText: 'Ok',
+  });
+};
 function Login() {
   useAuthRedirect();
   const navigate = useNavigate();
@@ -22,7 +30,6 @@ function Login() {
       setShowToast(false);
     }, 5000);
   };
-
   useEffect(() => {
     initGoogleAuth();
     gapi.load('client:auth2', initGoogleAuth);
@@ -52,7 +59,7 @@ function Login() {
       showTokenExpiredToast();
     }
   }, []);
-  const { toggleUser, usuario } = useUserContext();
+  const { toggleUser, usuario, toggleUserBlocked } = useUserContext();
 
   const onSuccess = async (res) => {
     console.log(res.profileObj);
@@ -66,7 +73,14 @@ function Login() {
       });
 
       if (!response.ok) {
-        throw new Error('Error en la autenticación');
+        const data = await response.json();
+        if (data.message === 'El usuario no existe.') {
+          // Manejar el caso en que el usuario no está registrado
+          mostrarMensajeUsuarioNoRegistrado();
+          toggleUserBlocked(true);
+          return;
+        }
+        throw new Error(data.message || 'Error en la autenticación');
       }
 
       const { token, role } = await response.json(); // Obtener el JWT del backend y el rol del usuario
@@ -84,7 +98,7 @@ function Login() {
         ) {
           navigate('/land');
         } else {
-          navigate('/login');
+          navigate('/');
         }
       }, 100);
     } catch (error) {
