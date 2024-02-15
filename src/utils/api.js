@@ -1,4 +1,4 @@
-export const API_URL = 'https://sarym-production-4033.up.railway.app/api/v2';
+export const API_URL = process.env.REACT_APP_API_URL;
 
 export const fetchColaboradores = () => {
   return fetch(`${API_URL}/colaborador`).then((response) => response.json());

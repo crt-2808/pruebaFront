@@ -23,8 +23,7 @@ import { ListBox } from 'primereact/listbox';
 function CalendarioVisita() {
   useAuthRedirect();
   CalendarioEsp();
-  const mapboxToken =
-    'pk.eyJ1IjoiZGllZ28tdWRhIiwiYSI6ImNscnp0bDg3ZTIxcm8ya3J6emI5YzB6dzIifQ.XfVLD6ewyxMC63V_hUKtRQ';
+  const mapboxToken = process.env.REACT_APP_MAPBOX_TOKEN;
   const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
   const navigate = useNavigate();
   const [Telefono, setTelefono] = useState('');

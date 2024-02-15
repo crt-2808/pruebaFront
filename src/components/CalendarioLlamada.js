@@ -314,7 +314,7 @@ function CalendarioLlamada() {
                   style={{ width: '100%' }}
                 />
               </div>
-              <div className='p-field'>
+              {/* <div className='p-field'>
                 <label>Documentos</label>
                 <FileUpload
                   name='DocumentosReal'
@@ -327,7 +327,7 @@ function CalendarioLlamada() {
                   disabled
                   style={{ width: '100%' }}
                 />
-              </div>
+              </div> */}
             </Col>
             <Button
               label='Confirmar'
