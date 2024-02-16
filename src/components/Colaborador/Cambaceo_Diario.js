@@ -5,76 +5,76 @@ import { ArrowLeft, X } from "react-bootstrap-icons";
 import Navbar from "../navbar";
 import { useAuthRedirect } from "../../useAuthRedirect";
 import { useUserContext } from "../../userProvider";
-import axios from "axios";
+import { API_URL, fetchWithToken } from "../../utils/api";
 
 // Componente principal
 const Cambaceo_Diario_Colab = () => {
   useAuthRedirect();
   const { toggleUser, usuario } = useUserContext();
   const [registros, setRegistros] = useState([]);
-  const navigate=useNavigate();
-  useEffect(() => {
-    const getInfo = async () => {
-      Swal.fire({
-        title: "Cargando...",
-        text: "Por favor espera un momento",
-        allowOutsideClick: false,
-        timer: 1000,
+  const navigate = useNavigate();
+
+  const getInfo = async () => {
+    Swal.fire({
+      title: "Cargando...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+      timer: 1000,
+    });
+    Swal.showLoading();
+    try {
+      const response = await fetchWithToken(`${API_URL}/colaboradorInfo`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Usuario: JSON.stringify(usuario),
+          Tipo: "Cambaceo_Diario",
+        },
       });
-      Swal.showLoading();
-      try {
-        const response = await axios.get(
-          "http://localhost:3005/Colaborador_Info",
-          {
-            params: { ...usuario, Tipo: "Cambaceo_Diario" },
-          }
+      // Verificar si hay registros en la respuesta
+      if (response.data && response.data.length > 0) {
+        // Obtener la fecha de inicio de la semana (lunes)
+        const now = new Date();
+        const inicioSemana = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)
         );
 
-        // Verificar si hay registros en la respuesta
-        if (response.data && response.data.length > 0) {
-          // Obtener la fecha de inicio de la semana (lunes)
-          const now = new Date();
-          const inicioSemana = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)
-          );
-  
-          // Filtrar registros dentro del rango semanal
-          const registrosSemana = response.data.filter((registro) => {
-            const fechaAsignacion = new Date(registro.FechaAsignacion);
-            return fechaAsignacion >= inicioSemana;
-          });
-  
-          // Actualizar los registros con los filtrados por semana
-          setRegistros(registrosSemana);
-          if (registrosSemana.length === 0) {
-            Swal.fire({
-              icon: "info",
-              title: "No hay registros para esta semana",
-              text: "No se encontraron registros para mostrar en la semana actual.",
-            });
-          }
-  
-          // Resto del código...
-        } else {
-          // Mostrar alerta si no hay registros
+        // Filtrar registros dentro del rango semanal
+        const registrosSemana = response.data.filter((registro) => {
+          const fechaAsignacion = new Date(registro.FechaAsignacion);
+          return fechaAsignacion >= inicioSemana;
+        });
+
+        // Actualizar los registros con los filtrados por semana
+        setRegistros(registrosSemana);
+        if (registrosSemana.length === 0) {
           Swal.fire({
             icon: "info",
-            title: "No hay registros",
-            text: "No se encontraron registros para mostrar.",
+            title: "No hay registros para esta semana",
+            text: "No se encontraron registros para mostrar en la semana actual.",
           });
         }
-      } catch (error) {
-        console.error(
-          "Error al obtener datos del procedimiento GetInfo:",
-          error
-        );
-      }
-    };
 
+        // Resto del código...
+      } else {
+        // Mostrar alerta si no hay registros
+        Swal.fire({
+          icon: "info",
+          title: "No hay registros",
+          text: "No se encontraron registros para mostrar.",
+        });
+      }
+    } catch (error) {
+      console.error("Error al obtener los datos del getInfo", error);
+    }
+  };
+  useEffect(() => {
     getInfo();
-  }, [usuario]); // Se ejecutará cuando el usuario cambie
+  });
+
+
   const [search, setSearch] = useState("");
   const [busqueda, setBusqueda] = useState("");
 
@@ -87,7 +87,7 @@ const Cambaceo_Diario_Colab = () => {
   };
 
   const handleVerClick = (registro) => {
-    navigate("/Colaborador/pruebaMaps", {state:{registro}})
+    navigate("/Colaborador/pruebaMaps", { state: { registro } });
   };
   const formatearFecha = (fecha) => {
     const options = { day: "2-digit", month: "2-digit", year: "numeric" };
@@ -99,14 +99,53 @@ const Cambaceo_Diario_Colab = () => {
     const fechaConclusion = new Date(registro.FechaConclusion);
 
     if (fechaActual > fechaConclusion) {
-      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-success"><h6>Terminado</h6></div>;
+      return (
+        <div
+          style={{
+            position: "absolute",
+            top: "0",
+            right: "0",
+            padding: "5px",
+            borderRadius: "5px",
+          }}
+          className="badge rounded-pill text-bg-success"
+        >
+          <h6>Terminado</h6>
+        </div>
+      );
     } else if (
       fechaActual >= fechaAsignacion &&
       fechaActual <= fechaConclusion
     ) {
-      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-warning"><h6>En curso</h6></div>;
+      return (
+        <div
+          style={{
+            position: "absolute",
+            top: "0",
+            right: "0",
+            padding: "5px",
+            borderRadius: "5px",
+          }}
+          className="badge rounded-pill text-bg-warning"
+        >
+          <h6>En curso</h6>
+        </div>
+      );
     } else {
-      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-secondary"><h6>Programada</h6></div>;
+      return (
+        <div
+          style={{
+            position: "absolute",
+            top: "0",
+            right: "0",
+            padding: "5px",
+            borderRadius: "5px",
+          }}
+          className="badge rounded-pill text-bg-secondary"
+        >
+          <h6>Programada</h6>
+        </div>
+      );
     }
   };
   return (

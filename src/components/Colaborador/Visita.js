@@ -5,7 +5,7 @@ import { ArrowLeft, X } from "react-bootstrap-icons";
 import Navbar from "../navbar";
 import { useAuthRedirect } from "../../useAuthRedirect";
 import { useUserContext } from "../../userProvider";
-import axios from "axios";
+import { fetchWithToken, API_URL } from "../../utils/api";
 
 // Componente principal
 const Visita_Colab = () => {
@@ -13,66 +13,61 @@ const Visita_Colab = () => {
   const { toggleUser, usuario } = useUserContext();
   const [registros, setRegistros] = useState([]);
   const navigate=useNavigate();
-  useEffect(() => {
-    const getInfo = async () => {
-      Swal.fire({
-        title: "Cargando...",
-        text: "Por favor espera un momento",
-        allowOutsideClick: false,
-        timer: 1000,
+  const getInfo = async () => {
+    Swal.fire({
+      title: "Cargando...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+      timer: 1000,
+    });
+    Swal.showLoading();
+    try {
+      const response = await fetchWithToken(`${API_URL}/colaboradorInfo`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Usuario: JSON.stringify(usuario),
+          Tipo: "Visita_Programada",
+        },
       });
-      Swal.showLoading();
-      try {
-        const response = await axios.get(
-          "http://localhost:3005/Colaborador_Info",
-          {
-            params: { ...usuario, Tipo: "Visita_Programada" },
-          }
-        );
+      // Verificar si hay registros en la respuesta
+      if (response.data && response.data.length > 0) {
+        // Obtener la fecha de inicio del mes
+        const now = new Date();
+        const inicioMes = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        // Verificar si hay registros en la respuesta
-        if (response.data && response.data.length > 0) {
-          // Obtener la fecha de inicio del mes
-          const now = new Date();
-          const inicioMes = new Date(now.getFullYear(), now.getMonth(), 1);
+        // Filtrar registros dentro del rango mensual
+        const registrosMes = response.data.filter((registro) => {
+          const fechaAsignacion = new Date(registro.FechaAsignacion);
+          return fechaAsignacion >= inicioMes;
+        });
 
-          // Filtrar registros dentro del rango mensual
-          const registrosMes = response.data.filter((registro) => {
-            const fechaAsignacion = new Date(registro.FechaAsignacion);
-            return fechaAsignacion >= inicioMes;
-          });
-
-          // Actualizar los registros con los filtrados por mes
-          setRegistros(registrosMes);
-
-          // Mostrar alerta si no hay registros para el mes actual
-          if (registrosMes.length === 0) {
-            Swal.fire({
-              icon: "info",
-              title: "No hay registros para este mes",
-              text: "No se encontraron registros para mostrar en el mes actual.",
-            });
-          }
-
-          // Resto del código...
-        } else {
-          // Mostrar alerta si no hay registros
+        // Actualizar los registros con los filtrados por mes
+        setRegistros(registrosMes);
+        if (registrosMes.length === 0) {
           Swal.fire({
             icon: "info",
-            title: "No hay registros",
-            text: "No se encontraron registros para mostrar.",
+            title: "No hay registros para esta semana",
+            text: "No se encontraron registros para mostrar en la semana actual.",
           });
         }
-      }catch (error) {
-        console.error(
-          "Error al obtener datos del procedimiento GetInfo:",
-          error
-        );
-      }
-    };
 
+        // Resto del código...
+      } else {
+        // Mostrar alerta si no hay registros
+        Swal.fire({
+          icon: "info",
+          title: "No hay registros",
+          text: "No se encontraron registros para mostrar.",
+        });
+      }
+    } catch (error) {
+      console.error("Error al obtener los datos del getInfo", error);
+    }
+  };
+  useEffect(() => {
     getInfo();
-  }, [usuario]); // Se ejecutará cuando el usuario cambie
+  });
   const [search, setSearch] = useState("");
   const [busqueda, setBusqueda] = useState("");
 

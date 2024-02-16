@@ -8,8 +8,10 @@ import { Link } from "react-router-dom";
 import { Form, Row, Col } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { API_URL, fetchWithToken } from "../../utils/api";
+
 const AgregarIncidencia = () => {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
   const [idRegistro, setIDRegistro] = useState("");
   const [nombreCompleto, setNombreCompleto] = useState("");
@@ -18,37 +20,41 @@ const AgregarIncidencia = () => {
   const [direccionCompleta, setDireccionCompleta] = useState("");
   const [fechaAsignacion, setFechaAsignacion] = useState("");
   const [incidentes, setIncidentes] = useState("");
-  const [tipo, setTipo]=useState("");
-  useEffect(() => {
+  const [tipo, setTipo] = useState("");
+
+  const getPlanificador = async () => {
     if (location.state && location.state.registro) {
-      console.log("Esto es el id que tienes que enviar",location.state.registro.idPlanificador)
+      console.log(
+        "Esto es el id que tienes que enviar",
+        location.state.registro.idPlanificador
+      );
       const ID = location.state.registro.idPlanificador;
       setIDRegistro(ID || 0);
-
-      // Realiza la solicitud al backend
-      axios
-        .get(`http://localhost:3005/api/getPlanificador/${ID}`)
-        .then((response) => {
-          // Maneja la respuesta de la solicitud
-          console.log(response.data); // Aquí deberías tener los datos de la base de datos
-
-          // Accede al primer elemento del array (si existe) y establece los estados
-          const primerElemento = response.data[0];
-          if (primerElemento) {
-            setNombreCompleto(primerElemento.NombreCompleto);
-            setTipoEmpresa(primerElemento.TipoEmpresa);
-            setTelefono(primerElemento.Telefono);
-            setDireccionCompleta(construirDireccionCompleta(primerElemento));
-            setFechaAsignacion(formatoFecha(primerElemento.FechaAsignacion));
-            setIncidentes(primerElemento.Incidentes);
-            setTipo(primerElemento.Tipo)
-          }
-        })
-        .catch((error) => {
-          // Maneja los errores de la solicitud
-          console.error("Error al obtener datos:", error);
+      try {
+        const response = await fetchWithToken(`${API_URL}/planificado/${ID}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
+        console.log(response);
+        const primerElemento = response.data[0];
+        if (primerElemento) {
+          setNombreCompleto(primerElemento.NombreCompleto);
+          setTipoEmpresa(primerElemento.TipoEmpresa);
+          setTelefono(primerElemento.Telefono);
+          setDireccionCompleta(primerElemento.Direccion);
+          setFechaAsignacion(formatoFecha(primerElemento.FechaAsignacion));
+          setIncidentes(primerElemento.Incidentes);
+          setTipo(primerElemento.Tipo);
+        }
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+      }
     }
+  };
+  useEffect(() => {
+    getPlanificador();
   }, [location.state]);
 
   const formatoFecha = (fecha) => {
@@ -68,49 +74,43 @@ const AgregarIncidencia = () => {
     return `${formatoDia}/${formatoMes}/${año} ${formatoHoras}:${formatoMinutos}`;
   };
   // Función para construir la dirección completa
-  const construirDireccionCompleta = (datos) => {
-    const {
-      Direccion_Calle,
-      Direccion_Num_Ext,
-      Direccion_Num_Int,
-      Direccion_Colonia,
-      Direccion_CP,
-    } = datos;
-
-    return `${Direccion_Calle} ${Direccion_Num_Ext} ${
-      Direccion_Num_Int ? `, ${Direccion_Num_Int}` : ""
-    }, ${Direccion_Colonia}, ${Direccion_CP}`;
-  };
 
   const manejoIncidencia = () => {
     const datosIncidencia = {
       ID: idRegistro,
       Incidentes: incidentes,
     };
-
-    axios
-      .put(`http://localhost:3005/api/putPlanificador/${idRegistro}`, datosIncidencia)
+    fetchWithToken(`${API_URL}/incidencia/${idRegistro}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(datosIncidencia),
+    })
       .then((response) => {
-        console.log(response.data);
-        // Muestra una alerta de confirmación con sweetalert2
+        if (!response.ok) {
+          throw new Error(`Error al guardar la incidencia`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
         Swal.fire({
           icon: "success",
-          title: "Incidencia agregada con éxito",
+          title: "Incidencia registrada con exito",
           showConfirmButton: false,
           timer: 1500,
         });
       })
-      .finally(
-        navigate("/land")
-      )
+      .then(() => {
+        navigate("/land");
+      })
       .catch((error) => {
-        console.error("Error al agregar incidencia:", error);
-
-        // Muestra una alerta de error con sweetalert2
+        console.log("Error al registrar la incidencia", error);
         Swal.fire({
           icon: "error",
-          title: "Error al agregar incidencia",
-          text: "Hubo un problema al procesar tu solicitud. Inténtalo de nuevo más tarde.",
+          title: "Error al agregar la incidencia",
+          text: "Hubo un problemma al procesar tu solicitud. Intentalo de nuevo más tarde",
         });
       });
   };
@@ -147,7 +147,9 @@ const AgregarIncidencia = () => {
             marginRight: "0px",
           }}
         >
-          <h2 className="titulo-cambaceo px-5 ">Incidencia de {tipo.replace(/_/g, ' ')}</h2>
+          <h2 className="titulo-cambaceo px-5 ">
+            Incidencia de {tipo.replace(/_/g, " ")}
+          </h2>
         </div>
 
         <div
@@ -177,7 +179,7 @@ const AgregarIncidencia = () => {
                     disabled
                     className="w-100"
                     rows={1}
-                  />  
+                  />
                 </div>
                 <div>
                   <h5 style={{ textAlign: "left" }}>Empresa</h5>
@@ -192,16 +194,28 @@ const AgregarIncidencia = () => {
                 </div>
                 <div>
                   <h5 style={{ textAlign: "left" }}>Telefono</h5>
-                  <a  style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }} href={`tel:${telefono}`} onClick={abrirAplicacionTelefono}> 
-                  <InputTextarea
-                    type="text"
-                    placeholder="El campo no es obligatorio"
-                    value={telefono}
-                    disabled
-                    className="w-100"
-                    rows={1}
-                    style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
-                  />
+                  <a
+                    style={{
+                      color: "blue",
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                    }}
+                    href={`tel:${telefono}`}
+                    onClick={abrirAplicacionTelefono}
+                  >
+                    <InputTextarea
+                      type="text"
+                      placeholder="El campo no es obligatorio"
+                      value={telefono}
+                      disabled
+                      className="w-100"
+                      rows={1}
+                      style={{
+                        color: "blue",
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                      }}
+                    />
                   </a>
                 </div>
                 <div>
@@ -234,12 +248,16 @@ const AgregarIncidencia = () => {
                     type="text"
                     placeholder="Ingresa cualquier detalle relevante"
                     value={incidentes}
-                    onChange={(e)=>setIncidentes(e.target.value)}
+                    onChange={(e) => setIncidentes(e.target.value)}
                     className="w-100"
                     rows={10}
                   />
                 </div>
-                <button type="button" class="btn btn-success btn-lg" onClick={manejoIncidencia}>
+                <button
+                  type="button"
+                  class="btn btn-success btn-lg"
+                  onClick={manejoIncidencia}
+                >
                   Agregar
                 </button>
               </Col>

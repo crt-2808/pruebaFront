@@ -4,7 +4,7 @@
   import Navbar from "../navbar";
   import Planeador from "../../img/Planeador.png";
   import { useAuthRedirect } from "../../useAuthRedirect";
-  import axios from "axios";
+  import { API_URL, fetchWithToken } from '../../utils/api';
   const upperCaseFirstLetter = (string) =>
     `${string.slice(0, 1).toUpperCase()}${string.slice(1)}`;
 
@@ -21,25 +21,29 @@
 
     const [liderData, setLiderData] = useState(null);
     const [showPhone, setShowPhone] = useState(false);
+    
+    const cargarLider= async()=>{
+      try {
+        const response= await fetchWithToken(`${API_URL}/lider`,{
+          method:"GET",
+          headers:{
+            'Content-Type': 'application/json',
+            'Usuario': JSON.stringify(usuario)
+          },
+        });
+        setLiderData(response.data)
+        console.log(liderData)
+      } catch (error) {
+        console.error("Error al obtener los datos del lider", error)
+        
+      }
 
+    }
+    useEffect(()=>{
+      cargarLider();
+    });
 
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get("http://localhost:3005/lider_info", {
-            params: { usuario },
-          });
-
-          setLiderData(response.data);
-          console.log("Datos del líder:", response.data);
-        } catch (error) {
-          console.error("Error al obtener datos del líder:", error);
-        }
-      };
-
-      fetchData();
-    }, [usuario]);
-
+    
     useEffect(() => {
       const options = {
         method: "GET",

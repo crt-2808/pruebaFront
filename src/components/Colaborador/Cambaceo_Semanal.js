@@ -5,7 +5,7 @@ import { ArrowLeft, X } from "react-bootstrap-icons";
 import Navbar from "../navbar";
 import { useAuthRedirect } from "../../useAuthRedirect";
 import { useUserContext } from "../../userProvider";
-import axios from "axios";
+import { API_URL, fetchWithToken } from "../../utils/api";
 
 // Componente principal
 const Cambaceo_Semanal_Colab = () => {
@@ -13,64 +13,66 @@ const Cambaceo_Semanal_Colab = () => {
   const { toggleUser, usuario } = useUserContext();
   const [registros, setRegistros] = useState([]);
   const navigate=useNavigate();
-  useEffect(() => {
-    const getInfo = async () => {
-      Swal.fire({
-        title: "Cargando...",
-        text: "Por favor espera un momento",
-        allowOutsideClick: false,
-        timer: 1000,
+  const getInfo = async () => {
+    Swal.fire({
+      title: "Cargando...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+      timer: 1000,
+    });
+    Swal.showLoading();
+    try {
+      const response = await fetchWithToken(`${API_URL}/colaboradorInfo`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Usuario: JSON.stringify(usuario),
+          Tipo: "Cambaceo_Semanal",
+        },
       });
-      Swal.showLoading();
-      try {
-        const response = await axios.get(
-          "http://localhost:3005/Colaborador_Info",
-          {
-            params: { ...usuario, Tipo: "Cambaceo_Semanal" },
-          }
+      // Verificar si hay registros en la respuesta
+      if (response.data && response.data.length > 0) {
+        // Obtener la fecha de inicio de la semana (lunes)
+        const now = new Date();
+        const inicioSemana = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)
         );
-        if (response.data && response.data.length > 0) {
-          // Obtener la fecha de inicio del mes
-          const now = new Date();
-          const inicioMes = new Date(now.getFullYear(), now.getMonth(), 1);
 
-          // Filtrar registros dentro del rango mensual
-          const registrosMes = response.data.filter((registro) => {
-            const fechaAsignacion = new Date(registro.FechaAsignacion);
-            return fechaAsignacion >= inicioMes;
-          });
+        // Filtrar registros dentro del rango semanal
+        const registrosSemana = response.data.filter((registro) => {
+          const fechaAsignacion = new Date(registro.FechaAsignacion);
+          return fechaAsignacion >= inicioSemana;
+        });
 
-          // Actualizar los registros con los filtrados por mes
-          setRegistros(registrosMes);
-
-          // Mostrar alerta si no hay registros para el mes actual
-          if (registrosMes.length === 0) {
-            Swal.fire({
-              icon: "info",
-              title: "No hay registros para este mes",
-              text: "No se encontraron registros para mostrar en el mes actual.",
-            });
-          }
-
-          // Resto del código...
-        } else {
-          // Mostrar alerta si no hay registros
+        // Actualizar los registros con los filtrados por semana
+        setRegistros(registrosSemana);
+        if (registrosSemana.length === 0) {
           Swal.fire({
             icon: "info",
-            title: "No hay registros",
-            text: "No se encontraron registros para mostrar.",
+            title: "No hay registros para esta semana",
+            text: "No se encontraron registros para mostrar en la semana actual.",
           });
         }
-      }catch (error) {
-        console.error(
-          "Error al obtener datos del procedimiento GetInfo:",
-          error
-        );
-      }
-    };
 
+        // Resto del código...
+      } else {
+        // Mostrar alerta si no hay registros
+        Swal.fire({
+          icon: "info",
+          title: "No hay registros",
+          text: "No se encontraron registros para mostrar.",
+        });
+      }
+    } catch (error) {
+      console.error("Error al obtener los datos del getInfo", error);
+    }
+  };
+  useEffect(() => {
     getInfo();
-  }, [usuario]); // Se ejecutará cuando el usuario cambie
+  });
+
   const [search, setSearch] = useState("");
   const [busqueda, setBusqueda] = useState("");
 
