@@ -88,7 +88,7 @@ function Login() {
       sessionStorage.setItem('userRole', role); // Guardar el rol del usuario en el almacenamiento de sesión
       console.log('este es el role', role);
       toggleUser(res.profileObj);
-
+      toggleUserBlocked(false);
       setTimeout(() => {
         const userRole = sessionStorage.getItem('userRole');
         if (
