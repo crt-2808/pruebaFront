@@ -27,8 +27,7 @@ const Cambaceo_Diario_Colab = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Usuario: JSON.stringify(usuario),
-          Tipo: "Cambaceo_Diario",
+          'Tipo': "Cambaceo_Diario",
         },
       });
       // Verificar si hay registros en la respuesta

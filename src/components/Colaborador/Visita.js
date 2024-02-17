@@ -26,8 +26,7 @@ const Visita_Colab = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Usuario: JSON.stringify(usuario),
-          Tipo: "Visita_Programada",
+          'Tipo': "Visita_Programada",
         },
       });
       // Verificar si hay registros en la respuesta
