@@ -26,8 +26,8 @@ const Cambaceo_Semanal_Colab = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          'Tipo': "Cambaceo_Semanal",
         },
+        Tipo: "Cambaceo_Semanal"
       });
       // Verificar si hay registros en la respuesta
       if (response.data && response.data.length > 0) {

@@ -26,8 +26,8 @@ const Llamada_Colab = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          'Tipo': "Llamada",
         },
+        Tipo: "Llamada"
       });
       // Verificar si hay registros en la respuesta
       if (response.data && response.data.length > 0) {

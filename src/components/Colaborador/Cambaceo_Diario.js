@@ -24,13 +24,16 @@ const Cambaceo_Diario_Colab = () => {
     Swal.showLoading();
     try {
       const response = await fetchWithToken(`${API_URL}/colaboradorInfo`, {
+      //const response = await fetchWithToken(`${API_URL}/colaboradorInfo`, {
+      //http://localhost:3001/colaboradorInfo
         method: "GET",
         headers: {
-          "Content-Type": "application/json",
-          'Tipo': "Cambaceo_Diario",
+          "Content-Type": 'application/json',
         },
+        Tipo: "Cambaceo_Diario"
       });
       // Verificar si hay registros en la respuesta
+      console.log("esta es la respuesta",response)
       if (response.data && response.data.length > 0) {
         // Obtener la fecha de inicio de la semana (lunes)
         const now = new Date();
