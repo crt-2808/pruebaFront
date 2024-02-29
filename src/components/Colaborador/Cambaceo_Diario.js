@@ -23,14 +23,12 @@ const Cambaceo_Diario_Colab = () => {
     });
     Swal.showLoading();
     try {
-      const response = await fetchWithToken(`${API_URL}/colaboradorInfo`, {
-      //const response = await fetchWithToken(`${API_URL}/colaboradorInfo`, {
-      //http://localhost:3001/colaboradorInfo
+      //const response = await fetchWithToken(`${API_URL}/ColaboradorCDiario`, {
+      const response = await fetchWithToken(`${API_URL}/ColaboradorCDiario`, {
         method: "GET",
         headers: {
           "Content-Type": 'application/json',
         },
-        Tipo: "Cambaceo_Diario"
       });
       // Verificar si hay registros en la respuesta
       console.log("esta es la respuesta",response)
@@ -69,7 +67,7 @@ const Cambaceo_Diario_Colab = () => {
         });
       }
     } catch (error) {
-      console.error("Error al obtener los datos del getInfo", error);
+      console.error("Error al obtener los datos", error);
     }
   };
   useEffect(() => {

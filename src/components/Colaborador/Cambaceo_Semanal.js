@@ -22,7 +22,7 @@ const Cambaceo_Semanal_Colab = () => {
     });
     Swal.showLoading();
     try {
-      const response = await fetchWithToken(`${API_URL}/colaboradorInfo`, {
+      const response = await fetchWithToken(`${API_URL}/ColaboradorCSemanal`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

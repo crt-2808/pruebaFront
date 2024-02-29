@@ -22,12 +22,11 @@ const Visita_Colab = () => {
     });
     Swal.showLoading();
     try {
-      const response = await fetchWithToken(`${API_URL}/colaboradorInfo`, {
+      const response = await fetchWithToken(`${API_URL}/ColaboradorVProgramada`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-        Tipo: "Visita_Programada"
       });
       // Verificar si hay registros en la respuesta
       if (response.data && response.data.length > 0) {
