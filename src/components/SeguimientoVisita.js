@@ -53,7 +53,7 @@ const SeguimientoVisita = () => {
           timerProgressBar: true,
         });
       }
-
+      console.log(response);
       const data = await response.json();
       console.log(data);
       if (data.length === 0) {

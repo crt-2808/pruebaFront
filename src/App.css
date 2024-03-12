@@ -961,3 +961,17 @@ background-color: red;
 svg.p-icon.p-checkbox-icon.p-c:hover{
   color: black;
 }
+
+
+.estatus{
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+  border-radius: 5px;
+  margin: 0;
+  transform: translate(50%, -50%);
+}
+.estatus h6{
+  margin: 0.2rem;
+}
