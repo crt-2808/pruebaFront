@@ -28,14 +28,15 @@ const Llamada_Colab = () => {
           "Content-Type": "application/json",
         },
       });
-      // Verificar si hay registros en la respuesta
-      if (response.data && response.data.length > 0) {
+      const data = await response.json();
+      console.log('esta es la data2:', data);
+      if (data && data.length > 0) {
         // Obtener la fecha de inicio del mes
         const now = new Date();
         const inicioMes = new Date(now.getFullYear(), now.getMonth(), 1);
 
         // Filtrar registros dentro del rango mensual
-        const registrosMes = response.data.filter((registro) => {
+        const registrosMes = data.filter((registro) => {
           const fechaAsignacion = new Date(registro.FechaAsignacion);
           return fechaAsignacion >= inicioMes;
         });
@@ -65,7 +66,7 @@ const Llamada_Colab = () => {
   };
   useEffect(() => {
     getInfo();
-  });
+  },[]);
 
 
 
@@ -93,14 +94,14 @@ const Llamada_Colab = () => {
     const fechaConclusion = new Date(registro.FechaConclusion);
 
     if (fechaActual > fechaConclusion) {
-      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-success"><h6>Terminado</h6></div>;
+      return <div className='badge rounded-pill text-bg-success estatus'><h6>Terminado</h6></div>;
     } else if (
       fechaActual >= fechaAsignacion &&
       fechaActual <= fechaConclusion
     ) {
-      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-warning"><h6>En curso</h6></div>;
+      return <div className='badge rounded-pill text-bg-warning estatus'><h6>En curso</h6></div>;
     } else {
-      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-secondary"><h6>Programada</h6></div>;
+      return <div className='badge rounded-pill text-bg-secondary estatus'><h6>Programada</h6></div>;
     }
   };
 

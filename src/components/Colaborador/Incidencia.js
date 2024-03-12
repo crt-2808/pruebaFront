@@ -80,7 +80,7 @@ const AgregarIncidencia = () => {
       ID: idRegistro,
       Incidentes: incidentes,
     };
-    fetchWithToken(`${API_URL}/incidencia/${idRegistro}`, {
+    fetchWithToken(`${API_URL}/incidencias/${idRegistro}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

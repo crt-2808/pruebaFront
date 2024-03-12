@@ -22,15 +22,17 @@ const Cambaceo_Semanal_Colab = () => {
     });
     Swal.showLoading();
     try {
-      const response = await fetchWithToken(`${API_URL}/ColaboradorCSemanal`, {
-        method: "GET",
+      //const response = await fetchWithToken(`${API_URL}/ColaboradorCSemanal`, {
+      const response = await fetchWithToken(`${API_URL}/ColaboradorCSemanal`, { 
+      method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-        Tipo: "Cambaceo_Semanal"
       });
       // Verificar si hay registros en la respuesta
-      if (response.data && response.data.length > 0) {
+      const data = await response.json();
+      console.log('esta es la data2:', data);
+      if (data && data.length > 0) {
         // Obtener la fecha de inicio de la semana (lunes)
         const now = new Date();
         const inicioSemana = new Date(
@@ -40,7 +42,7 @@ const Cambaceo_Semanal_Colab = () => {
         );
 
         // Filtrar registros dentro del rango semanal
-        const registrosSemana = response.data.filter((registro) => {
+        const registrosSemana = data.filter((registro) => {
           const fechaAsignacion = new Date(registro.FechaAsignacion);
           return fechaAsignacion >= inicioSemana;
         });
@@ -70,7 +72,7 @@ const Cambaceo_Semanal_Colab = () => {
   };
   useEffect(() => {
     getInfo();
-  });
+  },[]);
 
   const [search, setSearch] = useState("");
   const [busqueda, setBusqueda] = useState("");
@@ -96,14 +98,14 @@ const Cambaceo_Semanal_Colab = () => {
     const fechaConclusion = new Date(registro.FechaConclusion);
 
     if (fechaActual > fechaConclusion) {
-      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-success"><h6>Terminado</h6></div>;
+      return <div className='badge rounded-pill text-bg-success estatus'><h6>Terminado</h6></div>;
     } else if (
       fechaActual >= fechaAsignacion &&
       fechaActual <= fechaConclusion
     ) {
-      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-warning"><h6>En curso</h6></div>;
+      return <div className='badge rounded-pill text-bg-warning estatus'><h6>En curso</h6></div>;
     } else {
-      return <div style={{position:"absolute", top:"0", right:"0", padding:"5px", borderRadius:"5px"}} className="badge rounded-pill text-bg-secondary"><h6>Programada</h6></div>;
+      return <div className='badge rounded-pill text-bg-secondary estatus'><h6>Programada</h6></div>;
     }
   };
   return (
@@ -155,6 +157,7 @@ const Cambaceo_Semanal_Colab = () => {
                   justifyContent: "center",
                   flexWrap: "wrap",
                 }}
+                className='mt-4'
               >
                 {registros.map((registro, index) => (
                   <div className="col-md-3" key={index}>
@@ -164,7 +167,7 @@ const Cambaceo_Semanal_Colab = () => {
                         width: "15rem",
                         height: "16rem",
                         alignItems: "center",
-                        overflow: "hidden",
+                        justifyContent: 'center',
                         marginBottom: "15px",
                         maxWidth: window.innerWidth <= 768 ? "9rem" : "100%",
                         position: "relative",
