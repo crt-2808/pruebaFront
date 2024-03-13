@@ -230,7 +230,10 @@ function CalendarioLlamada() {
           </Link>
         </div>
       </div>
-      <div className='py-md-4 py-3' style={{ backgroundColor: '#F1F5F8' }}>
+      <div
+        className='py-md-4 py-3'
+        style={{ backgroundColor: '#F1F5F8', minHeight: '86vh' }}
+      >
         <div
           className='row mt-4 mt-md-0'
           style={{
@@ -243,11 +246,11 @@ function CalendarioLlamada() {
         </div>
 
         <div
-          className='container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-5 mt-md-4'
+          className='container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-2 mt-md-4'
           id='contenedor-cambaceo'
-          style={{ marginBottom: '0px' }}
+          style={{ marginBottom: '0px', transform: 'translateY(50px)' }}
         >
-          <Row className='mb-5'>
+          <Row className='mb-3'>
             <Col xs={12} md={6}>
               <div className='p-field'>
                 <label htmlFor='NombreCompleto'>
@@ -310,7 +313,7 @@ function CalendarioLlamada() {
                   value={Descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
                   placeholder='Describe brevemente el propósito de la llamada...'
-                  rows={5}
+                  rows={7}
                   style={{ width: '100%' }}
                 />
               </div>
@@ -329,12 +332,15 @@ function CalendarioLlamada() {
                 />
               </div> */}
             </Col>
-            <Button
-              label='Confirmar'
-              onClick={handleSubmit}
-              severity='success'
-              style={{ width: '100%' }}
-            />
+            <Col className='text-end px-3'>
+              <Button
+                label='Confirmar'
+                onClick={handleSubmit}
+                // severity='success'
+                style={{ width: '8rem' }}
+                className='mt-4 btn-exportar'
+              />
+            </Col>
           </Row>
         </div>
       </div>

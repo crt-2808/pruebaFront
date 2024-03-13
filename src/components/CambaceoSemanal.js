@@ -425,7 +425,7 @@ function CambaceoSemanal() {
                           id='calendar-24h-inicio'
                           value={fechaInicio}
                           onChange={(e) => setfechaInicio(e.value)}
-                          touchUI
+                          showTime
                           placeholder='Ingresa la fecha'
                           locale='es'
                           dateFormat='dd/mm/yy'
