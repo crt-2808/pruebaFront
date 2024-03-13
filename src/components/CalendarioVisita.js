@@ -143,6 +143,7 @@ function CalendarioVisita() {
       FechaAsignacion: fechaAsignacionFormateada,
       TipoEmpresa,
       Sitioweb,
+      Direccion: address,
       Descripcion,
       idUsuarios: idsUsuariosSeleccionados,
     };
