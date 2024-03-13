@@ -12,6 +12,7 @@ const Cambaceo_Semanal_Colab = () => {
   useAuthRedirect();
   const { toggleUser, usuario } = useUserContext();
   const [registros, setRegistros] = useState([]);
+  const [searchText, setSearchText] = useState('');
   const navigate=useNavigate();
   const getInfo = async () => {
     Swal.fire({
@@ -74,15 +75,17 @@ const Cambaceo_Semanal_Colab = () => {
     getInfo();
   },[]);
 
-  const [search, setSearch] = useState("");
-  const [busqueda, setBusqueda] = useState("");
-
-  const filtrarRegistros = () => {
-    // Filtra los registros por NombreCompleto
-    const registrosFiltrados = registros.filter((registro) =>
-      registro.NombreCompleto.toLowerCase().includes(busqueda.toLowerCase())
-    );
-    return registrosFiltrados;
+  const handleSearch = (e) => {
+    const searchTextValue = e.target.value;
+    if (searchTextValue) {
+      const filteredRegistros = registros.filter((registro) =>
+  registro.Telefono.toLowerCase().includes(searchTextValue.toLowerCase())
+);
+      setRegistros(filteredRegistros);
+    } else if(searchTextValue==''){
+      // Mostrar la lista completa de registros
+      setRegistros(registros);
+    }
   };
 
   const handleVerClick = (registro) => {
@@ -136,16 +139,20 @@ const Cambaceo_Semanal_Colab = () => {
               </div>
               <div className="col-md-6">
                 <div className="input-wrapper">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Buscar por Nombre"
-                    aria-label="Buscar"
-                    aria-describedby="basic-addon1"
-                    value={search}
-                    onChange={filtrarRegistros}
-                  />
-                  <X className="clear-icon" onClick={() => setSearch("")} />
+                <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Buscar por tipo de empresa"
+                      value={searchText}
+                      aria-label="Buscar"
+                      aria-describedby="basic-addon1"
+                      onChange={(e) => setSearchText(e.target.value)}
+                      onKeyUp={handleSearch}
+                    />
+                    <X
+                      className="clear-icon"
+                      onClick={() => setSearchText("")}
+                    />
                 </div>
               </div>
             </div>
