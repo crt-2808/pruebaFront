@@ -10,9 +10,9 @@ import { fetchWithToken, API_URL } from "../../utils/api";
 // Componente principal
 const Visita_Colab = () => {
   useAuthRedirect();
-  const { toggleUser, usuario } = useUserContext();
   const [registros, setRegistros] = useState([]);
-  const [searchText, setSearchText] = useState('');
+  const [search, setSearch] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
   const navigate = useNavigate();
   const getInfo = async () => {
     Swal.fire({
@@ -72,17 +72,14 @@ const Visita_Colab = () => {
     getInfo();
   }, []);
 
-  const handleSearch = (e) => {
-    const searchTextValue = e.target.value;
-    if (searchTextValue) {
-      const filteredRegistros = registros.filter((registro) =>
-  registro.TipoEmpresa.toLowerCase().includes(searchTextValue.toLowerCase())
-);
-      setRegistros(filteredRegistros);
-    } else if(searchTextValue==''){
-      // Mostrar la lista completa de registros
-      setRegistros(registros);
-    }
+  useEffect(() => {
+    const filteredregistros = registros.filter((registro) =>
+      registro.TipoEmpresa.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredData(filteredregistros);
+  }, [search, registros]);
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
   };
 
   const handleVerClick = (registro) => {
@@ -149,20 +146,16 @@ const Visita_Colab = () => {
               <div className="col-md-6">
                 <div className="input-wrapper">
                   <div className="input-wrapper">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Buscar por tipo de empresa"
-                      value={searchText}
-                      aria-label="Buscar"
-                      aria-describedby="basic-addon1"
-                      onChange={(e) => setSearchText(e.target.value)}
-                      onKeyUp={handleSearch}
-                    />
-                    <X
-                      className="clear-icon"
-                      onClick={() => setSearchText("")}
-                    />
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Buscar por Empresa"
+                    aria-label="Buscar"
+                    aria-describedby="basic-addon1"
+                    value={search}
+                    onChange={handleSearchChange}
+                  />
+                  <X className="clear-icon" onClick={() => setSearch("")} />
                   </div>
                 </div>
               </div>
@@ -177,7 +170,7 @@ const Visita_Colab = () => {
                 }}
                 className="py-3"
               >
-                {registros.map((registro, index) => (
+                {filteredData.map((registro, index) => (
                   <div className="col-md-3 my-2" key={index}>
                     <div
                       className="card centrar p-3"

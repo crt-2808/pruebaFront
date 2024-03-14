@@ -10,10 +10,10 @@ import { API_URL, fetchWithToken } from "../../utils/api";
 // Componente principal
 const Cambaceo_Semanal_Colab = () => {
   useAuthRedirect();
-  const { toggleUser, usuario } = useUserContext();
   const [registros, setRegistros] = useState([]);
-  const [searchText, setSearchText] = useState('');
-  const navigate=useNavigate();
+  const [search, setSearch] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  const navigate = useNavigate();
   const getInfo = async () => {
     Swal.fire({
       title: "Cargando...",
@@ -24,15 +24,15 @@ const Cambaceo_Semanal_Colab = () => {
     Swal.showLoading();
     try {
       //const response = await fetchWithToken(`${API_URL}/ColaboradorCSemanal`, {
-      const response = await fetchWithToken(`${API_URL}/ColaboradorCSemanal`, { 
-      method: "GET",
+      const response = await fetchWithToken(`${API_URL}/ColaboradorCSemanal`, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
       // Verificar si hay registros en la respuesta
       const data = await response.json();
-      console.log('esta es la data2:', data);
+      console.log("esta es la data2:", data);
       if (data && data.length > 0) {
         // Obtener la fecha de inicio de la semana (lunes)
         const now = new Date();
@@ -73,23 +73,19 @@ const Cambaceo_Semanal_Colab = () => {
   };
   useEffect(() => {
     getInfo();
-  },[]);
-
-  const handleSearch = (e) => {
-    const searchTextValue = e.target.value;
-    if (searchTextValue) {
-      const filteredRegistros = registros.filter((registro) =>
-  registro.Telefono.toLowerCase().includes(searchTextValue.toLowerCase())
-);
-      setRegistros(filteredRegistros);
-    } else if(searchTextValue==''){
-      // Mostrar la lista completa de registros
-      setRegistros(registros);
-    }
+  }, []);
+  useEffect(() => {
+    const filteredregistros = registros.filter((registro) =>
+      registro.Direccion.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredData(filteredregistros);
+  }, [search, registros]);
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
   };
 
   const handleVerClick = (registro) => {
-    navigate("/Colaborador/pruebaMaps", {state:{registro}})
+    navigate("/Colaborador/pruebaMaps", { state: { registro } });
   };
   const formatearFecha = (fecha) => {
     const options = { day: "2-digit", month: "2-digit", year: "numeric" };
@@ -101,14 +97,26 @@ const Cambaceo_Semanal_Colab = () => {
     const fechaConclusion = new Date(registro.FechaConclusion);
 
     if (fechaActual > fechaConclusion) {
-      return <div className='badge rounded-pill text-bg-success estatus'><h6>Terminado</h6></div>;
+      return (
+        <div className="badge rounded-pill text-bg-success estatus">
+          <h6>Terminado</h6>
+        </div>
+      );
     } else if (
       fechaActual >= fechaAsignacion &&
       fechaActual <= fechaConclusion
     ) {
-      return <div className='badge rounded-pill text-bg-warning estatus'><h6>En curso</h6></div>;
+      return (
+        <div className="badge rounded-pill text-bg-warning estatus">
+          <h6>En curso</h6>
+        </div>
+      );
     } else {
-      return <div className='badge rounded-pill text-bg-secondary estatus'><h6>Programada</h6></div>;
+      return (
+        <div className="badge rounded-pill text-bg-secondary estatus">
+          <h6>Programada</h6>
+        </div>
+      );
     }
   };
   return (
@@ -139,20 +147,16 @@ const Cambaceo_Semanal_Colab = () => {
               </div>
               <div className="col-md-6">
                 <div className="input-wrapper">
-                <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Buscar por tipo de empresa"
-                      value={searchText}
-                      aria-label="Buscar"
-                      aria-describedby="basic-addon1"
-                      onChange={(e) => setSearchText(e.target.value)}
-                      onKeyUp={handleSearch}
-                    />
-                    <X
-                      className="clear-icon"
-                      onClick={() => setSearchText("")}
-                    />
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Buscar por Empresa"
+                    aria-label="Buscar"
+                    aria-describedby="basic-addon1"
+                    value={search}
+                    onChange={handleSearchChange}
+                  />
+                  <X className="clear-icon" onClick={() => setSearch("")} />
                 </div>
               </div>
             </div>
@@ -164,9 +168,9 @@ const Cambaceo_Semanal_Colab = () => {
                   justifyContent: "center",
                   flexWrap: "wrap",
                 }}
-                className='mt-4'
+                className="mt-4"
               >
-                {registros.map((registro, index) => (
+                {filteredData.map((registro, index) => (
                   <div className="col-md-3" key={index}>
                     <div
                       className="card centrar p-3"
@@ -174,7 +178,7 @@ const Cambaceo_Semanal_Colab = () => {
                         width: "15rem",
                         height: "16rem",
                         alignItems: "center",
-                        justifyContent: 'center',
+                        justifyContent: "center",
                         marginBottom: "15px",
                         maxWidth: window.innerWidth <= 768 ? "9rem" : "100%",
                         position: "relative",
@@ -193,7 +197,7 @@ const Cambaceo_Semanal_Colab = () => {
                           },
                         }}
                       >
-                        {registro.NombreCompleto}
+                        {registro.Direccion}
                       </h2>
                       <h4 className="card-subtitle mb-2 text-muted">
                         {formatearFecha(registro.FechaAsignacion)}

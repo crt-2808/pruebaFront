@@ -31,7 +31,7 @@ const AgregarIncidencia = () => {
       const ID = location.state.registro.idPlanificador;
       setIDRegistro(ID || 0);
       try {
-        const response = await fetchWithToken(`${API_URL}/planificado/${ID}`, {
+        const response = await fetchWithToken(`${API_URL}/planificador/${ID}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

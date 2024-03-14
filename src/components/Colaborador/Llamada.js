@@ -10,9 +10,9 @@ import { API_URL, fetchWithToken } from '../../utils/api';
 // Componente principal
 const Llamada_Colab = () => {
   useAuthRedirect();
-  const { toggleUser, usuario } = useUserContext();
   const [registros, setRegistros] = useState([]);
-  const [searchText, setSearchText] = useState('');
+  const [search, setSearch] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
 
   const navigate = useNavigate();
   const getInfo = async () => {
@@ -70,20 +70,17 @@ const Llamada_Colab = () => {
     getInfo();
   }, []);
 
-
-
-  const handleSearch = (e) => {
-    const searchTextValue = e.target.value;
-    if (searchTextValue) {
-      const filteredRegistros = registros.filter((registro) =>
-  registro.Telefono.toLowerCase().includes(searchTextValue.toLowerCase())
-);
-      setRegistros(filteredRegistros);
-    } else if(searchTextValue==''){
-      // Mostrar la lista completa de registros
-      setRegistros(registros);
-    }
+  useEffect(() => {
+    const filteredregistros = registros.filter((registro) =>
+      registro.Telefono.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredData(filteredregistros);
+  }, [search, registros]);
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
   };
+
+
 
 
   const handleVerClick = (registro) => {
@@ -151,14 +148,13 @@ const Llamada_Colab = () => {
                 <input
                     type="text"
                     className="form-control"
-                    placeholder="Buscar por tipo de empresa"
-                    value={searchText}
+                    placeholder="Buscar por Empresa"
                     aria-label="Buscar"
                     aria-describedby="basic-addon1"
-                    onChange={(e) => setSearchText(e.target.value)}
-                    onKeyUp={handleSearch}
+                    value={search}
+                    onChange={handleSearchChange}
                   />
-                  <X className="clear-icon" onClick={() => setSearchText("")} />
+                  <X className="clear-icon" onClick={() => setSearch("")} />
 
                 </div>
               </div>
@@ -173,7 +169,7 @@ const Llamada_Colab = () => {
                 }}
                 className='py-3'
               >
-                {registros.map((registro, index) => (
+                {filteredData.map((registro, index) => (
                   <div className='col-md-3' key={index}>
                     <div
                       className='card centrar p-3'
@@ -199,7 +195,7 @@ const Llamada_Colab = () => {
                           },
                         }}
                       >
-                        {registro.NombreCompleto}
+                        {registro.Telefono}
                       </h2>
                       <h4 className='card-subtitle mb-2 text-muted'>
                         {formatearFecha(registro.FechaAsignacion)}

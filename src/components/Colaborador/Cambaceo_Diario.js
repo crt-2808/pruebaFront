@@ -10,9 +10,10 @@ import { API_URL, fetchWithToken } from '../../utils/api';
 // Componente principal
 const Cambaceo_Diario_Colab = () => {
   useAuthRedirect();
-  const { toggleUser, usuario } = useUserContext();
   const [registros, setRegistros] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [search, setSearch] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
   const navigate = useNavigate();
 
   const getInfo = async () => {
@@ -78,6 +79,15 @@ const Cambaceo_Diario_Colab = () => {
   useEffect(() => {
     getInfo();
   }, []);
+  useEffect(() => {
+    const filteredregistros = registros.filter((registro) =>
+      registro.Direccion.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredData(filteredregistros);
+  }, [search, registros]);
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
 
   const handleSearch = (e) => {
     const searchTextValue = e.target.value;
@@ -155,24 +165,20 @@ const Cambaceo_Diario_Colab = () => {
               <div className='col-md-6'>
                 <div className='input-wrapper'>
                 <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Buscar por tipo de empresa"
-                      value={searchText}
-                      aria-label="Buscar"
-                      aria-describedby="basic-addon1"
-                      onChange={(e) => setSearchText(e.target.value)}
-                      onKeyUp={handleSearch}
-                    />
-                    <X
-                      className="clear-icon"
-                      onClick={() => setSearchText("")}
-                    />
+                    type="text"
+                    className="form-control"
+                    placeholder="Buscar por Empresa"
+                    aria-label="Buscar"
+                    aria-describedby="basic-addon1"
+                    value={search}
+                    onChange={handleSearchChange}
+                  />
+                  <X className="clear-icon" onClick={() => setSearch("")} />
                 </div>
               </div>
             </div>
             {/* Renderizar la información según la existencia de registros */}
-            {registros.length > 0 ? (
+            {filteredData.length > 0 ? (
               <div
                 style={{
                   display: 'flex',
@@ -181,7 +187,7 @@ const Cambaceo_Diario_Colab = () => {
                 }}
                 className='mt-4'
               >
-                {registros.map((registro, index) => (
+                {filteredData.map((registro, index) => (
                   <div className='col-md-3 my-2' key={index}>
                     <div
                       className='card centrar p-3'
@@ -208,7 +214,7 @@ const Cambaceo_Diario_Colab = () => {
                           },
                         }}
                       >
-                        {registro.NombreCompleto}
+                        {registro.Direccion}
                       </h2>
                       <h4 className='card-subtitle mb-2 text-muted'>
                         {formatearFecha(registro.FechaAsignacion)}
