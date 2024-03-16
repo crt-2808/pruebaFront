@@ -167,7 +167,7 @@ const Cambaceo_Diario_Colab = () => {
                 <input
                     type="text"
                     className="form-control"
-                    placeholder="Buscar por Empresa"
+                    placeholder="Buscar por Direccion"
                     aria-label="Buscar"
                     aria-describedby="basic-addon1"
                     value={search}

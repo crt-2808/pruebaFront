@@ -148,7 +148,7 @@ const Llamada_Colab = () => {
                 <input
                     type="text"
                     className="form-control"
-                    placeholder="Buscar por Empresa"
+                    placeholder="Buscar por número de teléfono"
                     aria-label="Buscar"
                     aria-describedby="basic-addon1"
                     value={search}
