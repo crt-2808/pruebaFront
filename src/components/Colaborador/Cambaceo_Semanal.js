@@ -197,7 +197,7 @@ const Cambaceo_Semanal_Colab = () => {
                           },
                         }}
                       >
-                        {registro.Direccion}
+                        {registro.Direccion.split(',')[0].trim()}
                       </h2>
                       <h4 className="card-subtitle mb-2 text-muted">
                         {formatearFecha(registro.FechaAsignacion)}

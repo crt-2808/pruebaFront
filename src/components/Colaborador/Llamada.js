@@ -201,7 +201,7 @@ const Llamada_Colab = () => {
                         {formatearFecha(registro.FechaAsignacion)}
                       </h4>
                       <p className='card-text text-truncate'>
-                        {registro.Telefono}
+                        {registro.Descripcion.split(',')[0].trim().slice(0, 20)}
                       </p>
                       <button
                         className='btnDiario'
