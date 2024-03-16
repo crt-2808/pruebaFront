@@ -21,15 +21,11 @@ const AgregarIncidencia = () => {
   const [fechaAsignacion, setFechaAsignacion] = useState("");
   const [incidentes, setIncidentes] = useState("");
   const [tipo, setTipo] = useState("");
-
+  const [incidentesEditados, setIncidentesEditados] = useState("");
   const getPlanificador = async () => {
     if (location.state && location.state.registro) {
-      console.log(
-        "Esto es el id que tienes que enviar",
-        location.state.registro.idPlanificador
-      );
       const ID = location.state.registro.idPlanificador;
-      setIDRegistro(ID || 0);
+      setIDRegistro(ID);
       try {
         const response = await fetchWithToken(`${API_URL}/planificador/${ID}`, {
           method: "GET",
@@ -37,8 +33,8 @@ const AgregarIncidencia = () => {
             "Content-Type": "application/json",
           },
         });
-        console.log(response);
-        const primerElemento = response.data[0];
+        const data = await response.json();
+        const primerElemento = data[0];
         if (primerElemento) {
           setNombreCompleto(primerElemento.NombreCompleto);
           setTipoEmpresa(primerElemento.TipoEmpresa);
@@ -76,16 +72,13 @@ const AgregarIncidencia = () => {
   // Función para construir la dirección completa
 
   const manejoIncidencia = () => {
-    const datosIncidencia = {
-      ID: idRegistro,
-      Incidentes: incidentes,
-    };
-    fetchWithToken(`${API_URL}/incidencias/${idRegistro}`, {
+    const envioIncidentes = { incidencia: incidentesEditados };
+    fetchWithToken(`${API_URL}/ColaboradorIncidencias/${idRegistro}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(datosIncidencia),
+      body: JSON.stringify(envioIncidentes),
     })
       .then((response) => {
         if (!response.ok) {
@@ -101,10 +94,12 @@ const AgregarIncidencia = () => {
           showConfirmButton: false,
           timer: 1500,
         });
+        // Retrasar la navegación a "/land" por 2 segundos
+        setTimeout(() => {
+          navigate("/land");
+        }, 2000); // 2000 milisegundos = 2 segundos
       })
-      .then(() => {
-        navigate("/land");
-      })
+
       .catch((error) => {
         console.log("Error al registrar la incidencia", error);
         Swal.fire({
@@ -113,6 +108,9 @@ const AgregarIncidencia = () => {
           text: "Hubo un problemma al procesar tu solicitud. Intentalo de nuevo más tarde",
         });
       });
+  };
+  const handleIncidentesChange = (e) => {
+    setIncidentesEditados(e.target.value);
   };
 
   const abrirAplicacionTelefono = () => {
@@ -247,8 +245,8 @@ const AgregarIncidencia = () => {
                   <InputTextarea
                     type="text"
                     placeholder="Ingresa cualquier detalle relevante"
-                    value={incidentes}
-                    onChange={(e) => setIncidentes(e.target.value)}
+                    value={incidentesEditados}
+                    onChange={handleIncidentesChange}
                     className="w-100"
                     rows={10}
                   />
