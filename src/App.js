@@ -29,6 +29,7 @@ import VisitaView from './views/visita';
 import LlamadaView from './views/llamada';
 import CambaceoDiarioView from './views/cambaceoDiario';
 import CambaceoSemanalView from './views/cambaceoSemanal';
+import AllUsuers from './components/AllUsuers';
 
 function App() {
   return (
@@ -107,6 +108,7 @@ function App() {
           {/* Ruta de admin */}
           <Route element={<ProtectedRoutes allowedRoles={['admin']} exact />}>
             <Route path='/crearLider' element={<CrearLider />} />
+            <Route path='/usuarios' element={<AllUsuers />} />
           </Route>
         </Routes>
       </div>
