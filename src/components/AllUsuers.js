@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './navbar';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'react-bootstrap-icons';
+import { ArrowLeft, X } from 'react-bootstrap-icons';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
@@ -14,6 +14,16 @@ import Swal from 'sweetalert2';
 
 const AllUsuers = () => {
   const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState('');
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
+  const filteredUsers = users.filter(
+    (user) =>
+      user.Nombre.toLowerCase().includes(search.toLowerCase()) ||
+      user.Apellido_pat.toLowerCase().includes(search.toLowerCase())
+  );
+
   const fetchUsuarios = async () => {
     Swal.fire({
       title: 'Cargando...',
@@ -210,8 +220,44 @@ const AllUsuers = () => {
       >
         <div className='w-100 text-center'>
           <div className='row'>
-            <h4 className='titulo-cambaceo px-0 px-md-5'>Usuarios</h4>
-            <DataTable value={users}>
+            <div className='col-12 px-0 px-md-5 mb-4 mb-md-0 d-flex justify-content-between'>
+              <div className='row w-100'>
+                <div className='col-md-4 col-12 centrar'>
+                  <h4 className='titulo-cambaceo text-start  p-0 p-sm-4'>
+                    Usuarios
+                  </h4>
+                </div>
+                <div className='col-md-8 col-12 centrar'>
+                  <div className='row w-100'>
+                    <div className='col-md-6'>
+                      <h6 className='textoBuscaSeg'>
+                        Selecciona al colaborador<br></br>y el tipo de
+                        seguimiento
+                      </h6>
+                    </div>
+                    <div className='col-md-6'>
+                      <div className='input-wrapper'>
+                        <input
+                          type='text'
+                          className='form-control'
+                          placeholder='Buscar por Nombre'
+                          aria-label='Buscar'
+                          aria-describedby='basic-addon1'
+                          value={search}
+                          onChange={handleSearchChange}
+                        />
+                        <X
+                          className='clear-icon'
+                          onClick={() => setSearch('')}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <DataTable value={filteredUsers}>
               <Column
                 field='Imagen'
                 header='Imagen'
