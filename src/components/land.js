@@ -72,46 +72,69 @@ const Land = () => {
                     </div>
                   </div>
                 </div>
-                <div className='col-md-3'>
-                  <div className='row'>
-                    <div className='col-12'>
-                      <h4 className='subTituloLand'>Planeador</h4>
+
+                {isAdmin ? (
+                  <>
+                    <div className='col-md-3'>
+                      <div className='row'>
+                        <div className='col-12'>
+                          <h4 className='subTituloLand'>Planeador</h4>
+                        </div>
+                        <div className='col-12'>
+                          <div className='row pt-5'>
+                            <div className='col-md-12'>
+                              <Link to='/planeador' className='no-decoration'>
+                                <img src={Planeador} alt='Boton-Editar'></img>
+                                <p className='placeBtn'>Entrar</p>
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className='col-12'>
-                      <div className='row pt-5'>
-                        <div className='col-md-12'>
-                          <Link to='/planeador' className='no-decoration'>
-                            <img src={Planeador} alt='Boton-Editar'></img>
-                            <p className='placeBtn'>Entrar</p>
-                          </Link>
+                    <div className='col-md-3'>
+                      <div className='row'>
+                        <div className='col-12'>
+                          <h4 className='subTituloLand'>Usuarios</h4>
+                        </div>
+                        <div className='col-12'>
+                          <div className='row pt-5'>
+                            <div className='col-md-12'>
+                              <Link to='/usuarios' className='no-decoration'>
+                                <i
+                                  className='pi pi-users'
+                                  style={{
+                                    color: '#ea4335',
+                                    fontSize: '6em',
+                                  }}
+                                ></i>
+                                <p className='placeBtn'>Entrar</p>
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className='col-md-6'>
+                    <div className='row'>
+                      <div className='col-12'>
+                        <h4 className='subTituloLand'>Planeador</h4>
+                      </div>
+                      <div className='col-12'>
+                        <div className='row pt-5'>
+                          <div className='col-md-12'>
+                            <Link to='/planeador' className='no-decoration'>
+                              <img src={Planeador} alt='Boton-Editar'></img>
+                              <p className='placeBtn'>Entrar</p>
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className='col-md-3'>
-                  <div className='row'>
-                    <div className='col-12'>
-                      <h4 className='subTituloLand'>Usuarios</h4>
-                    </div>
-                    <div className='col-12'>
-                      <div className='row pt-5'>
-                        <div className='col-md-12'>
-                          <Link to='/usuarios' className='no-decoration'>
-                            <i
-                              className='pi pi-users'
-                              style={{
-                                color: '#ea4335',
-                                fontSize: '6em',
-                              }}
-                            ></i>
-                            <p className='placeBtn'>Entrar</p>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

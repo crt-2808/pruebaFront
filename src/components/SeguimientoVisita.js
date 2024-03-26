@@ -137,7 +137,7 @@ const SeguimientoVisita = () => {
     const envioIncidentes = { incidencia: incidentesEditados };
     try {
       const response = await fetch(
-        `${API_URL}/incidencia/${registroSeleccionado.ID}`,
+        `${API_URL}/incidencia/${registroSeleccionado.idPlanificador}`,
         {
           method: 'PUT',
           headers: {
