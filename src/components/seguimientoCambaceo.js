@@ -169,14 +169,12 @@ const SeguimientoCambaceo = () => {
     });
     Swal.showLoading();
     try {
-      const response = await fetch(`${API_URL}/descargarFechas`, {
-        method: "POST",
+      const response = await fetchWithToken(`${API_URL}/descargarFechas`, {
+        method: "GET",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "text/csv", // Especifica el tipo de contenido que esperas recibir
         },
-        body: JSON.stringify({ responseType: "blob" }),
       });
-      console.log(response);
       Swal.close();
       if (response.status === 204) {
         return Swal.fire({
@@ -185,16 +183,23 @@ const SeguimientoCambaceo = () => {
           text: "No hay registros para la próxima semana aún.",
         });
       }
-
-      // Crear un objeto URL para el blob y simular un clic para iniciar la descarga
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "resultado_consulta.csv";
-      a.click();
-      window.URL.revokeObjectURL(url);
+      // Verificar si la respuesta es exitosa
+      if (response.ok) {
+        // Generar un enlace de descarga para el archivo CSV
+        const blob = await response.blob();
+        const downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = "datos.csv";
+        downloadLink.click();
+      } else {
+        // Manejar errores de la solicitud
+        console.error(
+          "Error al descargar el archivo CSV:",
+          response.statusText
+        );
+      }
     } catch (error) {
+      // Manejar errores de red u otros errores
       Swal.close();
       console.error("Error al descargar el archivo CSV:", error.message);
       Swal.fire({
@@ -202,6 +207,7 @@ const SeguimientoCambaceo = () => {
         title: "Oops...",
         text: "Algo salió mal al descargar el archivo CSV!",
       });
+      console.error("Error de red:", error);
     } finally {
       setDescargando(false);
     }
