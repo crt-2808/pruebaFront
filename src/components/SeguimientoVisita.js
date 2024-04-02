@@ -134,9 +134,9 @@ const SeguimientoVisita = () => {
       });
       return;
     }
-    const envioIncidentes = { incidencia: incidentesEditados };
+    const envioIncidentes = { Incidentes: incidentesEditados };
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `${API_URL}/incidencia/${registroSeleccionado.idPlanificador}`,
         {
           method: 'PUT',
@@ -166,6 +166,8 @@ const SeguimientoVisita = () => {
         setModoCuestionario(false);
       } else {
         console.log(response);
+        const data = await response.json();
+        console.log(data);
         Swal.fire({
           icon: 'error',
           title: 'Error al registrar la incidencia',
