@@ -27,12 +27,9 @@ const UserProvider = ({children}) => {
         // Si el usuario está establecido, guardarlo en sessionStorage
         sessionStorage.setItem('usuario', JSON.stringify(us));
     } else {
-        // Si el usuario no está establecido (es decir, null), eliminarlo de sessionStorage
-        sessionStorage.removeItem('usuario');
-        // También hay que eliminar el JWT
-        sessionStorage.removeItem('jwtToken');
-        setJwtToken(null);
-        sessionStorage.removeItem('userRole');
+      sessionStorage.clear();
+      setJwtToken(null);
+      setIsBlocked(false);
 
     }
   }

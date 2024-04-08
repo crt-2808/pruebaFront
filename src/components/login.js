@@ -11,6 +11,7 @@ import { API_URL } from '../utils/api';
 import { initGoogleAuth, clientId } from '../utils/googleAuth';
 import { Toast } from 'primereact/toast';
 import Swal from 'sweetalert2';
+import { showNotification } from '../utils/utils';
 const mostrarMensajeUsuarioNoRegistrado = () => {
   Swal.fire({
     title: 'Usuario No Registrado',
@@ -103,6 +104,7 @@ function Login() {
       }, 100);
     } catch (error) {
       console.error('Error en la autenticación:', error);
+      showNotification('error', 'Error en la autenticación'); // Mostrar notificación de error
     }
   };
 

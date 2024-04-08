@@ -66,8 +66,6 @@ const Navbar = () => {
   });
 
   const handleLogout = () => {
-    sessionStorage.removeItem('jwtToken');
-    sessionStorage.removeItem('userRole');
     toggleUser(null);
     signOut();
     navigate('/');
