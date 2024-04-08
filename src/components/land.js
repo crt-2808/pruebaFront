@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useUserContext } from '../userProvider';
 import Navbar from './navbar';
 import Agregar from '../img/Agregar.png';
 import Editar from '../img/boton-editar.png';
 import Planeador from '../img/Planeador.png';
-import { useAuthRedirect } from '../useAuthRedirect';
 import { isUserAdmin } from '../utils/auth';
 const upperCaseFirstLetter = (string) =>
   `${string.slice(0, 1).toUpperCase()}${string.slice(1)}`;
@@ -18,7 +17,6 @@ const lowerCaseAllWordsExceptFirstLetters = (string) =>
 
 const Land = () => {
   const isAdmin = isUserAdmin();
-  useAuthRedirect();
   const { usuario } = useUserContext();
 
   return (

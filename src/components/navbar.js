@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState } from 'react';
 import logo from '../img/logo final.png';
 import ceth from '../img/Logo Ceth.jpg';
 import latino from '../img/logo Latino.jpg';
@@ -64,8 +64,8 @@ const Navbar = () => {
     onLogoutSuccess,
     onFailure: () => console.log('logout fail'),
   });
-
   const handleLogout = () => {
+    sessionStorage.removeItem('jwtToken');
     toggleUser(null);
     signOut();
     navigate('/');
