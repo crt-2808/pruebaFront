@@ -6,6 +6,13 @@ import Agregar from '../img/Agregar.png';
 import Editar from '../img/boton-editar.png';
 import Planeador from '../img/Planeador.png';
 import { isUserAdmin } from '../utils/auth';
+import { useState } from 'react';
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import { useEffect } from 'react';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { API_URL, fetchWithToken } from "../utils/api";
+
 const upperCaseFirstLetter = (string) =>
   `${string.slice(0, 1).toUpperCase()}${string.slice(1)}`;
 
@@ -18,10 +25,73 @@ const lowerCaseAllWordsExceptFirstLetters = (string) =>
 const Land = () => {
   const isAdmin = isUserAdmin();
   const { usuario } = useUserContext();
+  const [showPopup, setShowPopup] = useState(false);
+  const [ventas, setVentas] = useState('');
+  const [cobranza, setCobranza] = useState('');
+  const [trabajoPropio, setTrabajoPropio] = useState('');
+  const [Nombre_usuario, setUsuario] = useState('');
+
+  useEffect(() => {
+    // Coloca aquí la lógica para detectar el inicio de sesión
+    // Por ejemplo, podrías utilizar el estado de usuario para esto
+     setShowPopup(true); // Descomenta esta línea cuando quieras mostrar el popup
+     const nombreUsuario = usuario.givenName; // Debes reemplazar esto con la lógica real para obtener el nombre de usuario
+    setUsuario(nombreUsuario);
+  }, []); // El segundo argumento [] asegura que este efecto se ejecute solo una vez al montar el componente
+
+  const handleClickGuardar = async () => {
+    try {
+      const response = await fetchWithToken(`${API_URL}/GuardarIncidenciaDiaria`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Incidencia: trabajoPropio }),
+      });
+
+      if (response.ok) {
+        console.log('Incidencia guardada correctamente');
+        // Aquí puedes realizar alguna acción adicional si la incidencia se guarda con éxito
+      } else {
+        console.error('Error al guardar la incidencia:', response.statusText);
+        // Aquí puedes manejar el error de alguna manera apropiada
+      }
+    } catch (error) {
+      console.error('Error al realizar la solicitud:', error.message);
+      // Aquí puedes manejar el error de alguna manera apropiada
+    }finally{
+      setShowPopup(false)
+    }
+  };
 
   return (
-    <div className='fluid color-land'>
+    <div className={`fluid color-land ${showPopup ? 'popup-open' : ''}`}>
       <Navbar></Navbar>
+      <Dialog
+        visible={showPopup}
+        onHide={() => setShowPopup(false)}
+        header={`Estimad@ ${Nombre_usuario}, por favor registra tus actividades para poder continuar`}
+        footer={
+          <div>
+            <Button label='Guardar' icon='pi pi-check' onClick={handleClickGuardar} />
+          </div>
+        }
+      >
+        <div className='p-grid p-fluid'>
+          <div className='p-col-12 p-md-4'>
+            <span>Ventas:</span>
+            <InputTextarea value={ventas} onChange={(e) => setVentas(e.target.value)} rows={3} cols={30} />
+          </div>
+          <div className='p-col-12 p-md-4'>
+            <span>Cobranza:</span>
+            <InputTextarea value={cobranza} onChange={(e) => setCobranza(e.target.value)} rows={3} cols={30} />
+          </div>
+          <div className='p-col-12 p-md-4'>
+            <span>Trabajo Propio:</span>
+            <InputTextarea value={trabajoPropio} onChange={(e) => setTrabajoPropio(e.target.value)} rows={3} cols={30} />
+          </div>
+        </div>
+      </Dialog>
       <div className='container land pt-4 pb-4  d-flex' id='landing-p'>
         <div className='row w-100'>
           <div className='col-12 mt-2 mb-md-3 mb-sm-0 d-sm-block d-md-flex justify-content-sm-between align-items-center text-center'>

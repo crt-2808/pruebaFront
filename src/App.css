@@ -975,3 +975,6 @@ svg.p-icon.p-checkbox-icon.p-c:hover{
 .estatus h6{
   margin: 0.2rem;
 }
+.popup-open {
+  filter: blur(3px);
+}
