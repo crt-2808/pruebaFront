@@ -304,7 +304,13 @@ const Land = () => {
                           </div>
                           <div className="col-md-4">
                             <Link to="/Equipos" className="no-decoration">
-                              <img  src={Usuario} alt="Boton-Usuario" style={{ height: '120px' }} />
+                            <i
+                                    className="pi pi-users"
+                                    style={{
+                                      color: "#ea4335",
+                                      fontSize: "6em",
+                                    }}
+                                  ></i>
                               <p className="placeBtn">Entrar</p>
                             </Link>
                           </div>
