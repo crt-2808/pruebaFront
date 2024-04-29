@@ -30,6 +30,7 @@ import LlamadaView from './views/llamada';
 import CambaceoDiarioView from './views/cambaceoDiario';
 import CambaceoSemanalView from './views/cambaceoSemanal';
 import AllUsuers from './components/AllUsuers';
+import Equipos from './components/Equipos';
 
 function App() {
   return (
@@ -68,6 +69,7 @@ function App() {
               <ProtectedRoutes allowedRoles={['lider', 'admin']} exact />
             }
           >
+            <Route path='/Equipos' element={<Equipos />} />
             <Route path='/agregarColab' element={<AgregarColab />} />
             <Route path='/editarColab' element={<EditarColab />} />
             <Route
