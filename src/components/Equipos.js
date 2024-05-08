@@ -164,12 +164,14 @@ const Equipos = () => {
                         </div>
                       </div>
                       <div className='col-md-6'>
+                        <Link to='/crearEquipo'>
                         <Button
                           label='Crear Equipo'
                           icon='pi pi-plus'
                           severity='Danger'
                           style={{ marginLeft: '2rem' }}
                         />
+                        </Link>
                       </div>
                     </div>
                   </div>

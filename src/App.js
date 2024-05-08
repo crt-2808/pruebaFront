@@ -31,6 +31,7 @@ import CambaceoDiarioView from './views/cambaceoDiario';
 import CambaceoSemanalView from './views/cambaceoSemanal';
 import AllUsuers from './components/AllUsuers';
 import Equipos from './components/Equipos';
+import CrearEquipo from './components/CrearEquipo';
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
             <Route path='/Equipos' element={<Equipos />} />
             <Route path='/agregarColab' element={<AgregarColab />} />
             <Route path='/editarColab' element={<EditarColab />} />
+            <Route path='/crearEquipo' element={<CrearEquipo/>} />
             <Route
               path='/SeguimientoCambaceo'
               element={<SeguimientoCambaceo />}
@@ -91,6 +93,7 @@ function App() {
               path='/SeguimientoLlamada'
               element={<SeguimientoLlamada />}
             />
+    
           </Route>
 
           {/*Ruta de los colaboradores */}
