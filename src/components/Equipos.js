@@ -10,6 +10,8 @@ import { InputText } from 'primereact/inputtext';
 import { useAuthRedirect } from '../useAuthRedirect';
 import { API_URL, fetchWithToken } from '../utils/api';
 import Usuario_sin_img from '../img/imagen-de-usuario-con-fondo-negro.png';
+import { showNotification } from '../utils/utils';
+import Swal from 'sweetalert2';
 
 const Equipos = () => {
   useAuthRedirect();
@@ -42,30 +44,78 @@ const Equipos = () => {
       console.error('Error fetching equipos:', error);
     }
   };
+  const deleteEquipo = async (equipoId) => {
+    try {
+      const response = await fetchWithToken(`${API_URL}/DeleteEquipo/${equipoId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const newEquipos = equipos.filter(equipo => equipo.id !== equipoId);
+        setEquipos(newEquipos);
+        showNotification('success', 'Equipo eliminado', 'El equipo fue eliminado correctamente');
+      } else {
+        throw new Error('Error al eliminar el equipo');
+      }
+    } catch (error) {
+      console.error('Error eliminando el equipo:', error);
+      alert('No se pudo eliminar el equipo');
+    }
+  };
+  const optionsMenu = (rowData) => {
+    const menuItems = [
+      {
+        label: 'Añadir usuario',
+        icon: 'pi pi-user-plus',
+        command: () => {
+          console.log('Añadir usuario');
+        },
+      },
+      {
+        label: 'Editar equipo',
+        icon: 'pi pi-pencil',
+        command: () => {
+          console.log('Editar equipo');
+        },
+      },
+      {
+        label: 'Eliminar equipo',
+        icon: 'pi pi-trash',
+        command: () => {
+          Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Una vez eliminado, no podrás recuperar este equipo',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              deleteEquipo(rowData.id);
+            }
+          });
 
-  const menuItems = [
-    {
-      label: 'Añadir usuario',
-      icon: 'pi pi-user-plus',
-      command: () => {
-        console.log('Añadir usuario');
+
+        },
       },
-    },
-    {
-      label: 'Editar equipo',
-      icon: 'pi pi-pencil',
-      command: () => {
-        console.log('Editar equipo');
-      },
-    },
-    {
-      label: 'Eliminar equipo',
-      icon: 'pi pi-trash',
-      command: () => {
-        console.log('Eliminar equipo');
-      },
-    },
-  ];
+    ];
+  
+    return (
+      <div className='p-d-flex p-justify-center'>
+      <Button
+        icon='pi pi-bars'
+        className='p-button-rounded p-button-text'
+        onClick={(e) => showMenu(e, rowData)}
+      />
+      <Menu model={menuItems} popup ref={menu} />
+    </div>
+    );
+  };
   const imageBodyTemplate = (rowData) => {
     return (
       <div className='avatars'>
@@ -87,23 +137,24 @@ const Equipos = () => {
     );
   };
 
-  const optionsMenu = (rowData) => {
-    return (
-      <div className='p-d-flex p-justify-center'>
-        <Button
-          icon='pi pi-bars'
-          className='p-button-rounded p-button-text'
-          onClick={(e) => showMenu(e, rowData)}
-        />
-        <Menu model={menuItems} popup ref={menu} />
-      </div>
-    );
-  };
+  // const optionsMenu = (rowData) => {
+  //   return (
+      // <div className='p-d-flex p-justify-center'>
+      //   <Button
+      //     icon='pi pi-bars'
+      //     className='p-button-rounded p-button-text'
+      //     onClick={(e) => showMenu(e, rowData)}
+      //   />
+      //   <Menu model={menuItems} popup ref={menu} />
+      // </div>
+  //   );
+  // };
 
   const showMenu = (event, rowData) => {
     setMenuTarget(event.currentTarget);
-    menu.current.show(event);
+    menu.current.toggle(event); 
   };
+  
 
   const menu = useRef(null);
   const [menuTarget, setMenuTarget] = useState(null);
