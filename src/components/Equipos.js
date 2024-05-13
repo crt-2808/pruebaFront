@@ -12,6 +12,10 @@ import { API_URL, fetchWithToken } from '../utils/api';
 import Usuario_sin_img from '../img/imagen-de-usuario-con-fondo-negro.png';
 import { showNotification } from '../utils/utils';
 
+import { Avatar } from 'primereact/avatar';
+import { AvatarGroup } from 'primereact/avatargroup';  
+        
+
 import Swal from 'sweetalert2';
 
 const Equipos = () => {
@@ -42,6 +46,7 @@ const Equipos = () => {
 
       const equiposData = await response.json();
       setEquipos(equiposData);
+      console.log('Equipos:', equiposData);
     } catch (error) {
       console.error('Error fetching equipos:', error);
     }
@@ -117,24 +122,26 @@ const Equipos = () => {
   };
   const imageBodyTemplate = (rowData) => {
     return (
-      <div className='avatars'>
+      <AvatarGroup>
         {rowData.imagenes.map((imgUrl, index) => (
-          <img
+          <Avatar
             key={index}
-            src={imgUrl}
-            onError={(e) => (e.target.src = Usuario_sin_img)}
-            alt='member'
+            label={imgUrl ? '' : 'ND'} 
+            image={imgUrl || Usuario_sin_img} 
+            onImageError={(e) => e.target.src = Usuario_sin_img} 
+            shape="circle"
+            size="large" // O el tamaño que prefieras
             style={{
-              width: '30px',
-              height: '30px',
-              borderRadius: '50%',
-              margin: '2px',
+              width: '40px', // Ajusta el tamaño como necesites
+              height: '40px',
+              margin: '0 1px'
             }}
           />
         ))}
-      </div>
+      </AvatarGroup>
     );
   };
+  
 
   // const optionsMenu = (rowData) => {
   //   return (

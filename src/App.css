@@ -904,6 +904,7 @@ border-radius: 53px;
   fill: #ea4335;
 }
 .card{
+  min-height: 19rem;
   transition: background-color 500ms ease, color;
   overflow-wrap: break-word;
 }
@@ -977,4 +978,12 @@ svg.p-icon.p-checkbox-icon.p-c:hover{
 }
 .popup-open {
   filter: blur(3px);
+}
+.boton-eliminar{
+  position: absolute !important;
+  font-size: 1.5rem;
+  top: 0.1rem;
+  right: 0.1rem;
+  transform: translate(25%, -30%);
+  
 }

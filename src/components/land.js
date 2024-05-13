@@ -52,6 +52,7 @@ const Land = () => {
           const data = await response.json();
           const incidencia = data.incidencia; // Acceder a la incidencia desde la respuesta JSON
           console.log('Incidencia obtenida:', incidencia);
+          setIncidenciaRegistrada(incidencia);
         } else {
           console.error('Error al obtener la incidencia:', response.statusText);
         }
@@ -130,7 +131,7 @@ const Land = () => {
           <div className='p-col-12 p-md-4'>
             <span>Trabajo Propio:</span>
             <InputTextarea
-              value={trabajoPropio}
+              value={trabajoPropio || incidenciaRegistrada}
               onChange={(e) => setTrabajoPropio(e.target.value)}
               rows={3}
               cols={30}

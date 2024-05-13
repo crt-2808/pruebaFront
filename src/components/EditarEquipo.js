@@ -358,11 +358,15 @@ function EditarEquipo(){
                 <h1 className="textoSeguimiento mx-md-5 mx-sm-1">{nombreEquipo}</h1>
                 </div>
                 <div className='col-md-6'>
+                  <div className="row ">
+
+                  <div className="col-md-6 ">
+
                         <div
                           className='p-input-icon-left'
                           style={{
                             display: 'inline-block',
-                            marginLeft: '2rem',
+                            widows: '100%',
                           }}
                         >
                           <i className='pi pi-search' />
@@ -370,18 +374,21 @@ function EditarEquipo(){
                             value={search}
                             onChange={handleSearchChange}
                             placeholder='Buscar'
+                            className="w-100"
                           />
                         </div>
-                      </div>
+                  </div>
                       <div className='col-md-6'>
-
+                          
                         <Button
                           label='Agregar Miembros'
                           icon='pi pi-plus'
                           severity='Danger'
-                          style={{ marginLeft: '2rem' }}
+                          
                           onClick={handleOpenModal}
                         />
+                      </div>
+                  </div>
                       </div>
                 
               </div>
@@ -398,8 +405,8 @@ function EditarEquipo(){
                             <div className="card centrar p-3">
                             <Button
                                 icon="pi pi-minus"
-                                className="p-button-rounded p-button-danger"
-                                style={{ fontSize: '1.5rem', position: 'absolute', top: '0.1rem', right: '0.1rem' }}
+                                className="p-button-rounded p-button-danger boton-eliminar"
+                                
                                 onClick={() => handleDeleteConfirmation(colaborador)}
                             />
                               <div className="user-status">
