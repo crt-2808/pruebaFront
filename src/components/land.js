@@ -40,7 +40,6 @@ const Land = () => {
     setUsuario(nombreUsuario);
 
     const fetchIncidenciaRegistrada = async () => {
-      console.log(isLider);
       try {
         const response = await fetchWithToken(
           `${API_URL}/GetIncidenciaDiaria`,

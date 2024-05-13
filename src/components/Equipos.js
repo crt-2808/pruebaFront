@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Navbar from './navbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'react-bootstrap-icons';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -11,12 +11,15 @@ import { useAuthRedirect } from '../useAuthRedirect';
 import { API_URL, fetchWithToken } from '../utils/api';
 import Usuario_sin_img from '../img/imagen-de-usuario-con-fondo-negro.png';
 import { showNotification } from '../utils/utils';
+
 import Swal from 'sweetalert2';
 
 const Equipos = () => {
   useAuthRedirect();
+  const navigate = useNavigate();
   const [equipos, setEquipos] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRowData, setSelectedRowData] = useState(null);
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -39,7 +42,6 @@ const Equipos = () => {
 
       const equiposData = await response.json();
       setEquipos(equiposData);
-      console.log('Equipos:', equiposData);
     } catch (error) {
       console.error('Error fetching equipos:', error);
     }
@@ -68,17 +70,14 @@ const Equipos = () => {
   const optionsMenu = (rowData) => {
     const menuItems = [
       {
-        label: 'Añadir usuario',
-        icon: 'pi pi-user-plus',
-        command: () => {
-          console.log('Añadir usuario');
-        },
-      },
-      {
         label: 'Editar equipo',
         icon: 'pi pi-pencil',
         command: () => {
-          console.log('Editar equipo');
+          if(selectedRowData) {
+            navigate(`/EditarEquipo/${selectedRowData.id}`);
+          } else {
+            console.error('No se ha seleccionado ningún equipo.');
+          }
         },
       },
       {
@@ -151,6 +150,7 @@ const Equipos = () => {
   // };
 
   const showMenu = (event, rowData) => {
+    setSelectedRowData(rowData);
     setMenuTarget(event.currentTarget);
     menu.current.toggle(event); 
   };

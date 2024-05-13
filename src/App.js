@@ -32,6 +32,7 @@ import CambaceoSemanalView from './views/cambaceoSemanal';
 import AllUsuers from './components/AllUsuers';
 import Equipos from './components/Equipos';
 import CrearEquipo from './components/CrearEquipo';
+import EditarEquipo from './components/EditarEquipo';
 
 function App() {
   return (
@@ -74,6 +75,7 @@ function App() {
             <Route path='/agregarColab' element={<AgregarColab />} />
             <Route path='/editarColab' element={<EditarColab />} />
             <Route path='/crearEquipo' element={<CrearEquipo/>} />
+            <Route path='/EditarEquipo/:id' element={<EditarEquipo/>}/>
             <Route
               path='/SeguimientoCambaceo'
               element={<SeguimientoCambaceo />}
