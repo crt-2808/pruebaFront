@@ -11,7 +11,7 @@ import { useAuthRedirect } from '../useAuthRedirect';
 import { API_URL, fetchWithToken } from '../utils/api';
 import Usuario_sin_img from '../img/imagen-de-usuario-con-fondo-negro.png';
 import { showNotification } from '../utils/utils';
-
+import { isUserAdmin } from '../utils/auth';
 import { Avatar } from 'primereact/avatar';
 import { AvatarGroup } from 'primereact/avatargroup';  
         
@@ -20,6 +20,7 @@ import Swal from 'sweetalert2';
 
 const Equipos = () => {
   useAuthRedirect();
+  const isAdmin = isUserAdmin();
   const navigate = useNavigate();
   const [equipos, setEquipos] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -122,25 +123,25 @@ const Equipos = () => {
   };
   const imageBodyTemplate = (rowData) => {
     return (
-      <AvatarGroup>
-        {rowData.imagenes.map((imgUrl, index) => (
-          <Avatar
-            key={index}
-            label={imgUrl ? '' : 'ND'} 
-            image={imgUrl || Usuario_sin_img} 
-            onImageError={(e) => e.target.src = Usuario_sin_img} 
-            shape="circle"
-            size="large" // O el tamaño que prefieras
-            style={{
-              width: '40px', // Ajusta el tamaño como necesites
-              height: '40px',
-              margin: '0 1px'
-            }}
-          />
-        ))}
-      </AvatarGroup>
+        <AvatarGroup>
+            {rowData.imagenes.map((imgUrl, index) => (
+                <Avatar
+                    key={index}
+                    image={imgUrl || Usuario_sin_img}
+                    onImageError={(e) => (e.target.src = Usuario_sin_img)}
+                    shape="circle"
+                    size="large"
+                    style={{
+                        width: '40px',
+                        height: '40px',
+                        margin: '0 1px'
+                    }}
+                />
+            ))}
+        </AvatarGroup>
     );
-  };
+};
+
   
 
   // const optionsMenu = (rowData) => {
@@ -244,6 +245,7 @@ const Equipos = () => {
               >
                 <Column field='nombre' header='Nombre' />
                 <Column field='miembros' header='# Usuarios' />
+                {isAdmin && <Column field='creador' header='Creador' />}
                 <Column header='Imágenes' body={imageBodyTemplate} />
                 <Column
                   header=''
