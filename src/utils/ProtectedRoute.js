@@ -19,7 +19,7 @@ const ProtectedRoutes = ({ allowedRoles }) => {
       <Navigate to='/unAuthorized' />
     )
   ) : (
-    <Navigate to='/login' />
+    <Navigate to='/' />
   );
 };
 

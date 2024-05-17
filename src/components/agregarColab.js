@@ -40,40 +40,45 @@ function AgregarColab() {
 
   const navigate = useNavigate();
   const formData = new FormData();
+
   const onSubmit = async (data) => {
+    if (!data) {
+      return Swal.fire({
+        icon: "error",
+        title: "Se requiere llenar el formulario",
+        text: "Por favor, completa todos los campos.",
+        timer: 1200,
+        timerProgressBar: true,
+        backdrop: `
+          rgba(36,32,32,0.65)
+        `,
+      });
+    }
+
     Swal.fire({
       title: "Cargando...",
       text: "Por favor espera un momento",
       allowOutsideClick: false,
     });
     Swal.showLoading();
-    if (data === undefined) {
-      return Swal.fire({
-        icon: "error",
-        title: "Se requiere llenar el formulario",
-        text: "UDA",
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: `
-        rgba(36,32,32,0.65)
 
-      `,
-      });
-    }
     const correoExists = await checkIfCorreoExists(data.Correo);
     console.log("Correo exists:", correoExists);
     if (correoExists) {
+      Swal.close();
       return Swal.fire({
         icon: "error",
         title: "El correo ya está tomado",
         text: "Por favor, ingresa un correo diferente.",
       });
     }
-    let inputElem = document.getElementById("FotoColab");
-    let file = inputElem.files[0];
-    let blob = file.slice(0);
-    const imagen = new File([blob], `${file.name}`);
+
+    const inputElem = document.getElementById("FotoColab");
+    const file = inputElem.files[0];
+    const blob = file ? file.slice(0) : null;
+    const imagen = blob ? new File([blob], `${file.name}`) : null;
     data = { ...data, FotoColab: imagen };
+    
     formData.append("Nombre", data.Nombre);
     formData.append("Apellido_pat", data.Apellido_pat);
     formData.append("Apellido_mat", data.Apellido_mat);
@@ -81,35 +86,19 @@ function AgregarColab() {
     formData.append("Telefono", data.Telefono);
     formData.append("IDEquipo", data.IDEquipo);
 
-    formData.append("FotoColab", data.FotoColab);
-    console.log(data.FotoColab);
-    // data.FotoColab = data.FileList[0];
-
-    console.log(data);
-    // Visualizar el contenido de formData
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
+    if (imagen) {
+      formData.append("FotoColab", data.FotoColab);
     }
 
     let config = {
       method: "POST",
-      body: formData, // formData contiene los datos del formulario
+      body: formData,
     };
     try {
       let res = await fetchWithToken(`${API_URL}/createColaborador`, config);
       Swal.close();
       if (!res.ok) {
-        return Swal.fire({
-          icon: "error",
-          title: "Se produjo un error",
-          text: "UDA",
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-          rgba(36,32,32,0.65)
-          
-          `,
-        });
+        throw new Error("Failed to create colaborador");
       }
       let json = await res.json();
       console.log(json);
@@ -120,24 +109,22 @@ function AgregarColab() {
         timer: 1200,
         timerProgressBar: true,
         backdrop: `
-        rgba(36,32,32,0.65)
-        
-      `,
+          rgba(36,32,32,0.65)
+        `,
       }).then(() => {
         navigate("/land");
       });
     } catch (error) {
       console.error(error);
-      return Swal.fire({
+      Swal.fire({
         icon: "error",
         title: "Se produjo un error",
         text: "UDA",
         timer: 1200,
         timerProgressBar: true,
         backdrop: `
-        rgba(36,32,32,0.65)
-        
-      `,
+          rgba(36,32,32,0.65)
+        `,
       });
     }
   };
@@ -178,24 +165,17 @@ function AgregarColab() {
           className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-5 mt-md-4 "
           id="contenedor-cambaceo"
         >
-          <Form
-            onSubmit={handleSubmit(onSubmit)}
-            // encType="multipart/form-data"
-            method="post"
-            id="form"
-          >
+          <Form onSubmit={handleSubmit(onSubmit)} method="post" id="form">
             <Row className="mb-5">
               <Col xs={12} md={6}>
-                <Form.Group controlid="ColbID">
+                <Form.Group controlId="ColbID">
                   <Form.Label>ColabID</Form.Label>
                   <Form.Control
                     type="string"
                     {...register("ID_Colab", { required: true })}
                     placeholder="Ingresa el ID"
                   />
-                  {errors.ColabID?.type === "required" && (
-                    <p>Este campo es requerido</p>
-                  )}
+                  {errors.ID_Colab && <p>Este campo es requerido</p>}
                 </Form.Group>
                 <br />
                 <Form.Group>
@@ -205,37 +185,27 @@ function AgregarColab() {
                     {...register("Nombre", { required: true })}
                     placeholder="Ingresa el nombre"
                   />
-                  {errors.Nombre?.type === "required" && (
-                    <p>Este campo es requerido</p>
-                  )}
+                  {errors.Nombre && <p>Este campo es requerido</p>}
                 </Form.Group>
                 <br />
                 <Form.Group>
                   <Form.Label>Apellido Paterno</Form.Label>
                   <Form.Control
                     type="string"
-                    {...register("Apellido_pat", {
-                      required: true,
-                    })}
+                    {...register("Apellido_pat", { required: true })}
                     placeholder="Ingresa el apellido"
                   />
-                  {errors.Apellido_Paterno?.type === "required" && (
-                    <p>Este campo es requerido</p>
-                  )}
+                  {errors.Apellido_pat && <p>Este campo es requerido</p>}
                 </Form.Group>
                 <br />
                 <Form.Group>
                   <Form.Label>Apellido Materno</Form.Label>
                   <Form.Control
                     type="string"
-                    {...register("Apellido_mat", {
-                      required: true,
-                    })}
+                    {...register("Apellido_mat", { required: true })}
                     placeholder="Ingresa el apellido"
                   />
-                  {errors.Apellido_Materno?.type === "required" && (
-                    <p>Este campo es requerido</p>
-                  )}
+                  {errors.Apellido_mat && <p>Este campo es requerido</p>}
                 </Form.Group>
               </Col>
               <Col xs={12} md={6}>
@@ -249,9 +219,7 @@ function AgregarColab() {
                     })}
                     placeholder="Ingresa el correo"
                   />
-                  {errors.Correo?.type === "required" && (
-                    <p>Este campo es requerido</p>
-                  )}
+                  {errors.Correo && <p>Este campo es requerido</p>}
                   {errors.Correo?.type === "pattern" && (
                     <p>El formato del correo no es valido</p>
                   )}
@@ -263,14 +231,11 @@ function AgregarColab() {
                     type="tel"
                     {...register("Telefono", {
                       required: true,
-                      pattern:
-                        /^(\(\+?\d{2,3}\)[\|\s|\-|\.]?(([\d][\|\s|\-|\.]?){6})(([\d][\s|\-|\.]?){2})?|(\+?[\d][\s|\-|\.]?){8}(([\d][\s|\-|\.]?){2}(([\d][\s|\-|\.]?){2})?)?)$/i,
+                      pattern: /^(\(\+?\d{2,3}\)[\|\s|\-|\.]?(([\d][\|\s|\-|\.]?){6})(([\d][\s|\-|\.]?){2})?|(\+?[\d][\s|\-|\.]?){8}(([\d][\s|\-|\.]?){2}(([\d][\s|\-|\.]?){2})?)?)$/i,
                     })}
                     placeholder="Ingresa el numero telefónico"
                   />
-                  {errors.Telefono?.type === "required" && (
-                    <p>Este campo es requerido</p>
-                  )}
+                  {errors.Telefono && <p>Este campo es requerido</p>}
                   {errors.Telefono?.type === "pattern" && (
                     <p>El formato del telefono no es valido</p>
                   )}
@@ -279,11 +244,12 @@ function AgregarColab() {
                 <Form.Group>
                   <Form.Label>Equipo</Form.Label>
                   <Form.Select {...register("IDEquipo", { required: true })}>
-                    <option disabled="disabled">Selecciona una opcion</option>
+                    <option value="">Selecciona una opción</option>
                     <option value="1">Frontera</option>
                     <option value="2">Medio</option>
                     <option value="3">Sur</option>
                   </Form.Select>
+                  {errors.IDEquipo && <p>Este campo es requerido</p>}
                 </Form.Group>
                 <br />
                 <Form.Group controlId="FotoColab" className="mb-3">
@@ -291,21 +257,13 @@ function AgregarColab() {
                   <Form.Control
                     type="file"
                     accept=".png,.jpg,.jpeg,.webp"
-                    // {...register("FotoColab", { required: true })}
+                    {...register("FotoColab", { required: true })}
                   />
-                  {errors.FotoColab?.type === "required" && (
-                    <p>Este campo es requerido</p>
-                  )}
+                  {errors.FotoColab && <p>Este campo es requerido</p>}
                 </Form.Group>
               </Col>
               <Col>
-                <Button
-                  type="submit"
-                  value="Enviar"
-                  variant="success"
-                  size="lg"
-                  onClick={() => onSubmit()}
-                >
+                <Button type="submit" variant="success" size="lg">
                   Confirmar
                 </Button>
               </Col>
@@ -316,4 +274,5 @@ function AgregarColab() {
     </div>
   );
 }
+
 export default AgregarColab;
