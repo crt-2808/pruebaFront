@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import Map, { Marker } from 'react-map-gl';
+import Map, { Marker, NavigationControl } from 'react-map-gl';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -32,6 +32,12 @@ function CambaceoDiario() {
     latitude: 26.084241,
     longitude: -98.303863,
   });
+  const [viewState, setViewState] = useState({
+    longitude: -98.303863,
+    latitude: 26.084241,
+    zoom: 16,
+  });
+
   const [suggestions, setSuggestions] = useState([]);
   // Función asíncrona para geocodificación
   const fetchGeocoding = async (address) => {
@@ -65,6 +71,11 @@ function CambaceoDiario() {
     setCoordinates({
       latitude: feature.center[1],
       longitude: feature.center[0],
+    });
+    setViewState({
+      longitude: feature.center[0],
+      latitude: feature.center[1],
+      zoom: viewState.zoom,
     });
     setSuggestions([]);
     setIsFocused(false);
@@ -499,11 +510,8 @@ function CambaceoDiario() {
               </Col>
               <Col xs={12} md={6} className='mt-4 mt-md-0'>
                 <Map
-                  viewState={{
-                    longitude: coordinates.longitude,
-                    latitude: coordinates.latitude,
-                    zoom: 16,
-                  }}
+                  {...viewState}
+                  onMove={(evt) => setViewState(evt.viewState)}
                   style={{
                     width: '100%',
                     height: '480px',
@@ -524,6 +532,7 @@ function CambaceoDiario() {
                     draggable
                     onDragEnd={onMarkerDragEnd}
                   />
+                  <NavigationControl position='top-right' />
                 </Map>
                 <Row>
                   <div style={{ marginTop: '20px' }}>

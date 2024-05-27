@@ -963,6 +963,12 @@ svg.p-icon.p-checkbox-icon.p-c:hover{
   color: black;
 }
 
+.cropped-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 
 .estatus{
   position: absolute;
