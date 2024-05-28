@@ -7,7 +7,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { InputMask } from 'primereact/inputmask';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import 'primeicons/primeicons.css'; //iconos
-import Map, { Marker } from 'react-map-gl';
+import Map, { Marker, NavigationControl } from 'react-map-gl';
 import Swal from 'sweetalert2';
 import Navbar from './navbar';
 import { formatearFecha } from '../utils/utils';
@@ -39,6 +39,11 @@ function CalendarioVisita() {
   const [coordinates, setCoordinates] = useState({
     latitude: 26.084241,
     longitude: -98.303863,
+  });
+  const [viewState, setViewState] = useState({
+    longitude: -98.303863,
+    latitude: 26.084241,
+    zoom: 16,
   });
   const [suggestions, setSuggestions] = useState([]);
   // Función asíncrona para geocodificación
@@ -73,6 +78,11 @@ function CalendarioVisita() {
     setCoordinates({
       latitude: feature.center[1],
       longitude: feature.center[0],
+    });
+    setViewState({
+      longitude: feature.center[0],
+      latitude: feature.center[1],
+      zoom: viewState.zoom,
     });
     setSuggestions([]);
     setIsFocused(false);
@@ -426,11 +436,8 @@ function CalendarioVisita() {
             </Col>
             <Col xs={12} md={12} className='centrar'>
               <Map
-                viewState={{
-                  longitude: coordinates.longitude,
-                  latitude: coordinates.latitude,
-                  zoom: 16,
-                }}
+                {...viewState}
+                onMove={(evt) => setViewState(evt.viewState)}
                 className='centrar'
                 style={{
                   width: '80%',
@@ -453,6 +460,7 @@ function CalendarioVisita() {
                   draggable
                   onDragEnd={onMarkerDragEnd}
                 />
+                <NavigationControl position='top-right' />
               </Map>
             </Col>
           </Row>

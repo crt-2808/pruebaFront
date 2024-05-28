@@ -969,6 +969,10 @@ svg.p-icon.p-checkbox-icon.p-c:hover{
   text-overflow: ellipsis;
 }
 
+.centro-block{
+  padding: 10% 0;
+
+}
 
 .estatus{
   position: absolute;
