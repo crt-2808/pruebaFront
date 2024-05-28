@@ -13,7 +13,7 @@ const Logo = ({ src, alt, className }) => (
   <img src={src} className={`align-top logo ${className}`} alt={alt} />
 );
 
-const UserProfile = ({ user, onLogout }) => {
+const UserProfile = ({ user, onLogout, onEditProfile }) => {
   const [menuVisible, setMenuVisible] = useState(false);
 
   const toggleMenu = () => setMenuVisible(!menuVisible);
@@ -44,6 +44,7 @@ const UserProfile = ({ user, onLogout }) => {
       )}
       <div className={`user-menu ${menuVisible ? 'activo' : ''}`}>
         <div onClick={userDetails}>Mi perfil</div>
+        <div onClick={onEditProfile}>Editar perfil</div>
         <div onClick={onLogout}>Cerrar sesión</div>
       </div>
     </div>
@@ -53,6 +54,7 @@ const UserProfile = ({ user, onLogout }) => {
 const Navbar = () => {
   const { usuario, toggleUser } = useUserContext();
   const navigate = useNavigate();
+
   const onLogoutSuccess = () => {
     sessionStorage.removeItem('jwtToken');
     toggleUser(null);
@@ -64,11 +66,16 @@ const Navbar = () => {
     onLogoutSuccess,
     onFailure: () => console.log('logout fail'),
   });
+
   const handleLogout = () => {
     sessionStorage.removeItem('jwtToken');
     toggleUser(null);
     signOut();
     navigate('/');
+  };
+
+  const handleEditProfile = () => {
+    navigate('/editarInfo');
   };
 
   return (
@@ -83,7 +90,7 @@ const Navbar = () => {
         <Logo src={univic} alt='' className='univic nav__item' />
       </a>
       <div className='col-md-1'>
-        <UserProfile user={usuario} onLogout={handleLogout} />
+        <UserProfile user={usuario} onLogout={handleLogout} onEditProfile={handleEditProfile} />
       </div>
     </nav>
   );

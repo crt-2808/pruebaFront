@@ -79,6 +79,7 @@ const Equipos = () => {
   };
   const deleteEquipo = async (equipoId) => {
     try {
+      console.log('Equipo a eliminar:', equipoId); // Agregar console.log del equipo seleccionado
       const response = await fetchWithToken(
         `${API_URL}/DeleteEquipo/${equipoId}`,
         {
@@ -88,7 +89,7 @@ const Equipos = () => {
           },
         }
       );
-
+  
       if (response.ok) {
         const newEquipos = equipos.filter((equipo) => equipo.id !== equipoId);
         setEquipos(newEquipos);
@@ -105,6 +106,7 @@ const Equipos = () => {
       alert('No se pudo eliminar el equipo');
     }
   };
+  
   const optionsMenu = (rowData) => {
     const menuItems = [
       {
@@ -133,7 +135,7 @@ const Equipos = () => {
             cancelButtonText: 'Cancelar',
           }).then((result) => {
             if (result.isConfirmed) {
-              deleteEquipo(rowData.id);
+              deleteEquipo(selectedRowData.id);
             }
           });
         },

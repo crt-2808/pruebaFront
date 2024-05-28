@@ -33,7 +33,7 @@ import AllUsuers from './components/AllUsuers';
 import Equipos from './components/Equipos';
 import CrearEquipo from './components/CrearEquipo';
 import EditarEquipo from './components/EditarEquipo';
-
+import EditarInfo from './components/editarInfo';
 function App() {
   return (
     <UserProvider>
@@ -46,6 +46,7 @@ function App() {
           <Route path='/unAuthorized' element={<NotFound />} />
           <Route path='/prueba' element={<PruebaMaps />} />
           <Route path='/blocked' element={<Blocked />} />
+          <Route path='/editarInfo' element={<EditarInfo />} />
 
           {/*Rutas de vistas */}
           <Route

@@ -34,9 +34,12 @@ const Land = () => {
   const [Nombre_usuario, setUsuario] = useState('');
   const [incidenciaRegistrada, setIncidenciaRegistrada] = useState('');
 
+
   useEffect(() => {
     setShowPopup(true);
     const nombreUsuario = usuario.givenName;
+    console.log(sessionStorage);
+    console.log('Usuario', usuario)
     setUsuario(nombreUsuario);
 
     const fetchIncidenciaRegistrada = async () => {
