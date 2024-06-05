@@ -171,92 +171,145 @@ function CambaceoDiario() {
       const FechaConclucion = formateoFecha(fechaConclucion);
       console.log("Hora inicio: " + horaInicio);
       console.log("Hora fin: " + horaFin);
-      // let inputElem = document.getElementById("documentoCambaceo");
-      // let file = inputElem.files[0];
-      // let blob = file.slice(0);
-      // const imagen = new File([blob], `${file.name}`);
-      // const formData = new FormData();
-      // const geocoder = new window.google.maps.Geocoder();
-      // geocoder.geocode({ address: data.address }, (results, status) => {
-      //   if (status === "OK") {
-      //     setMarkerPosition(results[0].geometry.location);
-      //   } else {
-      //     console.error("Error en la búsqueda de dirección");
-      //   }
-      // });
-      const idsUsuariosSeleccionados = colaboradoresSeleccionados.map(
-        (colaboradorSeleccionado) => {
-          const [id] = colaboradorSeleccionado.split("_");
-          return id;
+  
+      // Separar IDs de colaboradores y equipos
+      const tipoColaborador = [];
+      const tipoEquipo = [];
+      
+      colaboradoresSeleccionados.forEach((item) => {
+        const [id, nombreCompleto] = item.split("_");
+        const colaborador = colaboradores.find(col => col.id === parseInt(id));
+        
+        if (colaborador.tipo === 'Colaborador') {
+          tipoColaborador.push(id);
+        } else if (colaborador.tipo === 'Equipo') {
+          tipoEquipo.push(id);
         }
-      );
-      data = {
-        ...data,
-        FechaAsignacion: FechaAsignacion,
-        FechaConclusion: FechaConclucion,
-        Direccion: address,
-        idUsuarios: idsUsuariosSeleccionados,
-        Activo: 1,
-        Tipo: "Cambaceo_Diario",
-        Documentos: "src",
-        SitioWeb: "src",
-        TipoEmpresa: "src",
-        // documentoCambaceo: imagen,
-      };
-      // Eliminar propiedades de 'data'
-      // delete data.FechaInicio;
-      // delete data.HoraInicio;
-      // delete data.HoraFin;
-      // console.log(data);
-      // formData.append('Direccion', address);
-      // formData.append('Descripcion', data.Descripcion);
-      // formData.append('FechaAsignacion', data.FechaAsignacion);
-      // formData.append('FechaConclucion', data.FechaConclucion);
-      // formData.append("documentoCambaceo", imagen);
-      let config = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      };
-      try {
-        Swal.fire({
-          title: "Cargando...",
-          text: "Por favor espera un momento",
-          allowOutsideClick: false,
-        });
-        Swal.showLoading();
-        let res = await fetchWithToken(`${API_URL}/createCambaceo`, config);
-        Swal.close();
-        let json = await res.json();
-        console.log(json);
-        Swal.fire({
-          icon: "success",
-          title: "Se agregó tu cambaceo diario correctamente",
-          text: "UDA",
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-          rgba(36,32,32,0.65)
-          
-        `,
-        }).then(() => {
-          navigate("/Cambaceo");
-        });
-      } catch (error) {
-        console.log(error);
-        return Swal.fire({
-          icon: "error",
-          title: "Se produjo un error",
-          text: "UDA",
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-          rgba(36,32,32,0.65)
-          
-        `,
-        });
+      });
+  
+      console.log("Colaboradores: ", tipoColaborador);
+      console.log("Equipos: ", tipoEquipo);
+  
+      if (tipoColaborador.length > 0) {
+        data = {
+          ...data,
+          FechaAsignacion: FechaAsignacion,
+          FechaConclusion: FechaConclucion,
+          Direccion: address,
+          idUsuarios: tipoColaborador,
+          Activo: 1,
+          Tipo: "Cambaceo_Diario",
+          Documentos: "src",
+          SitioWeb: "src",
+          TipoEmpresa: "src",
+        };
+        
+        let config = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        };
+        try {
+          Swal.fire({
+            title: "Cargando...",
+            text: "Por favor espera un momento",
+            allowOutsideClick: false,
+          });
+          Swal.showLoading();
+          let res = await fetchWithToken(`${API_URL}/createCambaceo`, config);
+          Swal.close();
+          let json = await res.json();
+          console.log(json);
+          Swal.fire({
+            icon: "success",
+            title: "Se agregó tu cambaceo diario correctamente",
+            text: "UDA",
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+            rgba(36,32,32,0.65)
+            
+          `,
+          }).then(() => {
+            navigate("/Cambaceo");
+          });
+        } catch (error) {
+          console.log(error);
+          return Swal.fire({
+            icon: "error",
+            title: "Se produjo un error",
+            text: "UDA",
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+            rgba(36,32,32,0.65)
+            
+          `,
+          });
+        }
+      }
+
+      if (tipoEquipo.length > 0) {
+        data = {
+          ...data,
+          FechaAsignacion: FechaAsignacion,
+          FechaConclusion: FechaConclucion,
+          Direccion: address,
+          idEquipos: tipoEquipo,
+          Activo: 1,
+          Tipo: "Cambaceo_Diario",
+          Documentos: "src",
+          SitioWeb: "src",
+          TipoEmpresa: "src",
+        };
+        
+        let config = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        };
+        try {
+          Swal.fire({
+            title: "Cargando...",
+            text: "Por favor espera un momento",
+            allowOutsideClick: false,
+          });
+          Swal.showLoading();
+          let res = await fetchWithToken(`${API_URL}/CambaceoTeam`, config);
+          Swal.close();
+          let json = await res.json();
+          console.log(json);
+          Swal.fire({
+            icon: "success",
+            title: "Se agregó tu cambaceo diario correctamente",
+            text: "UDA",
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+            rgba(36,32,32,0.65)
+            
+          `,
+          }).then(() => {
+            navigate("/Cambaceo");
+          });
+        } catch (error) {
+          console.log(error);
+          return Swal.fire({
+            icon: "error",
+            title: "Se produjo un error",
+            text: "UDA",
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+            rgba(36,32,32,0.65)
+            
+          `,
+          });
+        }
       }
     } catch (error) {
       console.log("Error al enviar los datos al servidor:", error);
@@ -272,10 +325,13 @@ function CambaceoDiario() {
       });
     }
   };
+
+
   const handleColaboradoresChange = (e) => {
     setColaboradoresSeleccionados(e.value);
     console.log("Colaboradores seleccionados:", e.value);
   };
+  
   
   const cargarColaboradores = async () => {
   try {
