@@ -8,6 +8,7 @@ import { useUserContext } from '../userProvider';
 import { useGoogleLogout } from 'react-google-login';
 import { clientId } from '../utils/googleAuth';
 import Swal from 'sweetalert2';
+import { FaUser, FaEdit, FaSignOutAlt } from 'react-icons/fa'; // Import icons
 
 const Logo = ({ src, alt, className }) => (
   <img src={src} className={`align-top logo ${className}`} alt={alt} />
@@ -17,19 +18,22 @@ const UserProfile = ({ user, onLogout, onEditProfile }) => {
   const [menuVisible, setMenuVisible] = useState(false);
 
   const toggleMenu = () => setMenuVisible(!menuVisible);
+
   const userDetails = () => {
     Swal.fire({
       title: `${user.name}`,
-      html:
-        `<img src="${user.imageUrl}" class="usuario mb-3" alt="Imagen de perfil" style="width:80px; height:80px;border-radius: 50%;">` +
-        `<p>Email: ${user.email}</p>`,
+      html: `
+        <div style="text-align: center;">
+          <img src="${user.imageUrl}" class="usuario mb-3" alt="Imagen de perfil" style="width:80px; height:80px; border-radius: 50%;">
+          <p>Email: ${user.email}</p>
+        </div>`,
       showCloseButton: true,
       focusConfirm: false,
     });
   };
 
   return (
-    <div>
+    <div className='user-profile'>
       {user ? (
         <img
           src={user.imageUrl}
@@ -42,10 +46,16 @@ const UserProfile = ({ user, onLogout, onEditProfile }) => {
       ) : (
         <div className='usuario'></div>
       )}
-      <div className={`user-menu ${menuVisible ? 'activo' : ''}`}>
-        <div onClick={userDetails}>Mi perfil</div>
-        <div onClick={onEditProfile}>Editar perfil</div>
-        <div onClick={onLogout}>Cerrar sesión</div>
+      <div className={`user-menu fade-inn ${menuVisible ? 'activo' : ''}`}>
+        <div onClick={userDetails}>
+          <FaUser className='icon' /> Mi perfil
+        </div>
+        <div onClick={onEditProfile}>
+          <FaEdit className='icon' /> Editar perfil
+        </div>
+        <div onClick={onLogout}>
+          <FaSignOutAlt className='icon' /> Cerrar sesión
+        </div>
       </div>
     </div>
   );
@@ -90,7 +100,11 @@ const Navbar = () => {
         <Logo src={univic} alt='' className='univic nav__item' />
       </a>
       <div className='col-md-1'>
-        <UserProfile user={usuario} onLogout={handleLogout} onEditProfile={handleEditProfile} />
+        <UserProfile
+          user={usuario}
+          onLogout={handleLogout}
+          onEditProfile={handleEditProfile}
+        />
       </div>
     </nav>
   );
