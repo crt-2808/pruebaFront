@@ -162,17 +162,16 @@ function CambaceoDiario() {
         fechaAsignacion.setHours(horaInicio.getHours());
         fechaAsignacion.setMinutes(horaInicio.getMinutes());
       }
-      const fechaConclucion = new Date(fechaInicio);
+      const fechaConclusion = new Date(fechaInicio);
       if (horaFin) {
-        fechaConclucion.setHours(horaFin.getHours());
-        fechaConclucion.setMinutes(horaFin.getMinutes());
+        fechaConclusion.setHours(horaFin.getHours());
+        fechaConclusion.setMinutes(horaFin.getMinutes());
       }
       const FechaAsignacion = formateoFecha(fechaAsignacion);
-      const FechaConclucion = formateoFecha(fechaConclucion);
+      const FechaConclusion = formateoFecha(fechaConclusion);
       console.log("Hora inicio: " + horaInicio);
       console.log("Hora fin: " + horaFin);
   
-      // Separar IDs de colaboradores y equipos
       const tipoColaborador = [];
       const tipoEquipo = [];
       
@@ -190,11 +189,13 @@ function CambaceoDiario() {
       console.log("Colaboradores: ", tipoColaborador);
       console.log("Equipos: ", tipoEquipo);
   
+      let cambaceoId = null;
+  
       if (tipoColaborador.length > 0) {
         data = {
           ...data,
           FechaAsignacion: FechaAsignacion,
-          FechaConclusion: FechaConclucion,
+          FechaConclusion: FechaConclusion,
           Direccion: address,
           idUsuarios: tipoColaborador,
           Activo: 1,
@@ -222,6 +223,12 @@ function CambaceoDiario() {
           Swal.close();
           let json = await res.json();
           console.log(json);
+  
+          if (json.idPlanificador) {
+            cambaceoId = json.idPlanificador; // Guardar el ID en la variable
+            console.log("ID del cambaceo registrado: ", cambaceoId);
+          }
+  
           Swal.fire({
             icon: "success",
             title: "Se agregó tu cambaceo diario correctamente",
@@ -250,19 +257,12 @@ function CambaceoDiario() {
           });
         }
       }
-
+  
       if (tipoEquipo.length > 0) {
         data = {
           ...data,
-          FechaAsignacion: FechaAsignacion,
-          FechaConclusion: FechaConclucion,
-          Direccion: address,
+          planificador:cambaceoId,
           idEquipos: tipoEquipo,
-          Activo: 1,
-          Tipo: "Cambaceo_Diario",
-          Documentos: "src",
-          SitioWeb: "src",
-          TipoEmpresa: "src",
         };
         
         let config = {
@@ -325,7 +325,7 @@ function CambaceoDiario() {
       });
     }
   };
-
+  
 
   const handleColaboradoresChange = (e) => {
     setColaboradoresSeleccionados(e.value);
