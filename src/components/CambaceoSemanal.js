@@ -142,116 +142,168 @@ function CambaceoSemanal() {
   const onSubmit = async (data) => {
     if (!data || !address || !fechaInicio) {
       Swal.fire({
-        icon: 'error',
-        title: 'Se requiere llenar el formulario',
-        text: 'Completa todos los campos obligatorios',
+        icon: "error",
+        title: "Se requiere llenar el formulario",
+        text: "Completa todos los campos obligatorios",
         timer: 1200,
         timerProgressBar: true,
-        backdrop: 'rgba(36,32,32,0.65)',
+        backdrop: "rgba(36,32,32,0.65)",
       });
       return;
     }
     try {
-      console.log(data);
-      console.log('Inicio: ' + fechaInicio);
+      console.log(data)
+      console.log("Inicio: " + fechaInicio);
       const fechaAsignacion = new Date(fechaInicio);
       const fechaConclucion = new Date(fechaFin);
       const FechaAsignacion = formateoFecha(fechaAsignacion);
       const FechaConclucion = formateoFecha(fechaConclucion);
-
-      // let inputElem = document.getElementById("documentoCambaceo");
-      // let file = inputElem.files[0];
-      // let blob = file.slice(0);
-      // const imagen = new File([blob], `${file.name}`);
-      // const formData = new FormData();
-      // const geocoder = new window.google.maps.Geocoder();
-      // geocoder.geocode({ address: data.address }, (results, status) => {
-      //   if (status === "OK") {
-      //     setMarkerPosition(results[0].geometry.location);
-      //   } else {
-      //     console.error("Error en la búsqueda de dirección");
-      //   }
-      // });
-      const idsUsuariosSeleccionados = colaboradoresSeleccionados.map(
-        (colaboradorSeleccionado) => {
-          const [id] = colaboradorSeleccionado.split('_');
-          return id;
+  
+      const tipoColaborador = [];
+      const tipoEquipo = [];
+      
+      colaboradoresSeleccionados.forEach((item) => {
+        const [id, nombreCompleto] = item.split("_");
+        const colaborador = colaboradores.find(col => col.id === parseInt(id));
+        
+        if (colaborador.tipo === 'Colaborador') {
+          tipoColaborador.push(id);
+        } else if (colaborador.tipo === 'Equipo') {
+          tipoEquipo.push(id);
         }
-      );
-      data = {
-        ...data,
-        FechaAsignacion: FechaAsignacion,
-        FechaConclusion: FechaConclucion,
-        Direccion: address,
-        idUsuarios: idsUsuariosSeleccionados,
-        Activo: 1,
-        Tipo: 'Cambaceo_Semanal',
-        Documentos: 'src',
-        SitioWeb: 'src',
-        TipoEmpresa: 'src',
-        // documentoCambaceo: imagen,
-      };
-      // Eliminar propiedades de 'data'
-      // delete data.FechaInicio;
-      // delete data.HoraInicio;
-      // delete data.HoraFin;
-      // console.log(data);
-      // formData.append('Direccion', address);
-      // formData.append('Descripcion', data.Descripcion);
-      // formData.append('FechaAsignacion', data.FechaAsignacion);
-      // formData.append('FechaConclucion', data.FechaConclucion);
-      // formData.append("documentoCambaceo", imagen);
-      let config = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      };
-      try {
-        Swal.fire({
-          title: 'Cargando...',
-          text: 'Por favor espera un momento',
-          allowOutsideClick: false,
-        });
-        Swal.showLoading();
-        let res = await fetchWithToken(`${API_URL}/createCambaceo`, config);
-        Swal.close();
-        let json = await res.json();
-        console.log(json);
-        Swal.fire({
-          icon: 'success',
-          title: 'Se agregó tu cambaceo diario correctamente',
-          text: 'UDA',
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-          rgba(36,32,32,0.65)
-          
-        `,
-        }).then(() => {
-          navigate('/Cambaceo');
-        });
-      } catch (error) {
-        console.log(error);
-        return Swal.fire({
-          icon: 'error',
-          title: 'Se produjo un error',
-          text: 'UDA',
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-          rgba(36,32,32,0.65)
-          
-        `,
-        });
+      });
+  
+      console.log("Colaboradores: ", tipoColaborador);
+      console.log("Equipos: ", tipoEquipo);
+  
+      let cambaceoId = null;
+  
+      if (tipoColaborador.length > 0) {
+        data = {
+          ...data,
+          FechaAsignacion: FechaAsignacion,
+          FechaConclusion: FechaConclucion,
+          Direccion: address,
+          idUsuarios: tipoColaborador,
+          Activo: 1,
+          Tipo: "Cambaceo_Semanal",
+          Documentos: "src",
+          SitioWeb: "src",
+          TipoEmpresa: "src",
+        };
+        
+        let config = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        };
+        try {
+          Swal.fire({
+            title: "Cargando...",
+            text: "Por favor espera un momento",
+            allowOutsideClick: false,
+          });
+          Swal.showLoading();
+          let res = await fetchWithToken(`${API_URL}/createCambaceo`, config);
+          Swal.close();
+          let json = await res.json();
+          console.log(json);
+  
+          if (json.idPlanificador) {
+            cambaceoId = json.idPlanificador; // Guardar el ID en la variable
+            console.log("ID del cambaceo registrado: ", cambaceoId);
+          }
+  
+          Swal.fire({
+            icon: "success",
+            title: "Se agregó tu cambaceo diario correctamente",
+            text: "UDA",
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+            rgba(36,32,32,0.65)
+            
+          `,
+          }).then(() => {
+            navigate("/Cambaceo");
+          });
+        } catch (error) {
+          console.log(error);
+          return Swal.fire({
+            icon: "error",
+            title: "Se produjo un error",
+            text: "UDA",
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+            rgba(36,32,32,0.65)
+            
+          `,
+          });
+        }
+      }
+  
+      if (tipoEquipo.length > 0) {
+        data = {
+          ...data,
+          planificador:cambaceoId,
+          idEquipos: tipoEquipo,
+        };
+        
+        let config = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        };
+        try {
+          Swal.fire({
+            title: "Cargando...",
+            text: "Por favor espera un momento",
+            allowOutsideClick: false,
+          });
+          Swal.showLoading();
+          let res = await fetchWithToken(`${API_URL}/CambaceoTeam`, config);
+          Swal.close();
+          let json = await res.json();
+          console.log(json);
+          Swal.fire({
+            icon: "success",
+            title: "Se agregó tu cambaceo diario correctamente",
+            text: "UDA",
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+            rgba(36,32,32,0.65)
+            
+          `,
+          }).then(() => {
+            navigate("/Cambaceo");
+          });
+        } catch (error) {
+          console.log(error);
+          return Swal.fire({
+            icon: "error",
+            title: "Se produjo un error",
+            text: "UDA",
+            timer: 1200,
+            timerProgressBar: true,
+            backdrop: `
+            rgba(36,32,32,0.65)
+            
+          `,
+          });
+        }
       }
     } catch (error) {
-      console.log('Error al enviar los datos al servidor:', error);
+      console.log("Error al enviar los datos al servidor:", error);
       return Swal.fire({
-        icon: 'error',
-        title: 'Se requiere llenar el formulario',
-        text: 'UDA',
+        icon: "error",
+        title: "Se requiere llenar el formulario",
+        text: "UDA",
         timer: 1200,
         timerProgressBar: true,
         backdrop: `
@@ -260,35 +312,64 @@ function CambaceoSemanal() {
       });
     }
   };
+  
+
   const handleColaboradoresChange = (e) => {
     setColaboradoresSeleccionados(e.value);
-    console.log('Colaboradores seleccionados:', e.value);
+    console.log("Colaboradores seleccionados:", e.value);
   };
+  
+  
   const cargarColaboradores = async () => {
-    try {
-      const response = await fetchWithToken(`${API_URL}/nombresColaborador`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      const colaboradoresProcesados = data.map((colaborador) => ({
-        id: colaborador.idUsuario,
-        nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
-      }));
+  try {
+    const response = await fetchWithToken(`${API_URL}/nombresColaborador2`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    console.log(data);
 
-      console.log('Colaboradores: ', colaboradoresProcesados);
-      setColaboradores(colaboradoresProcesados);
-    } catch (error) {
-      console.error('Error al cargar nombres de colaboradores:', error);
-    }
-  };
+    // Procesar colaboradores
+    const colaboradoresProcesados = data.colaboradores.map((colaborador) => ({
+      id: colaborador.idUsuario,
+      nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
+      tipo: 'Colaborador',
+    }));
+
+    // Procesar equipos
+    const equiposProcesados = data.equipos.map((equipo) => ({
+      id: equipo.IDEquipo,  // Asegúrate de que esto coincide con el campo en la respuesta de la API
+      nombreEquipo: equipo.Nombre,
+      tipo: 'Equipo',
+    }));
+
+    // Combinar colaboradores y equipos
+    const combinados = [
+      ...colaboradoresProcesados,
+      ...equiposProcesados.map((equipo) => ({
+        id: equipo.id,
+        nombreCompleto: equipo.nombreEquipo,
+        tipo: equipo.tipo,
+      })),
+    ];
+
+    console.log('Combinados: ', combinados);
+
+    // Actualizar estado
+    setColaboradores(combinados);
+  } catch (error) {
+    console.error('Error al cargar nombres de colaboradores y equipos:', error);
+  }
+};
+
+
   useEffect(() => {
     cargarColaboradores();
   }, []);
   const opcionesColaboradores = colaboradores.map((colaborador) => ({
-    label: colaborador.nombreCompleto,
+    label: `${colaborador.nombreCompleto} (${colaborador.tipo})`,
     value: `${colaborador.id}_${colaborador.nombreCompleto}`,
   }));
   const panelFooterTemplate = () => {
