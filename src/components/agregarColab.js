@@ -81,9 +81,12 @@ function AgregarColab() {
 
     const inputElem = document.getElementById('FotoColab');
     const file = inputElem.files[0];
-    const blob = file ? file.slice(0) : null;
-    const imagen = blob ? new File([blob], `${file.name}`) : null;
-    data = { ...data, FotoColab: imagen };
+    if (file) {
+      const blob = file.slice(0);
+      const imagen = new File([blob], `${file.name}`);
+      data = { ...data, FotoColab: imagen };
+      formData.append('FotoColab', imagen);
+    }
 
     formData.append('Nombre', data.Nombre);
     formData.append('Apellido_pat', data.Apellido_pat);
@@ -92,10 +95,6 @@ function AgregarColab() {
     formData.append('Telefono', data.Telefono);
     formData.append('IDEquipo', data.IDEquipo);
     formData.append('Rol', data.Rol);
-
-    if (imagen) {
-      formData.append('FotoColab', data.FotoColab);
-    }
 
     let config = {
       method: 'POST',
