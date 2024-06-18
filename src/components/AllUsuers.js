@@ -32,7 +32,7 @@ const AllUsuers = () => {
     });
     Swal.showLoading();
     try {
-      const response = await fetchWithToken(`${API_URL}/allUsers`, {
+      const response = await fetchWithToken(`${API_URL}/usuariosPorRol`, {
         method: 'GET',
         mode: 'cors',
         headers: {

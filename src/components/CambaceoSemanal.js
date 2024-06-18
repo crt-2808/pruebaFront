@@ -175,10 +175,32 @@ function CambaceoSemanal() {
   
       console.log("Colaboradores: ", tipoColaborador);
       console.log("Equipos: ", tipoEquipo);
+
+      let userIdsFromTeams = [];
+      if (tipoEquipo.length > 0) {
+      const teamData = {
+        equipoIds: tipoEquipo,
+      };
+
+      const teamConfig = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(teamData),
+      };
+
+      const teamRes = await fetchWithToken(`${API_URL}/usuariosPorEquipo`, teamConfig);
+      const teamJson = await teamRes.json();
+
+      userIdsFromTeams = teamJson.userIds.map(id=>id.toString());
+    }
+
+    // Combinar los IDs de colaboradores y los IDs obtenidos de los equipos
+      const allUserIds = [...tipoColaborador, ...userIdsFromTeams];
+
   
-      let cambaceoId = null;
-  
-      if (tipoColaborador.length > 0) {
+      if (allUserIds.length > 0) {
         data = {
           ...data,
           FechaAsignacion: FechaAsignacion,
@@ -208,68 +230,6 @@ function CambaceoSemanal() {
           Swal.showLoading();
           let res = await fetchWithToken(`${API_URL}/createCambaceo`, config);
           Swal.close();
-          let json = await res.json();
-          console.log(json);
-  
-          if (json.idPlanificador) {
-            cambaceoId = json.idPlanificador; // Guardar el ID en la variable
-            console.log("ID del cambaceo registrado: ", cambaceoId);
-          }
-  
-          Swal.fire({
-            icon: "success",
-            title: "Se agregó tu cambaceo diario correctamente",
-            text: "UDA",
-            timer: 1200,
-            timerProgressBar: true,
-            backdrop: `
-            rgba(36,32,32,0.65)
-            
-          `,
-          }).then(() => {
-            navigate("/Cambaceo");
-          });
-        } catch (error) {
-          console.log(error);
-          return Swal.fire({
-            icon: "error",
-            title: "Se produjo un error",
-            text: "UDA",
-            timer: 1200,
-            timerProgressBar: true,
-            backdrop: `
-            rgba(36,32,32,0.65)
-            
-          `,
-          });
-        }
-      }
-  
-      if (tipoEquipo.length > 0) {
-        data = {
-          ...data,
-          planificador:cambaceoId,
-          idEquipos: tipoEquipo,
-        };
-        
-        let config = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        };
-        try {
-          Swal.fire({
-            title: "Cargando...",
-            text: "Por favor espera un momento",
-            allowOutsideClick: false,
-          });
-          Swal.showLoading();
-          let res = await fetchWithToken(`${API_URL}/CambaceoTeam`, config);
-          Swal.close();
-          let json = await res.json();
-          console.log(json);
           Swal.fire({
             icon: "success",
             title: "Se agregó tu cambaceo diario correctamente",

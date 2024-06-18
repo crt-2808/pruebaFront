@@ -1023,3 +1023,27 @@ svg.p-icon.p-checkbox-icon.p-c:hover{
     opacity: 1;
   }
 }
+
+.avatar-container {
+  display: flex;
+  gap: 8px; /* Espacio entre avatares */
+}
+
+.avatar-image {
+  width: 50px; /* Tamaño deseado para el avatar */
+  height: 50px; /* Tamaño deseado para el avatar */
+  border-radius: 50%; /* Hace que la imagen sea redonda */
+  object-fit: cover; /* Ajusta la imagen para cubrir el contenedor redondo */
+}
+
+.btnDiario {
+  margin-top: 8px; /* Espacio entre avatares y botón */
+}
+.colaborador-container {
+  text-align: center;
+  margin-right: 5px;
+}
+
+.colaborador-nombre {
+  font-size: 0.7rem;
+}

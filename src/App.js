@@ -21,6 +21,7 @@ import ProtectedRoutes from './utils/ProtectedRoute';
 import CrearLider from './components/CrearLider';
 import Blocked from './components/Blocked';
 
+import SeguimientoCambaceos from './components/SeguimientoCambaceos';
 //Prueba views
 import LandView from './views/land';
 import PlaneadorView from './views/planeador';
@@ -92,6 +93,7 @@ function App() {
             <Route path='/CalendarioVisita' element={<CalendarioVisita />} />
             <Route path='/CalendarioLlamada' element={<CalendarioLlamada />} />
             <Route path='/SeguimientoVisita' element={<SeguimientoVisita />} />
+            <Route path='/SeguimientoCambaceos' element={<SeguimientoCambaceos />} />
             <Route
               path='/SeguimientoLlamada'
               element={<SeguimientoLlamada />}
