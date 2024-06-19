@@ -36,7 +36,6 @@ const Land = () => {
 
 
   useEffect(() => {
-    setShowPopup(true);
     const nombreUsuario = usuario.givenName;
     console.log(sessionStorage);
     console.log('Usuario', usuario)
@@ -154,9 +153,8 @@ const Land = () => {
                   )}
               </h1>
               {isAdmin && (
-                <Link to='/crearLider' className='no-decoration'>
-                  <button className='btn-exportar'>Ver Incidencias</button>
-                </Link>
+                <button className='btn-exportar' onClick={setShowPopup}>Ver Incidencias</button>
+
               )}
             </div>
 
