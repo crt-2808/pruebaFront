@@ -101,6 +101,9 @@ const SeguimientoCambaceos = () => {
 
   // Función para formatear la fecha en un formato legible
   const formatearFecha = (fecha) => {
+    if (!fecha) {
+      return ""; // Devuelve una cadena vacía si la fecha es nula o no válida
+    }
     const options = { day: "2-digit", month: "2-digit", year: "numeric" };
     return new Intl.DateTimeFormat("es-ES", options).format(new Date(fecha));
   };
@@ -114,9 +117,8 @@ const SeguimientoCambaceos = () => {
       icon: "warning",
       title: "Corrobora los datos seleccionados",
       html: `
-        <h2>${registro.TipoEmpresa}</h2>
-        <h4>${fechaFormateada}</h4>
-        <p>${registro.NombreCompleto}</p>
+        <h2>${registro.Direccion}</h2>
+        <h4><h3> <span class="text-danger">Fecha Asignacion: </span></h3> ${fechaFormateada}</h4>
         <h3>Para un  <span class="text-danger">Seguimiento</span></h3>
       `,
       showCancelButton: true,
@@ -195,7 +197,6 @@ const SeguimientoCambaceos = () => {
     }
   };
 
-
   const filtrarRegistros = () => {
     const registrosFiltrados = registros.filter((registro) =>
       registro.Colaboradores.some((colaborador) =>
@@ -205,11 +206,16 @@ const SeguimientoCambaceos = () => {
     setFilteredData(registrosFiltrados);
     console.log("Registros filtrados:", registrosFiltrados); // Imprimir en consola
   };
-  
+
   useEffect(() => {
     filtrarRegistros();
   }, [search, registros]);
 
+  const handleClickColaborador = (colaborador) => {
+    console.log("Nombre del Colaborador:", colaborador.NombreCompleto);
+    console.log("ID del Usuario:", colaborador.idUsuario);
+  };
+  
 
   return (
     <div className="fluid">
@@ -223,7 +229,15 @@ const SeguimientoCambaceos = () => {
             </Link>
           </div>
           <div className="col-12 mt-5 mb-md-1 mb-sm-0 px-4">
-            <h1 className="textoSeguimiento mx-md-5 mx-sm-1">Seguimiento</h1>
+            {modoCuestionario ? (
+              <h1 className="textoSeguimiento mx-md-5 mx-sm-1">
+                Cambaceo {registroSeleccionado?.Tipo}
+              </h1>
+            ) : (
+              <h1 className="textoSeguimiento mx-md-5 mx-sm-1">
+                Seguimiento Cambaceos
+              </h1>
+            )}
           </div>
           <div
             className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
@@ -234,21 +248,20 @@ const SeguimientoCambaceos = () => {
                 <div className="col-md-6">
                   <h3 className="textoBuscaSeg">Busca tu cambaceo</h3>
                 </div>
-                <div className='col-md-6'>
-  <div className='input-wrapper'>
-    <input
-      type='text'
-      className='form-control'
-      placeholder='Buscar por Nombre de Colaborador'
-      aria-label='Buscar'
-      aria-describedby='basic-addon1'
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-    />
-    <X className='clear-icon' onClick={() => setSearch('')} />
-  </div>
-</div>
-
+                <div className="col-md-6">
+                  <div className="input-wrapper">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Buscar por Nombre de Colaborador"
+                      aria-label="Buscar"
+                      aria-describedby="basic-addon1"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                    <X className="clear-icon" onClick={() => setSearch("")} />
+                  </div>
+                </div>
               </div>
             )}
             <div
@@ -270,45 +283,12 @@ const SeguimientoCambaceos = () => {
                         <Col xs={12} md={6}>
                           <label>Nombre Completo:</label>
                           <InputText
-                            value={registroSeleccionado?.NombreCompleto}
-                            disabled
-                            style={{ width: "100%" }}
-                          />
-                          <label>Empresa:</label>
-                          <InputText
-                            value={registroSeleccionado?.TipoEmpresa}
-                            disabled
-                            style={{ width: "100%" }}
-                          />
-                          <label>Telefono:</label>
-                          <InputText
-                            value={registroSeleccionado?.Telefono}
-                            disabled
-                            style={{ width: "100%" }}
-                          />
-                          <label>Sitio Web:</label>
-                          <InputText
-                            value={registroSeleccionado?.Sitioweb}
-                            disabled
-                            style={{ width: "100%" }}
-                          />
-                          <label>Dirreccion:</label>
-                          <InputText
-                            value={registroSeleccionado?.Direccion}
-                            disabled
-                            style={{ width: "100%" }}
-                          />
-
-                          <label>Fecha Asignacion:</label>
-                          <InputText
                             value={formatearFecha(
                               registroSeleccionado?.FechaAsignacion
                             )}
                             disabled
                             style={{ width: "100%" }}
                           />
-                        </Col>
-                        <Col xs={12} md={6}>
                           <div style={{ marginBottom: "10px" }}>
                             <label>Descripcion:</label>
                             <InputTextarea
@@ -319,37 +299,58 @@ const SeguimientoCambaceos = () => {
                               disabled
                             />
                           </div>
-
-                          {/* Campo de texto editable */}
+                        </Col>
+                        <Col>
                           <div style={{ marginBottom: "10px" }}>
-                            <label>Incidencias:</label>
+                            <label>Descripcion:</label>
                             <InputTextarea
                               autoResize={true}
                               rows={5}
-                              onChange={handleIncidentesChange}
-                              value={incidentesEditados}
+                              value={"aqui va el mapa"}
                               style={{ width: "100%" }}
+                              disabled
                             />
                           </div>
+
                           <div
                             style={{
                               display: "flex",
                               justifyContent: "center",
                               marginTop: "10px",
                             }}
-                          >
-                            <Button
-                              label="Guardar"
-                              style={{ marginRight: "10px" }}
-                              onClick={handleGuardarCuestionario}
-                            />
-                            <Button
-                              label="Cancelar"
-                              onClick={handleCancelarCuestionario}
-                            />
-                          </div>
+                          ></div>
                         </Col>
                       </Row>
+                      <Row>
+  <div className="col-12">
+    <h3 style={{ marginLeft: "15px", textAlign: "left" }}>
+      Seguimiento individual
+    </h3>
+    <div className="d-flex flex-wrap justify-content-center">
+  {registroSeleccionado?.Colaboradores.map((colaborador, idx) => (
+    <div key={idx} className="colaborador-container mb-3 mx-2">
+      <img
+        src={colaborador.Foto}
+        alt={`Avatar de ${colaborador.NombreCompleto}`}
+        style={{
+          width: "60px",
+          height: "60px",
+          borderRadius: "50%",
+          marginBottom: "10px",
+        }}
+        onClick={() => console.log(`Nombre: ${colaborador.NombreCompleto}, ID Usuario: ${colaborador.idUsuario}`)}
+      />
+      <div className="colaborador-nombre" style={{ fontSize: "1.2rem", textAlign: "center" }}>
+        {colaborador.NombreCompleto}
+      </div>
+    </div>
+  ))}
+</div>
+
+  </div>
+</Row>
+
+
                     </div>
                   ) : (
                     // Renderiza la vista de seguimientovisita
@@ -360,40 +361,75 @@ const SeguimientoCambaceos = () => {
                         flexWrap: "wrap",
                       }}
                     >
-{(filteredData.length > 0 ? filteredData : registros).map((registro, index) => (
-  <div className='col-md-4' key={index}>
-    <div className='card centrar p-3' style={{ width: '15rem', height: '16rem', alignItems: 'center', overflow: 'hidden', marginBottom: '15px' }}>
-      <h2 className='card-title' style={{ fontSize: '1.5rem', margin: 0, color: 'red' }}>
-        {registro.Tipo}
-      </h2>
-      <h4 className='card-subtitle mb-2 text-muted'>
-        {formatearFecha(registro.FechaAsignacion)}
-      </h4>
-      <p className='card-text text-truncate email'>
-        {registro.Direccion}
-      </p>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px', marginBottom: '10px' }}>
-        {registro.Colaboradores.slice(0, 2).map((colaborador, idx) => (
-          <div key={idx} className='colaborador-container'>
-            <img
-              src={colaborador.Foto}
-              alt={`Avatar de ${colaborador.NombreCompleto}`}
-              style={{ width: '40px', height: '40px', borderRadius: '50%' }}
-            />
-            <div className='colaborador-nombre'>
-              {colaborador.NombreCompleto}
-            </div>
-          </div>
-        ))}
-      </div>
-      <button className='btnDiario' onClick={() => handleVerClick(registro)}>
-        Ver
-      </button>
-    </div>
-  </div>
-))}
-
-
+                      {(filteredData.length > 0 ? filteredData : registros).map(
+                        (registro, index) => (
+                          <div className="col-md-4" key={index}>
+                            <div
+                              className="card centrar p-3"
+                              style={{
+                                width: "15rem",
+                                height: "16rem",
+                                alignItems: "center",
+                                overflow: "hidden",
+                                marginBottom: "15px",
+                              }}
+                            >
+                              <h2
+                                className="card-title"
+                                style={{
+                                  fontSize: "1.5rem",
+                                  margin: 0,
+                                  color: "red",
+                                }}
+                              >
+                                {registro.Tipo}
+                              </h2>
+                              <h4 className="card-subtitle mb-2 text-muted">
+                                {formatearFecha(registro.FechaAsignacion)}
+                              </h4>
+                              <p className="card-text text-truncate email">
+                                {registro.Direccion}
+                              </p>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  marginTop: "10px",
+                                  marginBottom: "10px",
+                                }}
+                              >
+                                {registro.Colaboradores.slice(0, 2).map(
+                                  (colaborador, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="colaborador-container"
+                                    >
+                                      <img
+                                        src={colaborador.Foto}
+                                        alt={`Avatar de ${colaborador.NombreCompleto}`}
+                                        style={{
+                                          width: "40px",
+                                          height: "40px",
+                                          borderRadius: "50%",
+                                        }}
+                                      />
+                                      <div className="colaborador-nombre">
+                                        {colaborador.NombreCompleto}
+                                      </div>
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                              <button
+                                className="btnDiario"
+                                onClick={() => handleVerClick(registro)}
+                              >
+                                Ver
+                              </button>
+                            </div>
+                          </div>
+                        )
+                      )}
                     </div>
                   )}
                 </div>
