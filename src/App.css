@@ -768,7 +768,8 @@ transition: all 0.5s ease;
 } */
 .textoBuscaSeg{
   text-align: left;
-  padding-left: 3rem;
+  padding-left: 1rem;
+  font-weight: 600;
 }
 @media screen and (max-width: 768px) {
   .textoBuscaSeg{
@@ -777,6 +778,77 @@ transition: all 0.5s ease;
   }
   
 }
+
+
+
+.col-md-4 .card.custom-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: start;
+  min-width: 10rem;
+  min-height: 6rem;
+  padding: 1rem;
+  border: 0.8px solid #676B6F;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.col-md-4 .card.custom-card .custom-card-title {
+  font-size: 1.5rem;
+  color: #EE5253;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.col-md-4 .card.custom-card .avatars-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.col-md-4 .card.custom-card .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.col-md-4 .card.custom-card .btn-custom {
+  background-color: #EE5253;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  align-self: end;
+  transition: background-color 0.5s ease;
+}
+
+.col-md-4 .card.custom-card .btn-custom:hover {
+  background-color: darkred;
+}
+.col-md-4 .card.custom-card:hover {
+  background-color: #282c34;
+  color: white;
+}
+.col-md-4 .card.custom-card:hover > .col-md-4 .card.custom-card .custom-card-title {
+  color: #e6edf1;
+}
+.extra-avatars{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #676B6F;
+  color: #FAFAFA;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
 #contenedor{
   width: 90%;
   
@@ -1047,4 +1119,3 @@ svg.p-icon.p-checkbox-icon.p-c:hover{
 .colaborador-nombre {
   font-size: 0.7rem;
 }
-

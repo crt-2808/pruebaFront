@@ -10,6 +10,8 @@ import { Row, Col } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
 import { useUserContext } from "../userProvider";
 import { API_URL, fetchWithToken } from "../utils/api";
+import Usuario_sin_img from '../img/imagen-de-usuario-con-fondo-negro.png';
+import { Tooltip } from 'primereact/tooltip';
 // Componente principal
 const SeguimientoCambaceos = () => {
   useAuthRedirect();
@@ -219,16 +221,16 @@ const SeguimientoCambaceos = () => {
 
   return (
     <div className="fluid">
-      <Navbar></Navbar>
-      <div className="Colab">
-        <div className="container-fluid px-4">
+      <Navbar style={{ backgroundColor: "##F8F9FA" }}></Navbar>
+      <div className="Colab" style={{ backgroundColor: "#F1F5F8" }}>
+        <div className="container-fluid px-4" style={{paddingBottom:'3rem' }}>
           <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
             <Link to="/VisitaProgramada">
               <ArrowLeft className="ml-4 regreso" />
               <span id="indicador">Menu Visita Programada</span>
             </Link>
           </div>
-          <div className="col-12 mt-5 mb-md-1 mb-sm-0 px-4">
+          <div className="col-12 mt-5 mb-md-1 mb-sm-0 px-4 pt-3">
             {modoCuestionario ? (
               <h1 className="textoSeguimiento mx-md-5 mx-sm-1">
                 Cambaceo {registroSeleccionado?.Tipo}
@@ -240,8 +242,9 @@ const SeguimientoCambaceos = () => {
             )}
           </div>
           <div
-            className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
-            id="contenedor"
+            className="container-fluid mt-md-3 mb-md-5 p-md-5 p-3 mb-4 mt-4"
+            
+            id="contenedor-cambaceo"
           >
             {modoCuestionario ? null : (
               <div className="row">
@@ -272,16 +275,10 @@ const SeguimientoCambaceos = () => {
                 <div className="row px-2 gy-4" id="Resultado">
                   {modoCuestionario ? (
                     // Renderiza la vista de cuestionario en dos columnas
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        flexWrap: "wrap",
-                      }}
-                    >
+                    <>
                       <Row className="mb-5">
                         <Col xs={12} md={6}>
-                          <label>Nombre Completo:</label>
+                          <label>Fecha:</label>
                           <InputText
                             value={formatearFecha(
                               registroSeleccionado?.FechaAsignacion
@@ -322,11 +319,12 @@ const SeguimientoCambaceos = () => {
                         </Col>
                       </Row>
                       <Row>
+                        <hr />
   <div className="col-12">
     <h3 style={{ marginLeft: "15px", textAlign: "left" }}>
       Seguimiento individual
     </h3>
-    <div className="d-flex flex-wrap justify-content-center">
+    <div className="d-flex flex-wrap justify-content-left">
   {registroSeleccionado?.Colaboradores.map((colaborador, idx) => (
     <div key={idx} className="colaborador-container mb-3 mx-2">
       <img
@@ -338,11 +336,13 @@ const SeguimientoCambaceos = () => {
           borderRadius: "50%",
           marginBottom: "10px",
         }}
+        onError={(e) => { e.target.onerror = null; e.target.src = Usuario_sin_img; }}
         onClick={() => console.log(`Nombre: ${colaborador.NombreCompleto}, ID Usuario: ${colaborador.idUsuario}`)}
+        data-pr-tooltip={colaborador.NombreCompleto}
+    className="avatar-tooltip"
       />
-      <div className="colaborador-nombre" style={{ fontSize: "1.2rem", textAlign: "center" }}>
-        {colaborador.NombreCompleto}
-      </div>
+      <Tooltip target=".avatar-tooltip" />
+  
     </div>
   ))}
 </div>
@@ -351,86 +351,50 @@ const SeguimientoCambaceos = () => {
 </Row>
 
 
-                    </div>
+</>
                   ) : (
-                    // Renderiza la vista de seguimientovisita
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      {(filteredData.length > 0 ? filteredData : registros).map(
-                        (registro, index) => (
-                          <div className="col-md-4" key={index}>
-                            <div
-                              className="card centrar p-3"
-                              style={{
-                                width: "15rem",
-                                height: "16rem",
-                                alignItems: "center",
-                                overflow: "hidden",
-                                marginBottom: "15px",
-                              }}
-                            >
-                              <h2
-                                className="card-title"
-                                style={{
-                                  fontSize: "1.5rem",
-                                  margin: 0,
-                                  color: "red",
-                                }}
-                              >
-                                {registro.Tipo}
-                              </h2>
-                              <h4 className="card-subtitle mb-2 text-muted">
+                   <>
+                     {(filteredData.length > 0 ? filteredData : registros).map(
+                        (registro, index) => {
+                          const maxAvatarsToShow = 3;
+                          const extraAvatars = registro.Colaboradores.length - maxAvatarsToShow;
+                          return (
+                            <div className="col-md-4" key={index}>
+                              <div className="card custom-card centrar p-3">
+                                <h2 className="card-title custom-card-title">
+                                  {registro.Tipo}
+                                </h2>
+                                <h4 className="card-subtitle mb-2 text-muted">
                                 {formatearFecha(registro.FechaAsignacion)}
                               </h4>
-                              <p className="card-text text-truncate email">
-                                {registro.Direccion}
-                              </p>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  marginTop: "10px",
-                                  marginBottom: "10px",
-                                }}
-                              >
-                                {registro.Colaboradores.slice(0, 2).map(
-                                  (colaborador, idx) => (
-                                    <div
-                                      key={idx}
-                                      className="colaborador-container"
-                                    >
+                                <div className="avatars-container">
+                                  {registro.Colaboradores.slice(0, maxAvatarsToShow).map(
+                                    (colaborador, idx) => (
                                       <img
+                                        key={idx}
                                         src={colaborador.Foto}
                                         alt={`Avatar de ${colaborador.NombreCompleto}`}
-                                        style={{
-                                          width: "40px",
-                                          height: "40px",
-                                          borderRadius: "50%",
-                                        }}
+                                        className="avatar"
+                                        // onError={(e) => e.target.src = 'Usuario_sin_img'}
+                                        onError={(e) => { e.target.onerror = null; e.target.src = Usuario_sin_img; }}
                                       />
-                                      <div className="colaborador-nombre">
-                                        {colaborador.NombreCompleto}
-                                      </div>
+                                    )
+                                  )}
+                                  {extraAvatars > 0 && (
+                                    <div className="extra-avatars">
+                                      +{extraAvatars}
                                     </div>
-                                  )
-                                )}
+                                  )}
+                                </div>
+                                <button className="btn-custom" onClick={() => handleVerClick(registro)}>
+                                  Ver más
+                                </button>
                               </div>
-                              <button
-                                className="btnDiario"
-                                onClick={() => handleVerClick(registro)}
-                              >
-                                Ver
-                              </button>
                             </div>
-                          </div>
-                        )
+                          );
+                        }
                       )}
-                    </div>
+                    </>
                   )}
                 </div>
               </div>
