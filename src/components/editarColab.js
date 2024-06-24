@@ -13,6 +13,11 @@ const EditarColab = () => {
   useAuthRedirect();
   const [colaboradores, setColaboradores] = useState([]);
   const [imageLoaded, setImageLoaded] = useState({});
+  const roleOptions = [
+    { label: 'Gerente', value: 'gerente' },
+    { label: 'Coordinador', value: 'coordinador' },
+    { label: 'Colaborador', value: 'colaborador' },
+  ];
   const isAdmin = isUserAdmin();
   const fetchColaboradores = async () => {
     Swal.fire({
@@ -135,27 +140,62 @@ const EditarColab = () => {
       }
     }
   };
+  const createInput = (type, id, placeholder, value) => {
+    return `<input type='${type}' required class="modal-edit-input" id='${id}' placeholder='${placeholder}' value='${value}'>`;
+  };
+  
+  const createDropdown = (id, options, selectedValue) => {
+    return `
+      <select id='${id}' class='modal-edit-input'>
+        ${options.map(option => `
+          <option value='${option.value}' ${option.value === selectedValue ? 'selected' : ''}>
+            ${option.label}
+          </option>
+        `).join('')}
+      </select>
+    `;
+  };
+  
+  const createEditHtmlContent = (colaborador) => {
+    return `
+      <div class='row centrar' style='overflow: hidden;'>
+        <h4>Información del colaborador</h4>
+        <div class='col-md-4 col-xs-6'>
+          <div class=' container centrar p-3 mt-3'>
+            <div class='row'>
+              <div class='col-12'>
+                <form action="#" method="post">
+                  ${createInput("text", "nombreUp", "Nombre", colaborador.Nombre)}
+                  ${createInput("text", "apellidoPatUp", "Apellido Paterno", colaborador.Apellido_pat)}
+                  ${createInput("text", "apellidoMatUp", "Apellido Materno", colaborador.Apellido_mat)}
+                  ${createInput("email", "correoUp", "Correo", colaborador.Correo)}
+                  ${createInput("tel", "telefonoUp", "Telefono", colaborador.Telefono)}
+                  ${createDropdown("rolUp", roleOptions, colaborador.Rol)}
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  };
   const handleEditClick = async (colaborador) => {
     console.log("Colaborador identificado:  ", colaborador);
     try {
       const htmlContent = `
-            <div class='row centrar' style='overflow: hidden;'>
-                <h4>Seguro que editar este colaborador?</h4>
-                <div class='col-md-3 col-xs-6'>
-                    <div class='card centrar p-3 mt-3'>
-                        <img src='${
-                          colaborador.Imagen || Usuario_sin_img
-                        }' class='img-fluid' id='img-card' onerror="this.onerror=null; this.src='${Usuario_sin_img}';">
-                        <h3>${colaborador.Nombre}</h3>
-                        <h4>${colaborador.Apellido_pat} ${
-        colaborador.Apellido_mat
-      }</h4>
-                        <h6>${colaborador.Correo}</h6>
-                        <h6>${colaborador.Telefono}</h6>
-                    </div>
-                </div>
+        <div class='row centrar' style='overflow: hidden;'>
+          <h4>Seguro que editar este colaborador?</h4>
+          <div class='col-md-3 col-xs-6'>
+            <div class='card centrar p-3 mt-3'>
+              <img src='${colaborador.Imagen || Usuario_sin_img}' class='img-fluid' id='img-card' onerror="this.onerror=null; this.src='${Usuario_sin_img}';">
+              <h3>${colaborador.Nombre}</h3>
+              <h4>${colaborador.Apellido_pat} ${colaborador.Apellido_mat}</h4>
+              <h6>${colaborador.Correo}</h6>
+              <h6>${colaborador.Telefono}</h6>
             </div>
-        `;
+          </div>
+        </div>
+      `;
       const result = await Swal.fire({
         width: 1100,
         title: "<strong>EDITAR <p>Colaborador</p></strong>",
@@ -167,60 +207,8 @@ const EditarColab = () => {
         confirmButtonText: "Editar colaborador",
       });
       if (result.isConfirmed) {
-        console.log("Confirmado");
-        const createEditHtmlContent = (colaborador) => {
-          return `
-              <div class='row centrar' style='overflow: hidden;'>
-                  <h4>Información del colaborador</h4>
-                  <div class='col-md-3 col-xs-6'>
-                      <div class=' container centrar p-3 mt-3'>
-                          <div class='row'>
-                              <div class='col-md-3 col-xs-6'>
-                                  <form action="#" method="post">
-                                      ${createInput(
-                                        "text",
-                                        "nombreUp",
-                                        "Nombre",
-                                        colaborador.Nombre
-                                      )}
-                                      ${createInput(
-                                        "text",
-                                        "apellidoPatUp",
-                                        "Apellido Paterno",
-                                        colaborador.Apellido_pat
-                                      )}
-                                      ${createInput(
-                                        "text",
-                                        "apellidoMatUp",
-                                        "Apellido Materno",
-                                        colaborador.Apellido_mat
-                                      )}
-                                      ${createInput(
-                                        "email",
-                                        "correoUp",
-                                        "Correo",
-                                        colaborador.Correo
-                                      )}
-                                      ${createInput(
-                                        "tel",
-                                        "telefonoUp",
-                                        "Telefono",
-                                        colaborador.Telefono
-                                      )}
-                                  </form>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          `;
-        };
-
-        const createInput = (type, id, placeholder, value) => {
-          return `<input type='${type}' required class="modal-edit-input" id='${id}' placeholder='${placeholder}' value='${value}'>`;
-        };
         const editHtmlContent = createEditHtmlContent(colaborador);
-
+  
         const editResult = await Swal.fire({
           width: 1100,
           title: "<strong>EDITAR <p>Colaborador</p></strong>",
@@ -232,19 +220,19 @@ const EditarColab = () => {
           confirmButtonText: "Editar colaborador",
         });
         if (editResult.isConfirmed) {
-          console.log("dentro");
           try {
             const getVal = (id) => document.getElementById(id).value;
-
+  
             const valoresUp = {
               Nombre: getVal("nombreUp"),
               Apellido_pat: getVal("apellidoPatUp"),
               Apellido_mat: getVal("apellidoMatUp"),
               Correo: getVal("correoUp"),
               Telefono: getVal("telefonoUp"),
+              Rol: getVal("rolUp"), // Agregar el rol
             };
             console.log("Valores:", valoresUp);
-
+  
             const updateOpt = {
               method: "PUT",
               mode: "cors",
@@ -264,7 +252,7 @@ const EditarColab = () => {
               updateOpt
             );
             Swal.close();
-
+  
             if (response.ok) {
               const updatedColaboradores = colaboradores.map((colab) => {
                 if (colab.ID_Colab === colaborador.ID_Colab) {
@@ -290,18 +278,13 @@ const EditarColab = () => {
             return showNotification("error", "Se produjo un error", "UDA");
           }
         }
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        showNotification(
-          "info",
-          "Cancelado",
-          "No se ha modificado ningun colaborador."
-        );
       }
     } catch (error) {
       console.log(error);
       showNotification("error", "Se produjo un error", "UDA");
     }
   };
+    
 
   const ColaboradorCard = ({ data }) => {
     const isActive = data.Activo === 1;
@@ -322,6 +305,7 @@ const EditarColab = () => {
           </div>
           <h3>{data.Nombre}</h3>
           <h4>{`${data.Apellido_pat} ${data.Apellido_mat}`}</h4>
+          <h5>{data.Rol}</h5>
           <h6 className="email"> {data.Correo}</h6>
           <h6>{data.Telefono}</h6>
           {!isActive && (
