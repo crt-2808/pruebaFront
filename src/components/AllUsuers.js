@@ -63,6 +63,8 @@ const AllUsuers = () => {
   const roleOptions = [
     { label: 'Admin', value: 'admin' },
     { label: 'Lider', value: 'lider' },
+    { label: 'Gerente', value: 'gerente' },
+    { label: 'Coordinador', value: 'coordinador' },
     { label: 'Colaborador', value: 'colaborador' },
   ];
 

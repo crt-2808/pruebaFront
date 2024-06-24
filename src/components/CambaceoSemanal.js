@@ -275,9 +275,128 @@ function CambaceoSemanal() {
   
 
   const handleColaboradoresChange = (e) => {
-    setColaboradoresSeleccionados(e.value);
-    console.log("Colaboradores seleccionados:", e.value);
+    const seleccionados = e.value;
+    const deseleccionados = colaboradoresSeleccionados.filter(item => !seleccionados.includes(item));
+    setColaboradoresSeleccionados(seleccionados);
+  
+    // Manejo de deseleccionados
+    deseleccionados.forEach(async (item) => {
+      const [id, nombreCompleto] = item.split("_");
+      const colaborador = colaboradores.find(col => col.id === parseInt(id));
+  
+      if (colaborador.tipo === 'Colaborador') {
+        try {
+          const res = await fetchWithToken(`${API_URL}/equipoPorColaborador/${id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const data = await res.json();
+  
+          if (data.id) {
+            // Lógica para re-habilitar el equipo
+            const updatedColaboradores = colaboradores.map(colab => {
+              if (colab.tipo === 'Equipo' && colab.id === data.id) {
+                return { ...colab, disabled: false };
+              }
+              return colab;
+            });
+            setColaboradores(updatedColaboradores);
+          }
+        } catch (error) {
+          console.error('Error al obtener el equipo del colaborador:', error);
+        }
+      } else if (colaborador.tipo === 'Equipo') {
+        try {
+          const res = await fetchWithToken(`${API_URL}/colaboradoresPorEquipo/${id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const data = await res.json();
+  
+          if (data.length > 0) {
+            // Lógica para re-habilitar los colaboradores del equipo
+            const updatedColaboradores = colaboradores.map(colab => {
+              if (colab.tipo === 'Colaborador' && data.some(equipoColab => equipoColab.id === colab.id)) {
+                return { ...colab, disabled: false };
+              }
+              return colab;
+            });
+            setColaboradores(updatedColaboradores);
+          }
+        } catch (error) {
+          console.error('Error al obtener los colaboradores del equipo:', error);
+        }
+      }
+    });
+  
+    // Manejo de seleccionados
+    const colaboradorIds = seleccionados.map(item => item.split("_")[0]);
+  
+    colaboradorIds.forEach(async (id) => {
+      const colaborador = colaboradores.find(col => col.id === parseInt(id));
+  
+      if (colaborador.tipo === 'Colaborador') {
+        try {
+          const res = await fetchWithToken(`${API_URL}/equipoPorColaborador/${id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const data = await res.json();
+  
+          if (data.message && data.message === 'El colaborador no pertenece a ningún equipo') {
+            // No hacer nada si el colaborador no pertenece a ningún equipo
+            console.log(`El colaborador ${colaborador.nombreCompleto} no pertenece a ningún equipo`);
+          } else if (data.id) {
+            // Lógica para deshabilitar el equipo
+            const updatedColaboradores = colaboradores.map(colab => {
+              if (colab.tipo === 'Equipo' && colab.id === data.id) {
+                return { ...colab, disabled: true };
+              }
+              return colab;
+            });
+            setColaboradores(updatedColaboradores);
+          }
+        } catch (error) {
+          console.error('Error al obtener el equipo del colaborador:', error);
+        }
+      } else if (colaborador.tipo === 'Equipo') {
+        try {
+          const res = await fetchWithToken(`${API_URL}/colaboradoresPorEquipo/${id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const data = await res.json();
+  
+          if (data.message && data.message === 'El equipo no tiene colaboradores') {
+            // No hacer nada si el equipo no tiene colaboradores
+            console.log(`El equipo ${colaborador.nombreCompleto} no tiene colaboradores`);
+          } else if (data.length > 0) {
+            // Lógica para deshabilitar los colaboradores del equipo
+            const updatedColaboradores = colaboradores.map(colab => {
+              if (colab.tipo === 'Colaborador' && data.some(equipoColab => equipoColab.id === colab.id)) {
+                return { ...colab, disabled: true };
+              }
+              return colab;
+            });
+            setColaboradores(updatedColaboradores);
+          }
+        } catch (error) {
+          console.error('Error al obtener los colaboradores del equipo:', error);
+        }
+      }
+    });
+  
+    console.log("Colaboradores seleccionados:", seleccionados);
   };
+
   
   
   const cargarColaboradores = async () => {
@@ -331,6 +450,7 @@ function CambaceoSemanal() {
   const opcionesColaboradores = colaboradores.map((colaborador) => ({
     label: `${colaborador.nombreCompleto} (${colaborador.tipo})`,
     value: `${colaborador.id}_${colaborador.nombreCompleto}`,
+    disabled: colaborador.disabled || false, // Agregar estado de deshabilitado
   }));
   const panelFooterTemplate = () => {
     const length = colaboradoresSeleccionados

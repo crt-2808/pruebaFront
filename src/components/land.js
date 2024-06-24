@@ -152,10 +152,7 @@ const Land = () => {
                     lowerCaseAllWordsExceptFirstLetters(usuario.givenName)
                   )}
               </h1>
-              {isAdmin && (
-                <button className='btn-exportar' onClick={setShowPopup}>Ver Incidencias</button>
-
-              )}
+              
             </div>
 
             <div className='col-12 mt-4 p-0'>
@@ -299,7 +296,7 @@ const Land = () => {
                   )}
               </h1>
             </div>
-
+            <button className='btn-exportar' onClick={setShowPopup}>Ver Incidencias</button>
             <div className='col-12 mt-4 p-0'>
               <div
                 className='container-fluid mt-2 mb-4 p-5'
