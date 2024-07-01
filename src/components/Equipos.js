@@ -287,16 +287,15 @@ const Equipos = () => {
                   Equipos
                 </h6>
               </div>
-              <div className='col-md-6'>
+              <div className='col-md-6 col-12'>
                 <div className='text-right'>
                   <div style={{ display: 'inline-block' }}>
                     <div className='row'>
-                      <div className='col-md-6'>
+                      <div className='col-md-6 col-6'>
                         <div
-                          className='p-input-icon-left'
+                          className='p-input-icon-left ml-2 w-100'
                           style={{
                             display: 'inline-block',
-                            marginLeft: '2rem',
                           }}
                         >
                           <i className='pi pi-search' />
@@ -304,13 +303,21 @@ const Equipos = () => {
                             value={searchTerm}
                             onChange={handleSearchChange}
                             placeholder='Buscar'
+                            className='w-100'
                           />
                         </div>
                       </div>
-                      <div className='col-md-6'>
+                      <div className='col-md-6 col-6'>
                         <Link to='/crearEquipo'>
                           <Button
+                            className='d-none d-sm-inline-flex' // Ocultar en tamaños pequeños
                             label='Crear Equipo'
+                            icon='pi pi-plus'
+                            severity='Danger'
+                            style={{ marginLeft: '2rem' }}
+                          />
+                          <Button
+                            className='d-inline-flex d-sm-none' // Mostrar solo en tamaños pequeños
                             icon='pi pi-plus'
                             severity='Danger'
                             style={{ marginLeft: '2rem' }}

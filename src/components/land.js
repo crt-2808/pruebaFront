@@ -287,7 +287,7 @@ const Land = () => {
       ) : (
         <div className='container land pt-4 pb-4  d-flex' id='landing-p'>
           <div className='row w-100'>
-            <div className='col-12 mt-2 mb-md-3 mb-sm-0 d-sm-block d-md-flex justify-content-sm-between align-items-center text-center'>
+            <div className='col-12 mt-2 mb-md-2 mb-sm-0 d-sm-block d-md-flex justify-content-sm-between align-items-center text-center'>
               <h1 className='bienvenidoText'>
                 Bienvenido &nbsp;
                 {usuario &&
@@ -295,8 +295,11 @@ const Land = () => {
                     lowerCaseAllWordsExceptFirstLetters(usuario.givenName)
                   )}
               </h1>
+              <button className='btn-exportar col-md-2 col-6 ' onClick={setShowPopup}>Ver Incidencias</button>
             </div>
-            <button className='btn-exportar' onClick={setShowPopup}>Ver Incidencias</button>
+            
+
+
             <div className='col-12 mt-4 p-0'>
               <div
                 className='container-fluid mt-2 mb-4 p-5'

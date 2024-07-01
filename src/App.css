@@ -629,7 +629,7 @@ color: #172126;
 }
 .bienvenidoText{
   display: flex;
-  padding-left: 5rem;
+  padding-left: 2rem;
 }
 @media screen and (max-width: 768px) {
   #navbar{

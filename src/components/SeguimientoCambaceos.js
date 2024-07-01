@@ -3,9 +3,8 @@ import Swal from "sweetalert2";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Link } from "react-router-dom";
-import { ArrowLeft, CodeSlash, X } from "react-bootstrap-icons";
+import { ArrowLeft, X } from "react-bootstrap-icons";
 import { Dialog } from 'primereact/dialog';
-import { Button } from 'primereact/button';
 import Navbar from "./navbar";
 import { Row, Col } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
@@ -15,7 +14,6 @@ import { Tooltip } from "primereact/tooltip";
 import Map, { Marker, NavigationControl } from "react-map-gl";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 import "mapbox-gl/dist/mapbox-gl.css";
-import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
