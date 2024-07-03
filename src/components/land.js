@@ -295,7 +295,7 @@ const Land = () => {
                     lowerCaseAllWordsExceptFirstLetters(usuario.givenName)
                   )}
               </h1>
-              <button className='btn-exportar col-md-2 col-6 ' onClick={setShowPopup}>Ver Incidencias</button>
+              <button className='btn-exportar col-md-2 col-6 ' onClick={setShowPopup}>Agregar Incidencias</button>
             </div>
             
 

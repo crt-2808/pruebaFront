@@ -74,7 +74,6 @@ const SeguimientoCambaceos = () => {
       }
 
       const data = await response.json();
-      console.log(data);
       if (data.length === 0) {
         return Swal.fire({
           title: "¡Atención!",
@@ -117,7 +116,6 @@ const SeguimientoCambaceos = () => {
   // Efecto para cargar los registros cuando el componente se monta
   useEffect(() => {
     cargarRegistros();
-    console.log("Estos son los registros", registros);
   }, []);
 
   // Función para formatear la fecha en un formato legible
@@ -198,7 +196,6 @@ const SeguimientoCambaceos = () => {
       )
     );
     setFilteredData(registrosFiltrados);
-    console.log("Registros filtrados:", registrosFiltrados); // Imprimir en consola
   };
 
   useEffect(() => {
@@ -219,7 +216,6 @@ const SeguimientoCambaceos = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Respuesta del servidor:', data);
       
         if (data.length > 0 && data[0].Incidencia !== null) {
           // Mostrar el modal con la respuesta del servidor

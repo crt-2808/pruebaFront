@@ -72,8 +72,8 @@ const AgregarIncidencia = () => {
   // Función para construir la dirección completa
 
   const manejoIncidencia = () => {
-    const envioIncidentes = { incidencia: incidentesEditados };
-    fetchWithToken(`${API_URL}/ColaboradorIncidencias/${idRegistro}`, {
+    const envioIncidentes = { incidencia: incidentesEditados, idPlanificador: idRegistro };
+    fetchWithToken(`${API_URL}/putIncidenciasColaborador`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
