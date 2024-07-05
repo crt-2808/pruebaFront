@@ -218,7 +218,6 @@ const SeguimientoCambaceos = () => {
         const data = await response.json();
       
         if (data.length > 0 && data[0].Incidencia !== null) {
-          // Mostrar el modal con la respuesta del servidor
           setModalData(data[0].Incidencia);
           setModalVisible(true);
         }  else {
@@ -230,7 +229,7 @@ const SeguimientoCambaceos = () => {
             timerProgressBar: true,
           });
         }
-      }       else {
+      }else {
         console.error(
           "Error al obtener incidencias por colaborador:",
           response
@@ -269,7 +268,7 @@ const SeguimientoCambaceos = () => {
     <div className="fluid">
       <div>
 
-      <Dialog header="Respuesta del Servidor" visible={modalVisible} onHide={onHideModal}>
+      <Dialog header="Incidencia Registrada" visible={modalVisible} onHide={onHideModal}>
         <div>{modalData}</div>
       </Dialog>
     </div>
