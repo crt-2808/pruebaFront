@@ -11,7 +11,7 @@ function LandView() {
   return (
     <div>
       {(() => {
-        if (USER_ROLE === "lider" || USER_ROLE === "admin") {
+        if (USER_ROLE === "lider" || USER_ROLE === "admin" || USER_ROLE === "gerente") {
           return <Land />;
         } else if (USER_ROLE === "colaborador") {
           return <Land_Colab />;

@@ -53,7 +53,7 @@ function App() {
           <Route
             element={
               <ProtectedRoutes
-                allowedRoles={['lider', 'admin', 'colaborador']}
+                allowedRoles={['lider', 'admin', 'colaborador', 'gerente']}
                 exact
               />
             }
@@ -70,7 +70,7 @@ function App() {
           {/*Ruta de lider o admin */}
           <Route
             element={
-              <ProtectedRoutes allowedRoles={['lider', 'admin']} exact />
+              <ProtectedRoutes allowedRoles={['lider', 'admin', 'gerente']} exact />
             }
           >
             <Route path='/Equipos' element={<Equipos />} />

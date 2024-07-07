@@ -46,7 +46,7 @@ const Cambaceo = () => {
                 </Link>
               </div>
               <div className="col-md-4">
-                <Link to="/SeguimientoCambaceo" className="links-cambaceo">
+                <Link to="/SeguimientoCambaceos" className="links-cambaceo">
                   <img src={Seguimiento} alt="Imagen Ilustrativa"></img>
                   <h3 className="opcionCambaceo">Seguimiento</h3>
                 </Link>

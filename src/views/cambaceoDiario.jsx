@@ -7,7 +7,7 @@ function CambaceoDiarioView() {
   return (
     <div>
       {(() => {
-        if (USER_ROLE === "lider" || USER_ROLE === "admin") {
+        if (USER_ROLE === "lider" || USER_ROLE === "admin" || USER_ROLE === "gerente") {
           return <CambaceoDiario />;
         } else if (USER_ROLE === "colaborador") {
           return <Cambaceo_Diario_Colab />;

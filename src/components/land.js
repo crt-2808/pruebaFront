@@ -4,7 +4,6 @@ import { useUserContext } from '../userProvider';
 import Navbar from './navbar';
 import Agregar from '../img/Agregar.png';
 import Editar from '../img/boton-editar.png';
-import Usuario from '../img/imagen-de-usuario-con-fondo-negro.png';
 import Planeador from '../img/Planeador.png';
 import { isUserAdmin } from '../utils/auth';
 import { useState } from 'react';
@@ -25,7 +24,6 @@ const lowerCaseAllWordsExceptFirstLetters = (string) =>
 
 const Land = () => {
   const isAdmin = isUserAdmin();
-  const isLider = isUserAdmin();
   const { usuario } = useUserContext();
   const [showPopup, setShowPopup] = useState(false);
   const [ventas, setVentas] = useState('');
@@ -33,7 +31,7 @@ const Land = () => {
   const [trabajoPropio, setTrabajoPropio] = useState('');
   const [Nombre_usuario, setUsuario] = useState('');
   const [incidenciaRegistrada, setIncidenciaRegistrada] = useState('');
-
+  const userRole=sessionStorage.getItem("userRole")
 
   useEffect(() => {
     const nombreUsuario = usuario.givenName;
@@ -318,18 +316,22 @@ const Land = () => {
                       </div>
                       <div className='col-12'>
                         <div className='row no-padding pt-5 pl-0 pr-0'>
-                          <div className='col-md-4 '>
-                            <Link to='/agregarColab' className='no-decoration'>
-                              <img src={Agregar} alt='Boton-Agregar'></img>
-                              <p className='placeBtn'>Agregar</p>
-                            </Link>
-                          </div>
-                          <div className='col-md-4'>
-                            <Link to='/editarColab' className='no-decoration'>
-                              <img src={Editar} alt='Boton-Editar'></img>
-                              <p className='placeBtn'>Editar</p>
-                            </Link>
-                          </div>
+                        {userRole !== 'gerente' && (
+                      <>
+                        <div className='col-md-6 '>
+                          <Link to='/agregarColab' className='no-decoration'>
+                            <img src={Agregar} alt='Boton-Agregar'></img>
+                            <p className='placeBtn'>Agregar</p>
+                          </Link>
+                        </div>
+                        <div className='col-md-6'>
+                          <Link to='/editarColab' className='no-decoration'>
+                            <img src={Editar} alt='Boton-Editar'></img>
+                            <p className='placeBtn'>Editar</p>
+                          </Link>
+                        </div>
+                      </>
+                    )}
                           <div className='col-md-4'>
                             <Link to='/Equipos' className='no-decoration'>
                               <i

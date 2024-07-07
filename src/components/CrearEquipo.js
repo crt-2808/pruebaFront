@@ -127,9 +127,11 @@ function CrearEquipo() {
         }
       );
       const data = await response.json();
+      console.log(data)
       const colaboradoresProcesados = data.map((colaborador) => ({
         id: colaborador.idUsuario,
         nombreCompleto: colaborador.NombreCompleto,
+        rol:colaborador.Rol,
       }));
 
       console.log('Colaboradores: ', colaboradoresProcesados);
@@ -143,8 +145,9 @@ function CrearEquipo() {
     cargarColaboradores();
   }, []);
   const opcionesColaboradores = colaboradores.map((colaborador) => ({
-    label: colaborador.nombreCompleto,
+    label: `${colaborador.nombreCompleto} (${colaborador.rol})}`,
     value: `${colaborador.id}_${colaborador.nombreCompleto}`,
+    
   }));
   const panelFooterTemplate = () => {
     const length = colaboradoresSeleccionados

@@ -7,7 +7,7 @@ function CambaceoSemanalView() {
   return (
     <div>
       {(() => {
-        if (USER_ROLE === "lider" || USER_ROLE === "admin") {
+        if (USER_ROLE === "lider" || USER_ROLE === "admin" || USER_ROLE === "gerente") {
           return <CambaceoSemanal />;
         } else if (USER_ROLE === "colaborador") {
           return <Cambaceo_Semanal_Colab />;

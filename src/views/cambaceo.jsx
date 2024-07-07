@@ -6,7 +6,7 @@ function CambaceoView() {
   return (
     <div>
       {(() => {
-        if (USER_ROLE === "lider" || USER_ROLE === "admin") {
+        if (USER_ROLE === "lider" || USER_ROLE === "admin" || USER_ROLE === "gerente") {
           return <Cambaceo />;
         } else if (USER_ROLE === "colaborador") {
           return <Cambaceo_Colab />;

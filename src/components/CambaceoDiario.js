@@ -20,7 +20,7 @@ import { CalendarioEsp } from "../utils/calendarLocale";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 import { fetchWithToken } from "../utils/api";
 import { API_URL } from "../utils/api";
-import { Panel } from 'primereact/panel';
+
 
 const mapboxToken = process.env.REACT_APP_MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
