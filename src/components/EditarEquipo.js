@@ -509,78 +509,73 @@ function EditarEquipo() {
             id="contenedor"
           >
             <div className="row">
-              <div className="col-md-6">
-                <div className="row ">
-                  <div className="col-md-6">
-                    {editingNombreEquipo ? (
-                      <InputText
-                        value={nombreEquipo}
-                        onChange={(e) => setNombreEquipo(e.target.value)}
-                        className="textoSeguimiento mx-md-5 mx-sm-1"
-                      />
-                    ) : (
-                      <h1 className="textoSeguimiento mx-md-5 mx-sm-1">
-                        {nombreEquipo}
-                      </h1>
-                    )}
-                  </div>
-                  <div className="col-md-6">
-                    {editingNombreEquipo ? (
-                      <div className="row">
-                        <Button
-                          label="Guardar"
-                          icon="pi pi-check"
-                          className="p-button-success"
-                          onClick={handleSaveNombreEquipo}
-                        />
-                        <Button
-                          label="Cancelar"
-                          icon="pi pi-times"
-                          className="p-button-danger ml-2"
-                          onClick={handleCancelEditNombreEquipo}
-                        />
-                      </div>
-                    ) : (
-                      <Button
-                        label="Editar"
-                        icon="pi pi-pencil"
-                        className="p-button-primary"
-                        onClick={handleEditNombreEquipo}
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="row ">
-                  <div className="col-md-6 ">
-                    <div
-                      className="p-input-icon-left"
-                      style={{
-                        display: "inline-block",
-                        widows: "100%",
-                      }}
-                    >
-                      <i className="pi pi-search" />
-                      <InputText
-                        value={search}
-                        onChange={handleSearchChange}
-                        placeholder="Buscar"
-                        className="w-100"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <Button
-                      label="Agregar Miembros"
-                      icon="pi pi-plus"
-                      severity="Danger"
-                      onClick={handleOpenModal}
-                    />
-                  </div>
-                </div>
-              </div>
+      <div className="col-md-6">
+        <div className="row">
+          <div className="col-md-12 d-flex align-items-center">
+            {editingNombreEquipo ? (
+              <InputText
+                value={nombreEquipo}
+                onChange={(e) => setNombreEquipo(e.target.value)}
+                className="textoSeguimiento mx-md-5 mx-sm-1"
+              />
+            ) : (
+              <h1 className="textoSeguimiento">{nombreEquipo}</h1>
+            )}
+            {editingNombreEquipo ? (
+              <>
+                <Button
+                  
+                  icon="pi pi-check"
+                  className="p-button-success rounded"
+                  onClick={handleSaveNombreEquipo}
+                />
+                <Button
+                  
+                  icon="pi pi-times"
+                  className="p-button-danger m-2"
+                  onClick={handleCancelEditNombreEquipo}
+                />
+              </>
+            ) : (
+              <i
+                className="pi pi-pencil m-3"
+                style={{ color: 'gray', cursor: 'pointer', fontSize: '1.5em' }}
+                onClick={handleEditNombreEquipo}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="col-md-6">
+        <div className="row">
+          <div className="col-md-6">
+            <div
+              className="p-input-icon-left"
+              style={{
+                display: 'inline-block',
+                width: '100%',
+              }}
+            >
+              <i className="pi pi-search" />
+              <InputText
+                value={search}
+                onChange={handleSearchChange}
+                placeholder="Buscar"
+                className="w-100"
+              />
             </div>
+          </div>
+          <div className="col-md-6">
+            <Button
+              label="Agregar Miembros"
+              icon="pi pi-plus"
+              severity="Danger"
+              onClick={handleOpenModal}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
             <div
               className="row align-items-center mt-sm-4 mb-sm-4 mt-md-0 mb-md-0"
               id="opcionesCambaceo"
