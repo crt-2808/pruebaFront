@@ -53,7 +53,7 @@ function App() {
           <Route
             element={
               <ProtectedRoutes
-                allowedRoles={['lider', 'admin', 'colaborador', 'gerente']}
+                allowedRoles={['lider', 'admin', 'colaborador', 'coordinador', 'gerente']}
                 exact
               />
             }
@@ -70,7 +70,7 @@ function App() {
           {/*Ruta de lider o admin */}
           <Route
             element={
-              <ProtectedRoutes allowedRoles={['lider', 'admin', 'gerente']} exact />
+              <ProtectedRoutes allowedRoles={['lider', 'admin', 'gerente','coordinador']} exact />
             }
           >
             <Route path='/Equipos' element={<Equipos />} />
@@ -103,7 +103,7 @@ function App() {
 
           {/*Ruta de los colaboradores */}
           <Route
-            element={<ProtectedRoutes allowedRoles={['colaborador']} exact />}
+            element={<ProtectedRoutes allowedRoles={['colaborador', 'coordinador']} exact />}
           >
             <Route
               element={<Colab_PruebaMaps />}

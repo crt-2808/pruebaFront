@@ -4,12 +4,14 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Link } from "react-router-dom";
 import { ArrowLeft, X } from "react-bootstrap-icons";
-import { Dialog } from 'primereact/dialog';
+import { Dialog } from "primereact/dialog";
 import Navbar from "./navbar";
 import { Row, Col } from "react-bootstrap";
 import { useAuthRedirect } from "../useAuthRedirect";
 import { API_URL, fetchWithToken } from "../utils/api";
+import { getUserRole } from "../utils/auth";
 import Usuario_sin_img from "../img/imagen-de-usuario-con-fondo-negro.png";
+import { useNavigate } from "react-router-dom";
 import { Tooltip } from "primereact/tooltip";
 import Map, { Marker, NavigationControl } from "react-map-gl";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
@@ -34,6 +36,11 @@ const SeguimientoCambaceos = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalData, setModalData] = useState(null);
   const [address, setAddress] = useState("");
+  const userRole = getUserRole();
+  const navigate = useNavigate();
+  const [idPlanificador, setIdPlanificador] = useState(null);
+  const [idColaborador, setIdColaborador] = useState(null);
+
   const [coordinates, setCoordinates] = useState({
     latitude: 26.084241,
     longitude: -98.303863,
@@ -216,20 +223,44 @@ const SeguimientoCambaceos = () => {
 
       if (response.ok) {
         const data = await response.json();
-      
+
         if (data.length > 0 && data[0].Incidencia !== null) {
           setModalData(data[0].Incidencia);
           setModalVisible(true);
-        }  else {
-          Swal.fire({
-            icon: 'info',
-            title: 'No hay incidencias registradas',
-            text: 'No se encontraron incidencias para este colaborador',
-            timer: 3000,
-            timerProgressBar: true,
-          });
+        } else {
+          // Mostrar modal especial para coordinadores si no hay incidencia registrada
+          if (userRole === "coordinador") {
+            Swal.fire({
+              title: "Colaborador sin incidencia registrada",
+              text: "El colaborador seleccionado no ha registrado incidencia. ¿Desea agregar una incidencia?",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Confirmar",
+              cancelButtonText: "Cancelar",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                // Aquí puedes añadir lógica adicional para agregar la incidencia si es necesario
+                // Por ejemplo, podrías abrir un formulario de ingreso de incidencia
+                setIdPlanificador(idPlanificador);
+                setIdColaborador(idColaborador);
+                navigate("/Colaborador/Incidencia", {
+                  state: { idPlanificador, idColaborador },
+                });
+              }
+            });
+          } else {
+            Swal.fire({
+              title: "No hay incidencias registradas",
+              text: "No se encontraron incidencias para este colaborador",
+              timer: 5000, // Tiempo en milisegundos antes de que se cierre automáticamente
+              timerProgressBar: true,
+              icon: "info",
+            });
+          }
         }
-      }else {
+      } else {
         console.error(
           "Error al obtener incidencias por colaborador:",
           response
@@ -262,26 +293,39 @@ const SeguimientoCambaceos = () => {
       e.preventDefault();
       window.location.reload();
     }
+    if (!modoCuestionario && userRole === "coordinador") {
+      e.preventDefault();
+      window.location.href = "/land";
+    }
   };
-  
+
   return (
     <div className="fluid">
       <div>
-
-      <Dialog header="Incidencia Registrada" visible={modalVisible} onHide={onHideModal}>
-        <div>{modalData}</div>
-      </Dialog>
-    </div>
+        <Dialog
+          header="Incidencia Registrada"
+          visible={modalVisible}
+          onHide={onHideModal}
+        >
+          <div>{modalData}</div>
+        </Dialog>
+      </div>
       <Navbar style={{ backgroundColor: "##F8F9FA" }}></Navbar>
       <div className="Colab" style={{ backgroundColor: "#F1F5F8" }}>
         <div className="container-fluid px-4" style={{ paddingBottom: "3rem" }}>
           <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
-          <Link to="/cambaceo" onClick={handleLinkClick}>
-  <ArrowLeft className="ml-4 regreso" />
-  <span id="indicador">{modoCuestionario ? "Seleccionar Cambaceo" : "Menu Cambaceo"}</span>
-</Link>
-
+            <Link to="/cambaceo" onClick={handleLinkClick}>
+              <ArrowLeft className="ml-4 regreso" />
+              <span id="indicador">
+                {modoCuestionario
+                  ? "Seleccionar Cambaceo"
+                  : userRole === "coordinador"
+                  ? "Pagina Principal"
+                  : "Menu Cambaceo"}
+              </span>
+            </Link>
           </div>
+
           <div className="col-12 mt-5 mb-md-1 mb-sm-0 px-4 pt-3">
             {modoCuestionario ? (
               <h1 className="textoSeguimiento mx-md-5 mx-sm-1">
@@ -396,7 +440,7 @@ const SeguimientoCambaceos = () => {
                         <hr />
                         <div className="col-12">
                           <h3 style={{ marginLeft: "15px", textAlign: "left" }}>
-                            Seguimiento individual
+                            Seguimiento Individual
                           </h3>
                           <div className="d-flex flex-wrap justify-content-left">
                             {/* Mostrar al líder */}
@@ -456,13 +500,14 @@ const SeguimientoCambaceos = () => {
                                       e.target.onerror = null;
                                       e.target.src = Usuario_sin_img;
                                     }}
-                                    onClick={
-                                      () => {
-                                        const idCambaceo = registroSeleccionado.idPlanificador;
-                                        handleClickAvatar(idCambaceo, colaborador.idUsuario);
-                                      }
-
-                                    }
+                                    onClick={() => {
+                                      const idCambaceo =
+                                        registroSeleccionado.idPlanificador;
+                                      handleClickAvatar(
+                                        idCambaceo,
+                                        colaborador.idUsuario
+                                      );
+                                    }}
                                     data-pr-tooltip={colaborador.NombreCompleto}
                                     className="avatar-tooltip"
                                   />

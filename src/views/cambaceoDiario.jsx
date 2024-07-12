@@ -9,7 +9,7 @@ function CambaceoDiarioView() {
       {(() => {
         if (USER_ROLE === "lider" || USER_ROLE === "admin" || USER_ROLE === "gerente") {
           return <CambaceoDiario />;
-        } else if (USER_ROLE === "colaborador") {
+        } else if (USER_ROLE === "colaborador"||USER_ROLE=="coordinador") {
           return <Cambaceo_Diario_Colab />;
         }
         return <div>Ocurrio un error, contacta al equipo de soporte</div>;

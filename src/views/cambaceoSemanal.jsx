@@ -9,7 +9,7 @@ function CambaceoSemanalView() {
       {(() => {
         if (USER_ROLE === "lider" || USER_ROLE === "admin" || USER_ROLE === "gerente") {
           return <CambaceoSemanal />;
-        } else if (USER_ROLE === "colaborador") {
+        } else if (USER_ROLE === "colaborador"||USER_ROLE=="coordinador") {
           return <Cambaceo_Semanal_Colab />;
         }
         return <div>Ocurrio un error, contacta al equipo de soporte</div>;

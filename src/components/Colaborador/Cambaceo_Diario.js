@@ -37,7 +37,6 @@ const Cambaceo_Diario_Colab = () => {
       // console.log('esta es la data', response.json());
       // const data = '';
       const data = await response.json();
-      console.log('esta es la data2:', data);
       if (data && data.length > 0) {
         // Obtener la fecha de inicio de la semana (lunes)
         const now = new Date();
@@ -102,6 +101,7 @@ const Cambaceo_Diario_Colab = () => {
     }
   };
   const handleVerClick = (registro) => {
+    console.log(registro)
     navigate('/Colaborador/pruebaMaps', { state: { registro } });
   };
   const formatearFecha = (fecha) => {

@@ -9,7 +9,7 @@ function PlaneadorView() {
       {(() => {
         if (USER_ROLE === "lider" || USER_ROLE === "admin" || USER_ROLE === "gerente") {
           return <Planeador />;
-        } else if (USER_ROLE === "colaborador") {
+        } else if (USER_ROLE === "colaborador"||USER_ROLE=="coordinador") {
           return <Planeador_Colab />;
         }
         return <div>Ocurrio un error, contacta al equipo de soporte</div>;

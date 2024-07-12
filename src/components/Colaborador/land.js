@@ -29,6 +29,7 @@ const Land_Colab = () => {
   const [ventas, setVentas] = useState("");
   const [cobranza, setCobranza] = useState("");
   const [trabajoPropio, setTrabajoPropio] = useState("");
+  const [userRole, setRole] = useState("");
 
   const cargarLider = async () => {
     try {
@@ -38,9 +39,10 @@ const Land_Colab = () => {
           "Content-Type": "application/json",
         },
       });
+
       const dataLider = await response.json();
-      console.log(dataLider);
-      setLiderData(dataLider);
+      setLiderData(dataLider["lider"]);
+      setRole(dataLider["role"]);
     } catch (error) {
       console.error("Error al obtener los datos del lider", error);
     }
@@ -58,8 +60,6 @@ const Land_Colab = () => {
   }, [showPhone]);
   useEffect(() => {
     const nombreUsuario = usuario.givenName;
-    console.log(sessionStorage);
-    console.log("Usuario", usuario);
     setUsuario(nombreUsuario);
     const fetchIncidenciaRegistrada = async () => {
       try {
@@ -174,6 +174,7 @@ const Land_Colab = () => {
             >
               Agregar Incidencias
             </button>
+            </div>
             <div className="container-fluid mt-2 mb-4 p-5" id="contenedor-land">
               <div className="row pt-md-5 mt-md-4 pb-md-4 mb-md-3">
                 <div className="col-md-6">
@@ -198,6 +199,15 @@ const Land_Colab = () => {
                               ></i>
                             )}
                           </h5>
+                          {userRole === "coordinador" && (
+                            <Link to="/SeguimientoCambaceos">
+                            <Button
+                              label="Seguimiento Equipo"
+                              className="p-button-outlined mt-3"
+                              
+                            />
+                            </Link>
+                          )}
                         </div>
                       )}
                     </div>
@@ -223,7 +233,6 @@ const Land_Colab = () => {
               </div>
             </div>
           </div>
-        </div>
       </div>
     </div>
   );

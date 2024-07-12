@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Map, { Marker } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
-import axios from "axios";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -14,8 +13,7 @@ import "../../theme.css";
 import "primereact/resources/primereact.css"; // core css
 import { addLocale } from "primereact/api";
 
-const mapboxToken =
-  "pk.eyJ1IjoiZGllZ28tdWRhIiwiYSI6ImNscnp0bDg3ZTIxcm8ya3J6emI5YzB6dzIifQ.XfVLD6ewyxMC63V_hUKtRQ";
+const mapboxToken =process.env.REACT_APP_MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
 
 function Colab_PruebaMaps() {
@@ -63,7 +61,6 @@ function Colab_PruebaMaps() {
         FechaAsignacion,
         FechaConclusion,
         Descripcion,
-        idPlanificador,
       } = location.state.registro;
 
       setDireccionCompleta(Direccion || "");
@@ -89,14 +86,6 @@ function Colab_PruebaMaps() {
     }
   }, [location.state]);
 
-  // Componentes de la direccion
-  const [map, setMap] = useState(null);
-  const onLoad = (map) => {
-    setMap(map);
-  };
-  const onUnmount = () => {
-    setMap(null);
-  };
 
   const obtenerCoordenadas = async (direccionCompleta) => {
     try {
@@ -127,7 +116,8 @@ function Colab_PruebaMaps() {
   };
 
   const handleIncidenciaClick = (registro) => {
-    navigate("/Colaborador/Incidencia", { state: { registro } });
+    const idPlanificador=registro.idPlanificador
+    navigate("/Colaborador/Incidencia", { state: { idPlanificador } });
   };
 
   useEffect(() => {

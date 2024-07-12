@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { InputTextarea } from "primereact/inputtextarea";
 import Navbar from "../navbar";
@@ -9,6 +8,7 @@ import { Form, Row, Col } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { API_URL, fetchWithToken } from "../../utils/api";
+import { Message } from "primereact/message";
 
 const AgregarIncidencia = () => {
   const navigate = useNavigate();
@@ -19,12 +19,13 @@ const AgregarIncidencia = () => {
   const [telefono, setTelefono] = useState("");
   const [direccionCompleta, setDireccionCompleta] = useState("");
   const [fechaAsignacion, setFechaAsignacion] = useState("");
-  const [incidentes, setIncidentes] = useState("");
   const [tipo, setTipo] = useState("");
   const [incidentesEditados, setIncidentesEditados] = useState("");
+  const [idColaborador, setIDColaborador] = useState(""); // Nuevo estado para IDColaborador
+
   const getPlanificador = async () => {
-    if (location.state && location.state.registro) {
-      const ID = location.state.registro.idPlanificador;
+    if (location.state && location.state.idPlanificador) {
+      const ID = location.state.idPlanificador;
       setIDRegistro(ID);
       try {
         const response = await fetchWithToken(`${API_URL}/planificador/${ID}`, {
@@ -41,11 +42,16 @@ const AgregarIncidencia = () => {
           setTelefono(primerElemento.Telefono);
           setDireccionCompleta(primerElemento.Direccion);
           setFechaAsignacion(formatoFecha(primerElemento.FechaAsignacion));
-          setIncidentes(primerElemento.Incidentes);
           setTipo(primerElemento.Tipo);
+          setIncidentesEditados(primerElemento.Incidencia);
         }
       } catch (error) {
         console.error("Error al obtener datos:", error);
+      }
+
+      if (location.state && location.state.idColaborador) {
+        setIDColaborador(location.state.idColaborador);
+        setIncidentesEditados("")
       }
     }
   };
@@ -72,7 +78,13 @@ const AgregarIncidencia = () => {
   // Función para construir la dirección completa
 
   const manejoIncidencia = () => {
-    const envioIncidentes = { incidencia: incidentesEditados, idPlanificador: idRegistro };
+    const envioIncidentes = {
+      incidencia: incidentesEditados,
+      idPlanificador: idRegistro,
+    };
+    if (idColaborador) {
+      envioIncidentes.idColaborador = idColaborador;
+    }
     fetchWithToken(`${API_URL}/putIncidenciasColaborador`, {
       method: "PUT",
       headers: {
@@ -87,7 +99,6 @@ const AgregarIncidencia = () => {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         Swal.fire({
           icon: "success",
           title: "Incidencia registrada con exito",
@@ -154,6 +165,12 @@ const AgregarIncidencia = () => {
           className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
           id="contenedor-cambaceo"
         >
+          {idColaborador && (
+            <Message
+              severity="info"
+              text={`Esta incidencia se agregará al Colaborador con ID ${idColaborador}`}
+            />
+          )}
           <Form>
             <Row className="mb-5">
               <Col xs={12} md={6}>
@@ -240,20 +257,20 @@ const AgregarIncidencia = () => {
                 </div>
               </Col>
               <Col xs={12} md={6}>
-                <div>
-                  <h5 style={{ textAlign: "left" }}>Incidentes</h5>
-                  <InputTextarea
-                    type="text"
-                    placeholder="Ingresa cualquier detalle relevante"
-                    value={incidentesEditados}
-                    onChange={handleIncidentesChange}
-                    className="w-100"
-                    rows={10}
-                  />
-                </div>
+                  <div>
+                    <h5 style={{ textAlign: "left" }}>Incidentes</h5>
+                    <InputTextarea
+                      type="text"
+                      placeholder="Ingresa cualquier detalle relevante"
+                      value={incidentesEditados}
+                      onChange={handleIncidentesChange}
+                      className="w-100"
+                      rows={10}
+                    />
+                  </div>
                 <button
                   type="button"
-                  class="btn btn-success btn-lg"
+                  className="btn btn-success btn-lg"
                   onClick={manejoIncidencia}
                 >
                   Agregar

@@ -21,7 +21,6 @@ import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 import { fetchWithToken } from "../utils/api";
 import { API_URL } from "../utils/api";
 
-
 const mapboxToken = process.env.REACT_APP_MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
 
@@ -159,11 +158,14 @@ function CambaceoDiario() {
       };
 
       try {
-        const res = await fetchWithToken(`${API_URL}/usuariosPorEquipo`, teamConfig);
+        const res = await fetchWithToken(
+          `${API_URL}/usuariosPorEquipo`,
+          teamConfig
+        );
         const json = await res.json();
-        console.log('Respuesta del servidor:', json);
+        console.log("Respuesta del servidor:", json);
       } catch (error) {
-        console.error('Error al obtener los miembros del equipo:', error);
+        console.error("Error al obtener los miembros del equipo:", error);
       }
     };
 
@@ -198,47 +200,49 @@ function CambaceoDiario() {
       const FechaConclusion = formateoFecha(fechaConclusion);
       console.log("Hora inicio: " + horaInicio);
       console.log("Hora fin: " + horaFin);
-  
+
       const tipoColaborador = [];
       const tipoEquipo = [];
-      
+
       colaboradoresSeleccionados.forEach((item) => {
         const [id, nombreCompleto] = item.split("_");
-        const colaborador = colaboradores.find(col => col.id === parseInt(id));
-        
-        if (colaborador.tipo === 'Colaborador') {
+        const colaborador = colaboradores.find(
+          (col) => col.id === parseInt(id)
+        );
+
+        if (colaborador.tipo === "Colaborador") {
           tipoColaborador.push(id);
-        } else if (colaborador.tipo === 'Equipo') {
+        } else if (colaborador.tipo === "Equipo") {
           tipoEquipo.push(id);
         }
       });
-  
-      console.log("Colaboradores: ", tipoColaborador);
-      console.log("Equipos: ", tipoEquipo);
+
       let userIdsFromTeams = [];
       if (tipoEquipo.length > 0) {
-      const teamData = {
-        equipoIds: tipoEquipo,
-      };
+        const teamData = {
+          equipoIds: tipoEquipo,
+        };
 
-      const teamConfig = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(teamData),
-      };
+        const teamConfig = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(teamData),
+        };
 
-      const teamRes = await fetchWithToken(`${API_URL}/usuariosPorEquipo`, teamConfig);
-      const teamJson = await teamRes.json();
+        const teamRes = await fetchWithToken(
+          `${API_URL}/usuariosPorEquipo`,
+          teamConfig
+        );
+        const teamJson = await teamRes.json();
 
-      userIdsFromTeams = teamJson.userIds.map(id=>id.toString());
-    }
+        userIdsFromTeams = teamJson.userIds.map((id) => id.toString());
+      }
 
-    // Combinar los IDs de colaboradores y los IDs obtenidos de los equipos
+      // Combinar los IDs de colaboradores y los IDs obtenidos de los equipos
       const allUserIds = [...tipoColaborador, ...userIdsFromTeams];
-      console.log(allUserIds)
-  
+
       if (allUserIds.length > 0) {
         data = {
           ...data,
@@ -252,7 +256,7 @@ function CambaceoDiario() {
           SitioWeb: "src",
           TipoEmpresa: "src",
         };
-        
+
         let config = {
           method: "POST",
           headers: {
@@ -268,8 +272,59 @@ function CambaceoDiario() {
           });
           Swal.showLoading();
           let res = await fetchWithToken(`${API_URL}/createCambaceo`, config);
+          const data = await res.json();
           Swal.close();
-  
+
+          if (res.ok) {
+            const idPlanificador = data.idPlanificador;
+            console.log("idPlanificador: ", idPlanificador);
+
+            // Enviar idPlanificador y tipoEquipo a /addCambaceoEquipo
+            if (tipoEquipo.length > 0) {
+              const addCambaceoEquipoData = {
+                idPlanificador: idPlanificador,
+                equipoIds: tipoEquipo,
+              };
+
+              const addCambaceoEquipoConfig = {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(addCambaceoEquipoData),
+              };
+
+              try {
+                console.log("ya estoy en el try");
+                let addRes = await fetchWithToken(
+                  `${API_URL}/addPlanificadorEquipo`,
+                  addCambaceoEquipoConfig
+                );
+                const addResJson = await addRes.json();
+                console.log("Respuesta de addCambaceoEquipo: ", addResJson);
+
+                if (!addRes.ok) {
+                  throw new Error(
+                    addResJson.message || "Error al agregar equipos al cambaceo"
+                  );
+                }
+              } catch (error) {
+                console.log("Error en addCambaceoEquipo: ", error);
+                Swal.fire({
+                  icon: "error",
+                  title: "Error al agregar equipos al cambaceo",
+                  text: error.message || "UDA",
+                  timer: 1200,
+                  timerProgressBar: true,
+                  backdrop: `
+                    rgba(36,32,32,0.65)
+                  `,
+                });
+                return;
+              }
+            }
+          }
+
           Swal.fire({
             icon: "success",
             title: "Se agregó tu cambaceo diario correctamente",
@@ -298,7 +353,6 @@ function CambaceoDiario() {
           });
         }
       }
-  
     } catch (error) {
       console.log("Error al enviar los datos al servidor:", error);
       return Swal.fire({
@@ -313,32 +367,36 @@ function CambaceoDiario() {
       });
     }
   };
-  
 
   const handleColaboradoresChange = (e) => {
     const seleccionados = e.value;
-    const deseleccionados = colaboradoresSeleccionados.filter(item => !seleccionados.includes(item));
+    const deseleccionados = colaboradoresSeleccionados.filter(
+      (item) => !seleccionados.includes(item)
+    );
     setColaboradoresSeleccionados(seleccionados);
-  
+
     // Manejo de deseleccionados
     deseleccionados.forEach(async (item) => {
       const [id, nombreCompleto] = item.split("_");
-      const colaborador = colaboradores.find(col => col.id === parseInt(id));
-  
-      if (colaborador.tipo === 'Colaborador') {
+      const colaborador = colaboradores.find((col) => col.id === parseInt(id));
+
+      if (colaborador.tipo === "Colaborador") {
         try {
-          const res = await fetchWithToken(`${API_URL}/equipoPorColaborador/${id}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+          const res = await fetchWithToken(
+            `${API_URL}/equipoPorColaborador/${id}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
           const data = await res.json();
-  
+
           if (data.id) {
             // Lógica para re-habilitar el equipo
-            const updatedColaboradores = colaboradores.map(colab => {
-              if (colab.tipo === 'Equipo' && colab.id === data.id) {
+            const updatedColaboradores = colaboradores.map((colab) => {
+              if (colab.tipo === "Equipo" && colab.id === data.id) {
                 return { ...colab, disabled: false };
               }
               return colab;
@@ -346,22 +404,28 @@ function CambaceoDiario() {
             setColaboradores(updatedColaboradores);
           }
         } catch (error) {
-          console.error('Error al obtener el equipo del colaborador:', error);
+          console.error("Error al obtener el equipo del colaborador:", error);
         }
-      } else if (colaborador.tipo === 'Equipo') {
+      } else if (colaborador.tipo === "Equipo") {
         try {
-          const res = await fetchWithToken(`${API_URL}/colaboradoresPorEquipo/${id}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+          const res = await fetchWithToken(
+            `${API_URL}/colaboradoresPorEquipo/${id}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
           const data = await res.json();
-  
+
           if (data.length > 0) {
             // Lógica para re-habilitar los colaboradores del equipo
-            const updatedColaboradores = colaboradores.map(colab => {
-              if (colab.tipo === 'Colaborador' && data.some(equipoColab => equipoColab.id === colab.id)) {
+            const updatedColaboradores = colaboradores.map((colab) => {
+              if (
+                colab.tipo === "Colaborador" &&
+                data.some((equipoColab) => equipoColab.id === colab.id)
+              ) {
                 return { ...colab, disabled: false };
               }
               return colab;
@@ -369,34 +433,45 @@ function CambaceoDiario() {
             setColaboradores(updatedColaboradores);
           }
         } catch (error) {
-          console.error('Error al obtener los colaboradores del equipo:', error);
+          console.error(
+            "Error al obtener los colaboradores del equipo:",
+            error
+          );
         }
       }
     });
-  
+
     // Manejo de seleccionados
-    const colaboradorIds = seleccionados.map(item => item.split("_")[0]);
-  
+    const colaboradorIds = seleccionados.map((item) => item.split("_")[0]);
+
     colaboradorIds.forEach(async (id) => {
-      const colaborador = colaboradores.find(col => col.id === parseInt(id));
-  
-      if (colaborador.tipo === 'Colaborador') {
+      const colaborador = colaboradores.find((col) => col.id === parseInt(id));
+
+      if (colaborador.tipo === "Colaborador") {
         try {
-          const res = await fetchWithToken(`${API_URL}/equipoPorColaborador/${id}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+          const res = await fetchWithToken(
+            `${API_URL}/equipoPorColaborador/${id}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
           const data = await res.json();
-  
-          if (data.message && data.message === 'El colaborador no pertenece a ningún equipo') {
+
+          if (
+            data.message &&
+            data.message === "El colaborador no pertenece a ningún equipo"
+          ) {
             // No hacer nada si el colaborador no pertenece a ningún equipo
-            console.log(`El colaborador ${colaborador.nombreCompleto} no pertenece a ningún equipo`);
+            console.log(
+              `El colaborador ${colaborador.nombreCompleto} no pertenece a ningún equipo`
+            );
           } else if (data.id) {
             // Lógica para deshabilitar el equipo
-            const updatedColaboradores = colaboradores.map(colab => {
-              if (colab.tipo === 'Equipo' && colab.id === data.id) {
+            const updatedColaboradores = colaboradores.map((colab) => {
+              if (colab.tipo === "Equipo" && colab.id === data.id) {
                 return { ...colab, disabled: true };
               }
               return colab;
@@ -404,25 +479,36 @@ function CambaceoDiario() {
             setColaboradores(updatedColaboradores);
           }
         } catch (error) {
-          console.error('Error al obtener el equipo del colaborador:', error);
+          console.error("Error al obtener el equipo del colaborador:", error);
         }
-      } else if (colaborador.tipo === 'Equipo') {
+      } else if (colaborador.tipo === "Equipo") {
         try {
-          const res = await fetchWithToken(`${API_URL}/colaboradoresPorEquipo/${id}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+          const res = await fetchWithToken(
+            `${API_URL}/colaboradoresPorEquipo/${id}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
           const data = await res.json();
-  
-          if (data.message && data.message === 'El equipo no tiene colaboradores') {
+
+          if (
+            data.message &&
+            data.message === "El equipo no tiene colaboradores"
+          ) {
             // No hacer nada si el equipo no tiene colaboradores
-            console.log(`El equipo ${colaborador.nombreCompleto} no tiene colaboradores`);
+            console.log(
+              `El equipo ${colaborador.nombreCompleto} no tiene colaboradores`
+            );
           } else if (data.length > 0) {
             // Lógica para deshabilitar los colaboradores del equipo
-            const updatedColaboradores = colaboradores.map(colab => {
-              if (colab.tipo === 'Colaborador' && data.some(equipoColab => equipoColab.id === colab.id)) {
+            const updatedColaboradores = colaboradores.map((colab) => {
+              if (
+                colab.tipo === "Colaborador" &&
+                data.some((equipoColab) => equipoColab.id === colab.id)
+              ) {
                 return { ...colab, disabled: true };
               }
               return colab;
@@ -430,70 +516,70 @@ function CambaceoDiario() {
             setColaboradores(updatedColaboradores);
           }
         } catch (error) {
-          console.error('Error al obtener los colaboradores del equipo:', error);
+          console.error(
+            "Error al obtener los colaboradores del equipo:",
+            error
+          );
         }
       }
     });
-  
+
     console.log("Colaboradores seleccionados:", seleccionados);
   };
-  
-  
-  
-  
-  
-  
+
   const cargarColaboradores = async () => {
-  try {
-    const response = await fetchWithToken(`${API_URL}/nombresColaborador2`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const data = await response.json();
-    console.log(data);
+    try {
+      const response = await fetchWithToken(`${API_URL}/nombresColaborador2`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      console.log(data);
 
-    // Procesar colaboradores
-    const colaboradoresProcesados = data.colaboradores.map((colaborador) => ({
-      id: colaborador.idUsuario,
-      nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
-      tipo: 'Colaborador',
-    }));
+      // Procesar colaboradores
+      const colaboradoresProcesados = data.colaboradores.map((colaborador) => ({
+        id: colaborador.idUsuario,
+        nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
+        tipo: "Colaborador",
+      }));
 
-    // Procesar equipos
-    const equiposProcesados = data.equipos.map((equipo) => ({
-      id: equipo.IDEquipo,  // Asegúrate de que esto coincide con el campo en la respuesta de la API
-      nombreEquipo: equipo.Nombre,
-      tipo: 'Equipo',
-    }));
+      // Procesar equipos
+      const equiposProcesados = data.equipos.map((equipo) => ({
+        id: equipo.IDEquipo, // Asegúrate de que esto coincide con el campo en la respuesta de la API
+        nombreEquipo: equipo.Nombre,
+        tipo: "Equipo",
+      }));
 
-    // Combinar colaboradores y equipos
-    const combinados = [
-      ...colaboradoresProcesados,
-      ...equiposProcesados.map((equipo) => ({
-        id: equipo.id,
-        nombreCompleto: equipo.nombreEquipo,
-        tipo: equipo.tipo,
-      })),
-    ];
+      // Combinar colaboradores y equipos
+      const combinados = [
+        ...colaboradoresProcesados,
+        ...equiposProcesados.map((equipo) => ({
+          id: equipo.id,
+          nombreCompleto: equipo.nombreEquipo,
+          tipo: equipo.tipo,
+        })),
+      ];
 
-    console.log('Combinados: ', combinados);
+      console.log("Combinados: ", combinados);
 
-    // Actualizar estado
-    setColaboradores(combinados);
-  } catch (error) {
-    console.error('Error al cargar nombres de colaboradores y equipos:', error);
-  }
-};
-
+      // Actualizar estado
+      setColaboradores(combinados);
+    } catch (error) {
+      console.error(
+        "Error al cargar nombres de colaboradores y equipos:",
+        error
+      );
+    }
+  };
 
   useEffect(() => {
     cargarColaboradores();
   }, []);
   const getLabelStyle = (tipo) => {
     return {
-      color: tipo === 'Colaborador' ? 'green' : 'blue'
+      color: tipo === "Colaborador" ? "green" : "blue",
     };
   };
   const opcionesColaboradores = colaboradores.map((colaborador) => ({
@@ -501,7 +587,7 @@ function CambaceoDiario() {
     value: `${colaborador.id}_${colaborador.nombreCompleto}`,
     disabled: colaborador.disabled || false, // Agregar estado de deshabilitado
   }));
-  
+
   const panelFooterTemplate = () => {
     const length = colaboradoresSeleccionados
       ? colaboradoresSeleccionados.length
