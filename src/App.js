@@ -35,6 +35,8 @@ import Equipos from './components/Equipos';
 import CrearEquipo from './components/CrearEquipo';
 import EditarEquipo from './components/EditarEquipo';
 import EditarInfo from './components/editarInfo';
+import EquipoGerente from './components/EquipoGerente';
+
 function App() {
   return (
     <UserProvider>
@@ -98,6 +100,7 @@ function App() {
               path='/SeguimientoLlamada'
               element={<SeguimientoLlamada />}
             />
+            <Route path='/EquipoGerente/:idUsuario' element={<EquipoGerente/>}/>
     
           </Route>
 

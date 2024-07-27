@@ -1,29 +1,31 @@
-import React, { useRef, useState, useEffect } from 'react';
-import Navbar from './navbar';
-import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'react-bootstrap-icons';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { Menu } from 'primereact/menu';
-import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
-import { useAuthRedirect } from '../useAuthRedirect';
-import { API_URL, fetchWithToken } from '../utils/api';
-import Usuario_sin_img from '../img/imagen-de-usuario-con-fondo-negro.png';
-import { showNotification } from '../utils/utils';
-import { isUserAdmin } from '../utils/auth';
-import { Avatar } from 'primereact/avatar';
-import { AvatarGroup } from 'primereact/avatargroup';
-import { Dialog } from 'primereact/dialog';
+import React, { useRef, useState, useEffect } from "react";
+import Navbar from "./navbar";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "react-bootstrap-icons";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { useAuthRedirect } from "../useAuthRedirect";
+import { API_URL, fetchWithToken } from "../utils/api";
+import Usuario_sin_img from "../img/imagen-de-usuario-con-fondo-negro.png";
+import { showNotification } from "../utils/utils";
+import { isUserAdmin, isUserLider } from "../utils/auth";
+import { Avatar } from "primereact/avatar";
+import { AvatarGroup } from "primereact/avatargroup";
+import { Dialog } from "primereact/dialog";
 
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const Equipos = () => {
   useAuthRedirect();
   const isAdmin = isUserAdmin();
+  const isLider = isUserLider();
   const navigate = useNavigate();
   const [equipos, setEquipos] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [gerentes, setGerentes] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalEquipoData, setModalEquipoData] = useState(null);
@@ -38,101 +40,126 @@ const Equipos = () => {
   const fetchEquipos = async () => {
     try {
       const response = await fetchWithToken(`${API_URL}/GetEquipos`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
 
       const equiposData = await response.json();
       setEquipos(equiposData);
-      console.log('Equipos:', equiposData);
+      console.log("Equipos:", equiposData);
     } catch (error) {
-      console.error('Error fetching equipos:', error);
+      console.error("Error fetching equipos:", error);
     }
   };
+
+  const fetchGerentes = async () => {
+    try {
+      const response = await fetchWithToken(`${API_URL}/GetGerentes`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const gerentesData = await response.json();
+      // Agrega el campo nombreGerente concatenando Nombre, Apellido_pat, Apellido_mat
+      const gerentesWithFullName = gerentesData.map((gerente) => ({
+        ...gerente,
+        nombreGerente: `${gerente.Nombre} ${gerente.Apellido_pat} ${gerente.Apellido_mat}`,
+      }));
+      setGerentes(gerentesWithFullName);
+      console.log("Estos son los gerentes", gerentesWithFullName);
+    } catch (error) {
+      console.error("No encontre gerentes", error);
+    }
+  };
+
   const fetchEquipoMembers = async (equipoId) => {
     try {
       const response = await fetchWithToken(
         `${API_URL}/equipos/${equipoId}/members`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
 
       const membersData = await response.json();
       setEquipoMembers(membersData);
     } catch (error) {
-      console.error('Error fetching team members:', error);
+      console.error("Error fetching team members:", error);
     }
   };
   const deleteEquipo = async (equipoId) => {
     try {
-      console.log('Equipo a eliminar:', equipoId); // Agregar console.log del equipo seleccionado
+      console.log("Equipo a eliminar:", equipoId); // Agregar console.log del equipo seleccionado
       const response = await fetchWithToken(
         `${API_URL}/DeleteEquipo/${equipoId}`,
         {
-          method: 'DELETE',
+          method: "DELETE",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
-  
+
       if (response.ok) {
         const newEquipos = equipos.filter((equipo) => equipo.id !== equipoId);
         setEquipos(newEquipos);
         showNotification(
-          'success',
-          'Equipo eliminado',
-          'El equipo fue eliminado correctamente'
+          "success",
+          "Equipo eliminado",
+          "El equipo fue eliminado correctamente"
         );
       } else {
-        throw new Error('Error al eliminar el equipo');
+        throw new Error("Error al eliminar el equipo");
       }
     } catch (error) {
-      console.error('Error eliminando el equipo:', error);
-      alert('No se pudo eliminar el equipo');
+      console.error("Error eliminando el equipo:", error);
+      alert("No se pudo eliminar el equipo");
     }
   };
-  
+
   const optionsMenu = (rowData) => {
     const menuItems = [
       {
-        label: 'Editar equipo',
-        icon: 'pi pi-pencil',
+        label: "Editar equipo",
+        icon: "pi pi-pencil",
         command: () => {
           if (selectedRowData) {
             navigate(`/EditarEquipo/${selectedRowData.id}`);
           } else {
-            console.error('No se ha seleccionado ningún equipo.');
+            console.error("No se ha seleccionado ningún equipo.");
           }
         },
       },
       {
-        label: 'Eliminar equipo',
-        icon: 'pi pi-trash',
+        label: "Eliminar equipo",
+        icon: "pi pi-trash",
         command: () => {
           Swal.fire({
-            title: '¿Estás seguro?',
-            text: 'Una vez eliminado, no podrás recuperar este equipo',
-            icon: 'warning',
+            title: "¿Estás seguro?",
+            text: "Una vez eliminado, no podrás recuperar este equipo",
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
           }).then((result) => {
             if (result.isConfirmed) {
               deleteEquipo(selectedRowData.id);
@@ -143,10 +170,10 @@ const Equipos = () => {
     ];
 
     return (
-      <div className='p-d-flex p-justify-center'>
+      <div className="p-d-flex p-justify-center">
         <Button
-          icon='pi pi-bars'
-          className='p-button-rounded p-button-text'
+          icon="pi pi-bars"
+          className="p-button-rounded p-button-text"
           onClick={(e) => showMenu(e, rowData)}
         />
         <Menu model={menuItems} popup ref={menu} />
@@ -161,31 +188,18 @@ const Equipos = () => {
             key={index}
             image={imgUrl || Usuario_sin_img}
             onImageError={(e) => (e.target.src = Usuario_sin_img)}
-            shape='circle'
-            size='large'
+            shape="circle"
+            size="large"
             style={{
-              width: '40px',
-              height: '40px',
-              margin: '0 1px',
+              width: "40px",
+              height: "40px",
+              margin: "0 1px",
             }}
           />
         ))}
       </AvatarGroup>
     );
   };
-
-  // const optionsMenu = (rowData) => {
-  //   return (
-  // <div className='p-d-flex p-justify-center'>
-  //   <Button
-  //     icon='pi pi-bars'
-  //     className='p-button-rounded p-button-text'
-  //     onClick={(e) => showMenu(e, rowData)}
-  //   />
-  //   <Menu model={menuItems} popup ref={menu} />
-  // </div>
-  //   );
-  // };
 
   const showMenu = (event, rowData) => {
     setSelectedRowData(rowData);
@@ -200,7 +214,7 @@ const Equipos = () => {
   const renderModal = () => {
     return (
       <Dialog
-        header='Detalles del Equipo'
+        header="Detalles del Equipo"
         visible={isModalVisible}
         onHide={() => setIsModalVisible(false)}
       >
@@ -213,28 +227,28 @@ const Equipos = () => {
                 <li
                   key={index}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginBottom: '10px',
-                    minWidth: '450px',
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "10px",
+                    minWidth: "450px",
                   }}
                 >
                   <Avatar
                     image={member.Imagen || Usuario_sin_img}
                     onImageError={(e) => (e.target.src = Usuario_sin_img)}
-                    shape='circle'
-                    size='large'
+                    shape="circle"
+                    size="large"
                   />
                   <span
-                    className='cropped-text'
+                    className="cropped-text"
                     style={{
-                      marginLeft: '10px',
-                      fontWeight: 'bold',
-                      maxWidth: '200px',
-                      marginRight: 'auto',
+                      marginLeft: "10px",
+                      fontWeight: "bold",
+                      maxWidth: "200px",
+                      marginRight: "auto",
                     }}
                   >{`${member.Nombre} ${member.Apellido_pat}`}</span>
-                  <span style={{ fontStyle: 'italic' }}>{member.Rol}</span>
+                  <span style={{ fontStyle: "italic" }}>{member.Rol}</span>
                 </li>
               ))}
             </ul>
@@ -245,7 +259,7 @@ const Equipos = () => {
   };
   const viewButtonTemplate = (rowData) => {
     return (
-      <Button label='Ver equipo' onClick={() => handleViewEquipo(rowData)} />
+      <Button label="Ver equipo" onClick={() => handleViewEquipo(rowData)} />
     );
   };
 
@@ -253,74 +267,75 @@ const Equipos = () => {
   const [menuTarget, setMenuTarget] = useState(null);
   useEffect(() => {
     fetchEquipos();
+    fetchGerentes();
   }, []);
 
   return (
-    <div className='fluid'>
+    <div className="fluid">
       <Navbar></Navbar>
-      <div className='Colab'>
-        <div className='container-fluid px-4'>
-          <div className='row table_space mt-4'>
-            <div className='col-md-12 d-flex justify-content-center align-items-center mb-3'>
-              <Link to='/land'>
-                <ArrowLeft className='ml-4 regreso' />
-                <span id='indicador'>Menu Principal</span>
+      <div className="Colab">
+        <div className="container-fluid px-4">
+          <div className="row table_space mt-4">
+            <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
+              <Link to="/land">
+                <ArrowLeft className="ml-4 regreso" />
+                <span id="indicador">Menu Principal</span>
               </Link>
             </div>
           </div>
           <div
-            className='container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4'
-            id='contenedor'
+            className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
+            id="contenedor"
           >
-            <div className='row align-items-center'>
-              <div className='col-md-6'>
+            <div className="row align-items-center">
+              <div className="col-md-6">
                 <h6
                   style={{
-                    textAlign: 'left',
-                    fontStyle: 'normal',
+                    textAlign: "left",
+                    fontStyle: "normal",
                     fontWeight: 700,
-                    fontSize: '32px',
-                    color: '#172126',
-                    whiteSpace: 'nowrap',
+                    fontSize: "32px",
+                    color: "#172126",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   Equipos
                 </h6>
               </div>
-              <div className='col-md-6 col-12'>
-                <div className='text-right'>
-                  <div style={{ display: 'inline-block' }}>
-                    <div className='row'>
-                      <div className='col-md-6 col-6'>
+              <div className="col-md-6 col-12">
+                <div className="text-right">
+                  <div style={{ display: "inline-block" }}>
+                    <div className="row">
+                      <div className="col-md-6 col-6">
                         <div
-                          className='p-input-icon-left ml-2 w-100'
+                          className="p-input-icon-left ml-2 w-100"
                           style={{
-                            display: 'inline-block',
+                            display: "inline-block",
                           }}
                         >
-                          <i className='pi pi-search' />
+                          <i className="pi pi-search" />
                           <InputText
                             value={searchTerm}
                             onChange={handleSearchChange}
-                            placeholder='Buscar'
-                            className='w-100'
+                            placeholder="Buscar"
+                            className="w-100"
                           />
                         </div>
                       </div>
-                      <div className='col-md-6 col-6'>
-                        <Link to='/crearEquipo'>
+                      <div className="col-md-6 col-6">
+                        <Link to="/crearEquipo">
                           <Button
-                            className='d-none d-sm-inline-flex' // Ocultar en tamaños pequeños
-                            label='Crear Equipo'
-                            icon='pi pi-plus'
-                            severity='Danger'
-                            style={{ marginLeft: '2rem' }}
+                            className="d-none d-sm-inline-flex" // Ocultar en tamaños pequeños
+                            label="Crear Equipo"
+                            icon="pi pi-plus"
+                            severity="Danger"
+                            style={{ marginLeft: "2rem" }}
                           />
                           <Button
-                            className='d-inline-flex d-sm-none' // Mostrar solo en tamaños pequeños
-                            icon='pi pi-plus'
-                            severity='Danger'
-                            style={{ marginLeft: '2rem' }}
+                            className="d-inline-flex d-sm-none" // Mostrar solo en tamaños pequeños
+                            icon="pi pi-plus"
+                            severity="Danger"
+                            style={{ marginLeft: "2rem" }}
                           />
                         </Link>
                       </div>
@@ -329,21 +344,66 @@ const Equipos = () => {
                 </div>
               </div>
             </div>
-            <div className='mt-4'>
+            <div className="mt-4">
+              {isLider && (
+                <div className="mt-4">
+                  <h2>Equipos de Gerentes</h2>
+                  <hr></hr>
+                  <div className="gerentes-container">
+                    {gerentes.length > 0 ? (
+                      gerentes.map((gerente) => (
+                        <div
+                          key={gerente.idUsuario}
+                          className="p-card p-component"
+                          onClick={() =>
+                            navigate(`/EquipoGerente/${gerente.idUsuario}`, {
+                              state: { gerente },
+                            })
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          <div
+                            className="p-card-body"
+                            style={{ textAlign: "center" }}
+                          >
+                            <Avatar
+                              image={gerente.Imagen || Usuario_sin_img}
+                              onImageError={(e) =>
+                                (e.target.src = Usuario_sin_img)
+                              }
+                              shape="circle"
+                              size="xlarge"
+                            />
+                            <div style={{ marginTop: "10px" }}>
+                              <h3>{gerente.nombreGerente}</h3>
+                              <p>{gerente.correo}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No hay gerentes asignados</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <hr></hr>
+              <h2>Equipos Prácticos</h2>
               <DataTable
                 value={filteredEquipos}
                 rows={5}
-                emptyMessage='No hay equipos disponibles.'
+                emptyMessage="No hay equipos disponibles."
               >
-                <Column field='nombre' header='Nombre' />
-                <Column field='miembros' header='# Usuarios' />
-                {isAdmin && <Column field='creador' header='Creador' />}
+                <Column field="nombre" header="Nombre" />
+                <Column field="miembros" header="# Usuarios" />
+                {isAdmin && <Column field="creador" header="Creador" />}
                 {/* <Column header='Imágenes' body={imageBodyTemplate} /> */}
-                <Column header='Acciones' body={viewButtonTemplate} />
+                <Column header="Acciones" body={viewButtonTemplate} />
                 <Column
-                  header=''
+                  header=""
                   body={optionsMenu}
-                  style={{ textAlign: 'center', width: '8em' }}
+                  style={{ textAlign: "center", width: "8em" }}
                 />
               </DataTable>
             </div>

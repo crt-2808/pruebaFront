@@ -9,6 +9,8 @@ import Swal from "sweetalert2";
 import { useAuthRedirect } from "../useAuthRedirect";
 import { API_URL, fetchWithToken } from "../utils/api";
 import { Checkbox } from "primereact/checkbox";
+import { Message } from "primereact/message";
+import { useLocation } from "react-router-dom"; // Importar useLocation
 
 const checkIfCorreoExists = async (correo) => {
   try {
@@ -31,6 +33,13 @@ const checkIfCorreoExists = async (correo) => {
 };
 
 function AgregarColab() {
+  const [message, setMessage] = useState("");
+  const location = useLocation();
+  const { idGerente } = location.state || {}; // Extraer idGerente de location.state
+  const [liderID2, setLiderID2] = useState(idGerente || ""); // Inicializar con idGerente si está disponible
+
+  console.log(idGerente)
+
   useAuthRedirect();
   const {
     register,
@@ -212,6 +221,13 @@ function AgregarColab() {
           }}
         >
           <h2 className="titulo-cambaceo px-0 px-md-5">Agregar Colaborador</h2>
+          {message && (
+            <Message
+              severity="info"
+              text={message}
+              style={{ marginBottom: "1rem" }}
+            />
+          )}
         </div>
 
         <div
@@ -356,7 +372,10 @@ function AgregarColab() {
                               value={gerente.idUsuario}
                             >
                               {gerente.Nombre} {gerente.Apellido_pat}{" "}
-                              {gerente.Apellido_mat}{" ("}{gerente.Rol}{")"}
+                              {gerente.Apellido_mat}
+                              {" ("}
+                              {gerente.Rol}
+                              {")"}
                             </option>
                           ))}
                         </Form.Select>
