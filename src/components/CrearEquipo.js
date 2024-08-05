@@ -13,10 +13,15 @@ import 'primereact/resources/primereact.css'; // core css
 import { fetchWithToken } from '../utils/api';
 import { API_URL } from '../utils/api';
 import { Button } from 'primereact/button';
+import { useLocation } from "react-router-dom"; // Importar useLocation
+import { Message } from "primereact/message";
 
 function CrearEquipo() {
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const idGerente = params.get("idGerente");
   const {
     register,
     handleSubmit,
@@ -26,6 +31,13 @@ function CrearEquipo() {
   const [colaboradoresSeleccionados, setColaboradoresSeleccionados] = useState(
     []
   );
+
+  useEffect(() => {
+    if (idGerente) {
+      setMessage(`Se agregará el líder con ID: ${idGerente}`);
+    }
+  }, [idGerente]);
+
 
   const onSubmit = async (data) => {
     console.log(data);
@@ -51,6 +63,7 @@ function CrearEquipo() {
       data = {
         ...data,
         usuarios: idsUsuariosSeleccionados,
+        idGerente: idGerente
       };
       let config = {
         method: 'POST',
@@ -117,8 +130,12 @@ function CrearEquipo() {
   };
   const cargarColaboradores = async () => {
     try {
+      let url = `${API_URL}/equipos/usuarios/sin-equipo`;
+    if (idGerente) {
+      url += `?idGerente=${idGerente}`;
+    }
       const response = await fetchWithToken(
-        `${API_URL}/equipos/usuarios/sin-equipo`,
+        url,
         {
           method: 'GET',
           headers: {
@@ -200,6 +217,13 @@ function CrearEquipo() {
       >
         <div className='col-12 px-5'>
           <h2 className='titulo-cambaceo px-5 '>Crear Equipo</h2>
+          {message && (
+            <Message
+              severity="info"
+              text={message}
+              style={{ marginBottom: "1rem" }}
+            />
+          )}
         </div>
 
         <div

@@ -35,10 +35,8 @@ const checkIfCorreoExists = async (correo) => {
 function AgregarColab() {
   const [message, setMessage] = useState("");
   const location = useLocation();
-  const { idGerente } = location.state || {}; // Extraer idGerente de location.state
-  const [liderID2, setLiderID2] = useState(idGerente || ""); // Inicializar con idGerente si está disponible
-
-  console.log(idGerente)
+  const params = new URLSearchParams(location.search);
+  const idGerente = params.get("idGerente");
 
   useAuthRedirect();
   const {
@@ -59,6 +57,19 @@ function AgregarColab() {
     useState(false);
   const [gerentes, setGerentes] = useState([]);
   const [liderID, setLiderID] = useState("");
+  const [disableGerente, setDisableGerente] = useState(false);
+  const [showAssignAnother, setShowAssignAnother] = useState(true);
+
+  useEffect(() => {
+    if (idGerente) {
+      setDisableGerente(true);
+      setMessage(`Se agregará el líder con ID: ${idGerente}`);
+      setShowAssignAnother(false);
+    } else {
+      setDisableGerente(false);
+      setShowAssignAnother(true);
+    }
+  }, [idGerente]);
 
   useEffect(() => {
     const fetchUsuarios = async () => {
@@ -128,6 +139,10 @@ function AgregarColab() {
 
     if (liderID) {
       formData.append("liderID", liderID);
+    }
+
+    if(idGerente){
+      formData.append("liderID", idGerente)
     }
 
     formData.append("Nombre", data.Nombre);
@@ -247,13 +262,18 @@ function AgregarColab() {
                       Selecciona un rol
                     </option>
                     {roles.map((role) => (
-                      <option key={role.value} value={role.value}>
+                      <option
+                        key={role.value}
+                        value={role.value}
+                        disabled={disableGerente && role.value === "gerente"}
+                      >
                         {role.label}
                       </option>
                     ))}
                   </Form.Select>
                   {errors.Rol && <p>Este campo es requerido</p>}
                 </Form.Group>
+
                 <br />
                 <Form.Group controlId="ColbID">
                   <Form.Label>ColabID</Form.Label>
@@ -342,50 +362,40 @@ function AgregarColab() {
                   {errors.FotoColab && <p>Este campo es requerido</p>}
                 </Form.Group>
                 <br />
-                {isCoordinadorOColaborador && (
-                  <>
-                    <Form.Group>
-                      <Checkbox
-                        inputId="assignToAnother"
-                        checked={assignToAnother}
-                        onChange={handleAssignToAnotherChange}
-                      />
-                      <Form.Label htmlFor="assignToAnother">
-                        ¿Asignar a otro gerente?
-                      </Form.Label>
-                    </Form.Group>
+                {isCoordinadorOColaborador && showAssignAnother && (
+                  <Form.Group>
+                    <Checkbox
+                      inputId="assignToAnother"
+                      checked={assignToAnother}
+                      onChange={handleAssignToAnotherChange}
+                    />
+                    <Form.Label htmlFor="assignToAnother">
+                      ¿Asignar a otro gerente?
+                    </Form.Label>
                     {assignToAnother && (
                       <Form.Group>
-                        <Form.Label>
-                          Selecciona al gerente correspondiente
-                        </Form.Label>
-                        <Form.Select
-                          {...register("GerenteSeleccionado", {
-                            required: true,
+                        <Form.Label>Selecciona un gerente</Form.Label>
+                        <Form.Control
+                          as="select"
+                          {...register("liderID", {
+                            required: assignToAnother,
                           })}
                           onChange={handleGerenteSeleccionadoChange}
                         >
-                          <option value="">Selecciona una opción</option>
+                          <option value="">Selecciona un gerente</option>
                           {gerentes.map((gerente) => (
                             <option
                               key={gerente.idUsuario}
                               value={gerente.idUsuario}
                             >
-                              {gerente.Nombre} {gerente.Apellido_pat}{" "}
-                              {gerente.Apellido_mat}
-                              {" ("}
-                              {gerente.Rol}
-                              {")"}
+                              {gerente.Nombre+' '+gerente.Apellido_pat+' '+gerente.Apellido_mat}
                             </option>
                           ))}
-                        </Form.Select>
-
-                        {errors.GerenteSeleccionado && (
-                          <p>Este campo es requerido</p>
-                        )}
+                        </Form.Control>
+                        {errors.liderID && <p>Este campo es requerido</p>}
                       </Form.Group>
                     )}
-                  </>
+                  </Form.Group>
                 )}
               </Col>
               <Col>
