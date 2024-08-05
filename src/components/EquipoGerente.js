@@ -438,6 +438,7 @@ const EquipoGerente = () => {
           </div>
         </div>
       </div>
+      {renderModal()}
     </div>
   );
 };
