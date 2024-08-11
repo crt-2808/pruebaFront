@@ -141,8 +141,8 @@ function AgregarColab() {
       formData.append("liderID", liderID);
     }
 
-    if(idGerente){
-      formData.append("liderID", idGerente)
+    if (idGerente) {
+      formData.append("liderID", idGerente);
     }
 
     formData.append("Nombre", data.Nombre);
@@ -174,12 +174,11 @@ function AgregarColab() {
           rgba(36,32,32,0.65)
         `,
       }).then(() => {
-        if(idGerente){
+        if (idGerente) {
           navigate(-1);
-        }else{
+        } else {
           navigate("/land");
         }
-        
       });
     } catch (error) {
       console.error(error);
@@ -223,7 +222,7 @@ function AgregarColab() {
             backgroundColor: "#F1F5F8",
           }}
         >
-         <Link to={idGerente ? -1 : "/Land"}>
+          <Link to={idGerente ? -1 : "/Land"}>
             <ArrowLeft className="ml-4 regreso" />
             <span style={{ marginBottom: "100px" }} id="indicador">
               {idGerente ? "Regresar al gerente" : "Menu Principal"}
@@ -266,16 +265,17 @@ function AgregarColab() {
                     <option value="" disabled>
                       Selecciona un rol
                     </option>
-                    {roles.map((role) => (
-                      <option
-                        key={role.value}
-                        value={role.value}
-                        disabled={disableGerente && role.value === "gerente"}
-                      >
-                        {role.label}
-                      </option>
-                    ))}
+                    {roles
+                      .filter(
+                        (role) => !(idGerente && role.value === "gerente")
+                      )
+                      .map((role) => (
+                        <option key={role.value} value={role.value}>
+                          {role.label}
+                        </option>
+                      ))}
                   </Form.Select>
+
                   {errors.Rol && <p>Este campo es requerido</p>}
                 </Form.Group>
 
@@ -393,7 +393,11 @@ function AgregarColab() {
                               key={gerente.idUsuario}
                               value={gerente.idUsuario}
                             >
-                              {gerente.Nombre+' '+gerente.Apellido_pat+' '+gerente.Apellido_mat}
+                              {gerente.Nombre +
+                                " " +
+                                gerente.Apellido_pat +
+                                " " +
+                                gerente.Apellido_mat}
                             </option>
                           ))}
                         </Form.Control>
