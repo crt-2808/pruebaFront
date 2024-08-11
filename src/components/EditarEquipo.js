@@ -304,6 +304,8 @@ function EditarEquipo() {
   };
   useEffect(() => {
     cargarColaboradores();
+    console.log("Estos son los colab", colaboradores)
+
   }, []);
   const opcionesColaboradores = colaboradores.map((colaborador) => ({
     label: colaborador.nombreCompleto,

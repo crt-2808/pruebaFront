@@ -13,7 +13,6 @@ import Usuario_sin_img from "../img/imagen-de-usuario-con-fondo-negro.png";
 import { showNotification } from "../utils/utils";
 import { isUserAdmin, isUserLider } from "../utils/auth";
 import { Avatar } from "primereact/avatar";
-import { AvatarGroup } from "primereact/avatargroup";
 import { Dialog } from "primereact/dialog";
 
 import Swal from "sweetalert2";
@@ -30,6 +29,11 @@ const Equipos = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalEquipoData, setModalEquipoData] = useState(null);
   const [equipoMembers, setEquipoMembers] = useState([]);
+  const [membersData, setMembersData] = useState([]);
+  const [showGerentes, setShowGerentes] = useState(true);
+  const [showCoordinadores, setShowCoordinadores] = useState(true);
+  const [showAsesores, setShowAsesores] = useState(true);
+
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -180,27 +184,7 @@ const Equipos = () => {
       </div>
     );
   };
-  const imageBodyTemplate = (rowData) => {
-    return (
-      <AvatarGroup>
-        {rowData.imagenes.map((imgUrl, index) => (
-          <Avatar
-            key={index}
-            image={imgUrl || Usuario_sin_img}
-            onImageError={(e) => (e.target.src = Usuario_sin_img)}
-            shape="circle"
-            size="large"
-            style={{
-              width: "40px",
-              height: "40px",
-              margin: "0 1px",
-            }}
-          />
-        ))}
-      </AvatarGroup>
-    );
-  };
-
+  
   const showMenu = (event, rowData) => {
     setSelectedRowData(rowData);
     setMenuTarget(event.currentTarget);
@@ -265,10 +249,58 @@ const Equipos = () => {
 
   const menu = useRef(null);
   const [menuTarget, setMenuTarget] = useState(null);
+
+  const fetchUsuarios = async () => {
+    try {
+      const url = `${API_URL}/usuariosPorRol`;
+      const response = await fetchWithToken(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      setMembersData(data);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+    }
+  };
+
   useEffect(() => {
     fetchEquipos();
     fetchGerentes();
+    fetchUsuarios();
+    console.log(membersData);
   }, []);
+
+
+  const filteredMembers = membersData.filter((member) =>
+    `${member.Nombre} ${member.Apellido_pat} ${member.Apellido_mat}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
+  const groupedMembers = filteredMembers.reduce(
+    (acc, member) => {
+      if (member.Rol === "coordinador") {
+        acc.coordinadores.push(member);
+      } else if (member.Rol === "colaborador") {
+        acc.asesores.push(member);
+      }
+      return acc;
+    },
+    { coordinadores: [], asesores: [] }
+  );
+
+  const toggleGerentes = () => setShowGerentes(!showGerentes);
+  const toggleCoordinadores = () => setShowCoordinadores(!showCoordinadores);
+  const toggleAsesores = () => setShowAsesores(!showAsesores);
+
 
   return (
     <div className="fluid">
@@ -347,48 +379,135 @@ const Equipos = () => {
             <div className="mt-4">
               {isLider && (
                 <div className="mt-4">
-                  <h2>Equipos de Gerentes</h2>
-                  <hr></hr>
-                  <div className="gerentes-container">
-                    {gerentes.length > 0 ? (
-                      gerentes.map((gerente) => (
-                        <div
-                          key={gerente.idUsuario}
-                          className="p-card p-component"
-                          onClick={() =>
-                            navigate(`/EquipoGerente/${gerente.idUsuario}`, {
-                              state: { gerente },
-                            })
-                          }
-                          style={{ cursor: "pointer" }}
-                        >
+                  <h3 onClick={toggleGerentes} className="title">
+                    Gerentes
+                    <Button
+                      icon={
+                        showGerentes ? "pi pi-angle-up" : "pi pi-angle-down"
+                      }
+                      className="p-button-rounded p-button-text"
+                    />
+                  </h3>
+                  <hr />
+                  {showGerentes && (
+                    <div className="gerentes-container">
+                      {gerentes.length > 0 ? (
+                        gerentes.map((gerente) => (
                           <div
-                            className="p-card-body"
-                            style={{ textAlign: "center" }}
+                            key={gerente.idUsuario}
+                            className="p-card p-component"
+                            onClick={() =>
+                              navigate(`/EquipoGerente/${gerente.idUsuario}`, {
+                                state: { gerente },
+                              })
+                            }
+                            style={{ cursor: "pointer" }}
                           >
-                            <Avatar
-                              image={gerente.Imagen || Usuario_sin_img}
-                              onImageError={(e) =>
-                                (e.target.src = Usuario_sin_img)
-                              }
-                              shape="circle"
-                              size="xlarge"
-                            />
-                            <div style={{ marginTop: "10px" }}>
-                              <h3>{gerente.nombreGerente}</h3>
-                              <p>{gerente.correo}</p>
+                            <div
+                              className="p-card-body"
+                              style={{ textAlign: "center" }}
+                            >
+                              <Avatar
+                                image={gerente.Imagen || Usuario_sin_img}
+                                onImageError={(e) =>
+                                  (e.target.src = Usuario_sin_img)
+                                }
+                                shape="circle"
+                                size="xlarge"
+                              />
+                              <div style={{ marginTop: "10px" }}>
+                                <h3>{gerente.nombreGerente}</h3>
+                                <p>{gerente.correo}</p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p>No hay gerentes asignados</p>
-                    )}
-                  </div>
+                        ))
+                      ) : (
+                        <p>No hay gerentes asignados</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
+              <div className="mt-4">
+                <h4 onClick={toggleCoordinadores} className="title">
+                  Coordinador
+                  <Button
+                    icon={
+                      showCoordinadores ? "pi pi-angle-up" : "pi pi-angle-down"
+                    }
+                    className="p-button-rounded p-button-text"
+                  />
+                </h4>
+                <hr />
+                {showCoordinadores &&
+                  groupedMembers.coordinadores.length > 0 && (
+                    <div className="gerentes-container">
+                      {groupedMembers.coordinadores.map((member) => {
+                        const nombreCompleto = `${member.Nombre} ${member.Apellido_pat} ${member.Apellido_mat}`;
 
-              <hr></hr>
+                        return (
+                          <div className="p-card" key={member.idUsuario}>
+                            <div className="d-flex flex-column justify-content-center align-items-center mb-3">
+                              <img
+                                src={member.Imagen}
+                                alt={nombreCompleto}
+                                style={{
+                                  width: "100px",
+                                  height: "100px",
+                                  borderRadius: "50%",
+                                  objectFit: "cover",
+                                }}
+                              />
+                              <h5>{nombreCompleto}</h5>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+              </div>
+              <h5 onClick={toggleAsesores} className="title">
+                Asesores
+                <Button
+                  icon={showAsesores ? "pi pi-angle-up" : "pi pi-angle-down"}
+                  className="p-button-rounded p-button-text"
+                />
+              </h5>
+                  <hr />
+              {showAsesores&&groupedMembers.asesores.length > 0 && (
+
+                  <div className="gerentes-container">
+                    {groupedMembers.asesores.map((member) => {
+                      const nombreCompleto = `${member.Nombre} ${member.Apellido_pat} ${member.Apellido_mat}`;
+
+                      return (
+                        <div className="p-card" key={member.idUsuario}>
+                          <div className="d-flex flex-column justify-content-center align-items-center mb-3">
+                            <img
+                              src={member.Imagen}
+                              alt={nombreCompleto}
+                              style={{
+                                width: "100px",
+                                height: "100px",
+                                borderRadius: "50%",
+                                objectFit: "cover",
+                              }}
+                            />
+                            <h5>{nombreCompleto}</h5>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+              )}
+
+              {groupedMembers.coordinadores.length === 0 &&
+                groupedMembers.asesores.length === 0 && (
+                  <p>No hay miembros asignados</p>
+                )}
+
+
               <h2>Equipos Prácticos</h2>
               <DataTable
                 value={filteredEquipos}

@@ -40,7 +40,6 @@ function CrearEquipo() {
 
 
   const onSubmit = async (data) => {
-    console.log(data);
     if (!data) {
       Swal.fire({
         icon: 'error',

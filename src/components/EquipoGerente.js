@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import Navbar from "./navbar";
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "react-bootstrap-icons";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -29,15 +29,21 @@ const EquipoGerente = () => {
   const [modalEquipoData, setModalEquipoData] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [equipoMembers, setEquipoMembers] = useState([]);
-  
+  const [showGerentes, setShowGerentes] = useState(true);
+  const [showCoordinadores, setShowCoordinadores] = useState(true);
+  const [showAsesores, setShowAsesores] = useState(true);
+
   const fetchEquipos = async (idUsuario) => {
     try {
-      const response = await fetchWithToken(`${API_URL}/GetEquipos?idUsuario=${idUsuario}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetchWithToken(
+        `${API_URL}/GetEquipos?idUsuario=${idUsuario}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -45,7 +51,6 @@ const EquipoGerente = () => {
 
       const equiposData = await response.json();
       setEquipos(equiposData);
-      console.log("Equipos:", equiposData);
     } catch (error) {
       console.error("Error fetching equipos:", error);
     }
@@ -86,7 +91,7 @@ const EquipoGerente = () => {
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
-  
+
   const groupedMembers = filteredMembers.reduce(
     (acc, member) => {
       if (member.Rol === "coordinador") {
@@ -267,6 +272,10 @@ const EquipoGerente = () => {
     );
   };
 
+  const toggleGerentes = () => setShowGerentes(!showGerentes);
+  const toggleCoordinadores = () => setShowCoordinadores(!showCoordinadores);
+  const toggleAsesores = () => setShowAsesores(!showAsesores);
+
   return (
     <div className="fluid">
       <Navbar />
@@ -351,72 +360,99 @@ const EquipoGerente = () => {
             </div>
             <div className="mt-4">
               {/* Coordinadores */}
-              {groupedMembers.coordinadores.length > 0 ? (
+              {groupedMembers.coordinadores.length > 0 && (
                 <>
-                  <h4>Coordinador</h4>
-                  <hr />
-                  <div className="gerentes-container">
-                    {groupedMembers.coordinadores.map((member) => {
-                      const nombreCompleto = `${member.Nombre} ${member.Apellido_pat} ${member.Apellido_mat}`;
+                  <h4 onClick={toggleCoordinadores} className="title">
+                    Coordinador
+                    <Button
+                      icon={
+                        showCoordinadores
+                          ? "pi pi-angle-up"
+                          : "pi pi-angle-down"
+                      }
+                      className="p-button-rounded p-button-text"
+                    />
+                  </h4>
+                  {showCoordinadores && (
+                    <>
+                      <hr />
+                      <div className="gerentes-container">
+                        {groupedMembers.coordinadores.map((member) => {
+                          const nombreCompleto = `${member.Nombre} ${member.Apellido_pat} ${member.Apellido_mat}`;
 
-                      return (
-                        <div className="p-card" key={member.idUsuario}>
-                          <div className="d-flex flex-column justify-content-center align-items-center mb-3">
-                            <img
-                              src={member.Imagen}
-                              alt={nombreCompleto}
-                              style={{
-                                width: "100px",
-                                height: "100px",
-                                borderRadius: "50%",
-                                objectFit: "cover",
-                              }}
-                            />
-                            <h5>{nombreCompleto}</h5>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                          return (
+                            <div className="p-card" key={member.idUsuario}>
+                              <div className="d-flex flex-column justify-content-center align-items-center mb-3">
+                                <img
+                                  src={member.Imagen}
+                                  alt={nombreCompleto}
+                                  style={{
+                                    width: "100px",
+                                    height: "100px",
+                                    borderRadius: "50%",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                                <h5>{nombreCompleto}</h5>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
                 </>
-              ) : null}
+              )}
 
               {/* Asesores */}
-              {groupedMembers.asesores.length > 0 ? (
+              {groupedMembers.asesores.length > 0 && (
                 <>
-                  <h4>Asesor</h4>
-                  <hr />
-                  <div className="gerentes-container">
-                    {groupedMembers.asesores.map((member) => {
-                      const nombreCompleto = `${member.Nombre} ${member.Apellido_pat} ${member.Apellido_mat}`;
+                  <h4 onClick={toggleAsesores} className="title">
+                    Asesor
+                    <Button
+                      icon={
+                        showAsesores ? "pi pi-angle-up" : "pi pi-angle-down"
+                      }
+                      className="p-button-rounded p-button-text"
+                    />
+                  </h4>
+                  {showAsesores && (
+                    <>
+                      <hr />
+                      <div className="gerentes-container">
+                        {groupedMembers.asesores.map((member) => {
+                          const nombreCompleto = `${member.Nombre} ${member.Apellido_pat} ${member.Apellido_mat}`;
 
-                      return (
-                        <div className="p-card" key={member.idUsuario}>
-                          <div className="d-flex flex-column justify-content-center align-items-center mb-3">
-                            <img
-                              src={member.Imagen}
-                              alt={nombreCompleto}
-                              style={{
-                                width: "100px",
-                                height: "100px",
-                                borderRadius: "50%",
-                                objectFit: "cover",
-                              }}
-                            />
-                            <h5>{nombreCompleto}</h5>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                          return (
+                            <div className="p-card" key={member.idUsuario}>
+                              <div className="d-flex flex-column justify-content-center align-items-center mb-3">
+                                <img
+                                  src={member.Imagen}
+                                  alt={nombreCompleto}
+                                  style={{
+                                    width: "100px",
+                                    height: "100px",
+                                    borderRadius: "50%",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                                <h5>{nombreCompleto}</h5>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
                 </>
-              ) : null}
+              )}
 
               {groupedMembers.coordinadores.length === 0 &&
                 groupedMembers.asesores.length === 0 && (
                   <p>No hay miembros asignados</p>
                 )}
-                <hr></hr>
+
+              <hr />
               <h2>Equipos Prácticos</h2>
               <DataTable
                 value={filteredEquipos}
