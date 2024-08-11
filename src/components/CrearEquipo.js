@@ -94,7 +94,11 @@ function CrearEquipo() {
           
         `,
         }).then(() => {
-          navigate('/Equipos');
+          if (idGerente) {
+            navigate(-1);
+          } else {
+            navigate('/Equipos');
+          }
         });
       } catch (error) {
         console.log(error);

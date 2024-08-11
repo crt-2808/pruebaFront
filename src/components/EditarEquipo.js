@@ -22,9 +22,7 @@ function EditarEquipo() {
   useAuthRedirect();
   const navigate = useNavigate();
   const {
-    register,
     handleSubmit,
-    formState: { errors },
   } = useForm();
   const [colaboradores, setColaboradores] = useState([]);
   const [colaboradoresSeleccionados, setColaboradoresSeleccionados] = useState(
@@ -42,14 +40,7 @@ function EditarEquipo() {
   const [currentCoordinator, setCurrentCoordinator] = useState(null);
   const [editingNombreEquipo, setEditingNombreEquipo] = useState(false); // Estado para controlar la edición del nombre
   const toast = useRef(null);
-  const showToast = () => {
-    toast.current.show({
-      severity: "warn",
-      summary: "Error",
-      detail: "No logramos acceder a la imagen del colaborador.",
-      life: 2000,
-    });
-  };
+
   const handleImageError = (e) => {
     e.target.src = usuarioAnon; // imagen predeterminada
   };
@@ -87,7 +78,6 @@ function EditarEquipo() {
         });
       }
       const data = await response.json();
-      console.log(data);
       setNombreEquipo(data[0].NombreEquipo);
       if (data.length === 0) {
         return Swal.fire({
@@ -303,7 +293,6 @@ function EditarEquipo() {
         }
       );
       const data = await response.json();
-      console.log("Data:", data);
       const colaboradoresProcesados = data.map((colaborador) => ({
         id: colaborador.idUsuario,
         nombreCompleto: colaborador.NombreCompleto,
@@ -369,7 +358,7 @@ function EditarEquipo() {
       // Datos a enviar al servidor
       const data = {
         colaboradorId: colaborador.idUsuario,
-        currentCoordinatorId: currentCoordinator.idUsuario,
+        currentCoordinatorId: currentCoordinator ? currentCoordinator.idUsuario : null,
       };
 
       // Configuración de la solicitud
@@ -389,7 +378,7 @@ function EditarEquipo() {
       );
       if (!response.ok) {
         throw new Error(
-          `Error al enviar los datos al servidor: ${response.status}`
+          `Error al enviar los datos al servidor :): ${response.status}`
         );
       }
 
@@ -414,7 +403,7 @@ function EditarEquipo() {
 
       // Aquí podrías actualizar el estado, recargar datos, etc.
     } catch (error) {
-      console.error("Error al hacer coordinador:", error.message);
+      console.error("Error al hacer coordinador", error.message);
 
       // Manejar errores, mostrar mensajes al usuario, etc.
       Swal.fire({
@@ -509,73 +498,75 @@ function EditarEquipo() {
             id="contenedor"
           >
             <div className="row">
-      <div className="col-md-6">
-        <div className="row">
-          <div className="col-md-12 d-flex align-items-center">
-            {editingNombreEquipo ? (
-              <InputText
-                value={nombreEquipo}
-                onChange={(e) => setNombreEquipo(e.target.value)}
-                className="textoSeguimiento mx-md-5 mx-sm-1"
-              />
-            ) : (
-              <h1 className="textoSeguimiento">{nombreEquipo}</h1>
-            )}
-            {editingNombreEquipo ? (
-              <>
-                <Button
-                  
-                  icon="pi pi-check"
-                  className="p-button-success rounded"
-                  onClick={handleSaveNombreEquipo}
-                />
-                <Button
-                  
-                  icon="pi pi-times"
-                  className="p-button-danger m-2"
-                  onClick={handleCancelEditNombreEquipo}
-                />
-              </>
-            ) : (
-              <i
-                className="pi pi-pencil m-3"
-                style={{ color: 'gray', cursor: 'pointer', fontSize: '1.5em' }}
-                onClick={handleEditNombreEquipo}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-      <div className="col-md-6">
-        <div className="row">
-          <div className="col-md-6">
-            <div
-              className="p-input-icon-left"
-              style={{
-                display: 'inline-block',
-                width: '100%',
-              }}
-            >
-              <i className="pi pi-search" />
-              <InputText
-                value={search}
-                onChange={handleSearchChange}
-                placeholder="Buscar"
-                className="w-100"
-              />
+              <div className="col-md-6">
+                <div className="row">
+                  <div className="col-md-12 d-flex align-items-center">
+                    {editingNombreEquipo ? (
+                      <InputText
+                        value={nombreEquipo}
+                        onChange={(e) => setNombreEquipo(e.target.value)}
+                        className="textoSeguimiento mx-md-5 mx-sm-1"
+                      />
+                    ) : (
+                      <h1 className="textoSeguimiento">{nombreEquipo}</h1>
+                    )}
+                    {editingNombreEquipo ? (
+                      <>
+                        <Button
+                          icon="pi pi-check"
+                          className="p-button-success rounded"
+                          onClick={handleSaveNombreEquipo}
+                        />
+                        <Button
+                          icon="pi pi-times"
+                          className="p-button-danger m-2"
+                          onClick={handleCancelEditNombreEquipo}
+                        />
+                      </>
+                    ) : (
+                      <i
+                        className="pi pi-pencil m-3"
+                        style={{
+                          color: "gray",
+                          cursor: "pointer",
+                          fontSize: "1.5em",
+                        }}
+                        onClick={handleEditNombreEquipo}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="row">
+                  <div className="col-md-6">
+                    <div
+                      className="p-input-icon-left"
+                      style={{
+                        display: "inline-block",
+                        width: "100%",
+                      }}
+                    >
+                      <i className="pi pi-search" />
+                      <InputText
+                        value={search}
+                        onChange={handleSearchChange}
+                        placeholder="Buscar"
+                        className="w-100"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <Button
+                      label="Agregar Miembros"
+                      icon="pi pi-plus"
+                      severity="Danger"
+                      onClick={handleOpenModal}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="col-md-6">
-            <Button
-              label="Agregar Miembros"
-              icon="pi pi-plus"
-              severity="Danger"
-              onClick={handleOpenModal}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
             <div
               className="row align-items-center mt-sm-4 mb-sm-4 mt-md-0 mb-md-0"
               id="opcionesCambaceo"

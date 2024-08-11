@@ -174,7 +174,12 @@ function AgregarColab() {
           rgba(36,32,32,0.65)
         `,
       }).then(() => {
-        navigate("/land");
+        if(idGerente){
+          navigate(-1);
+        }else{
+          navigate("/land");
+        }
+        
       });
     } catch (error) {
       console.error(error);
