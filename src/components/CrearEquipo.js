@@ -198,10 +198,10 @@ function CrearEquipo() {
             backgroundColor: '#F1F5F8',
           }}
         >
-          <Link to='/Equipos'>
-            <ArrowLeft className='ml-4 regreso' />
-            <span style={{ marginBottom: '100px' }} id='indicador'>
-              Equipos
+          <Link to={idGerente ? -1 : "/Equipos"}>
+            <ArrowLeft className="ml-4 regreso" />
+            <span style={{ marginBottom: "100px" }} id="indicador">
+              {idGerente ? "Regresar al gerente" : "Equipos"}
             </span>
           </Link>
         </div>
@@ -237,7 +237,7 @@ function CrearEquipo() {
                   <Form.Group>
                     <h5 style={{ textAlign: 'left' }}>Nombre del Equipo </h5>
                     <InputText
-                      autoResize
+                      
                       placeholder='Selecciona un nombre apropiado para el equipo'
                       {...register('nombre', {
                         required: 'El nombre debe ser uno valido',

@@ -218,10 +218,10 @@ function AgregarColab() {
             backgroundColor: "#F1F5F8",
           }}
         >
-          <Link to="/Land">
+         <Link to={idGerente ? -1 : "/Land"}>
             <ArrowLeft className="ml-4 regreso" />
             <span style={{ marginBottom: "100px" }} id="indicador">
-              Menu Principal
+              {idGerente ? "Regresar al gerente" : "Menu Principal"}
             </span>
           </Link>
         </div>
