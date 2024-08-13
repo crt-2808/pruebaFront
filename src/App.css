@@ -1078,7 +1078,12 @@ svg.p-icon.p-checkbox-icon.p-c:hover{
   
 }
 .fade-inn {
-  animation: fadeInn 0.3s ease-in-out;
+  animation: fadeInn 0.8s ease-in-out;
+}
+.fade-out {
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+  opacity: 0;
 }
 .img-preview{
   width: 100%;

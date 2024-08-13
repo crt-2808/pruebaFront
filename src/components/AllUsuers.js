@@ -23,6 +23,7 @@ const AllUsuers = () => {
       user.Nombre.toLowerCase().includes(search.toLowerCase()) ||
       user.Apellido_pat.toLowerCase().includes(search.toLowerCase())
   );
+  const isAdmin = isUserAdmin();
 
   const fetchUsuarios = async () => {
     Swal.fire({
@@ -32,13 +33,16 @@ const AllUsuers = () => {
     });
     Swal.showLoading();
     try {
-      const response = await fetchWithToken(`${API_URL}/usuariosPorRol`, {
+      const url = isAdmin ? `${API_URL}/allUsers` : `${API_URL}/usuariosPorRol`;
+
+      const response = await fetchWithToken(url, {
         method: 'GET',
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
         },
       });
+
       Swal.close();
       if (!response) {
         // Si fetchWithToken redirige al usuario, no continuamos el flujo
