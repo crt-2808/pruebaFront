@@ -31,12 +31,12 @@ const Land = () => {
   const [trabajoPropio, setTrabajoPropio] = useState('');
   const [Nombre_usuario, setUsuario] = useState('');
   const [incidenciaRegistrada, setIncidenciaRegistrada] = useState('');
-  const userRole=sessionStorage.getItem("userRole")
+  const userRole = sessionStorage.getItem('userRole');
 
   useEffect(() => {
     const nombreUsuario = usuario.givenName;
     console.log(sessionStorage);
-    console.log('Usuario', usuario)
+    console.log('Usuario', usuario);
     setUsuario(nombreUsuario);
 
     const fetchIncidenciaRegistrada = async () => {
@@ -150,7 +150,6 @@ const Land = () => {
                     lowerCaseAllWordsExceptFirstLetters(usuario.givenName)
                   )}
               </h1>
-              
             </div>
 
             <div className='col-12 mt-4 p-0'>
@@ -167,7 +166,7 @@ const Land = () => {
                   <div className='col-md-6'>
                     <div className='row no-padding'>
                       <div className='col-12'>
-                        <h4 className='subTituloLand'>Colaboradores</h4>
+                        <h4 className='subTituloLand'>Usuarios</h4>
                       </div>
                       <div className='col-12'>
                         <div className='row no-padding pt-5 pl-0 pr-0'>
@@ -283,7 +282,11 @@ const Land = () => {
           </div>
         </div>
       ) : (
-        <div className='container pt-4 pb-4  d-flex' style={{minHeight: '88.5vh'}} id='landing-p'>
+        <div
+          className='container pt-4 pb-4  d-flex'
+          style={{ minHeight: '88.5vh' }}
+          id='landing-p'
+        >
           <div className='row w-100'>
             <div className='col-12 mt-2 mb-md-2 mb-sm-0 d-sm-block d-md-flex justify-content-sm-between align-items-center text-center'>
               <h1 className='bienvenidoText'>
@@ -293,10 +296,13 @@ const Land = () => {
                     lowerCaseAllWordsExceptFirstLetters(usuario.givenName)
                   )}
               </h1>
-              <button className='btn-exportar col-md-2 col-6 ' onClick={setShowPopup}>Agregar Incidencias</button>
+              <button
+                className='btn-exportar col-md-2 col-6 '
+                onClick={setShowPopup}
+              >
+                Agregar Incidencias
+              </button>
             </div>
-            
-
 
             <div className='col-12 mt-4 p-0'>
               <div
@@ -316,50 +322,55 @@ const Land = () => {
                       </div>
                       <div className='col-12'>
                         <div className='row no-padding pt-5 pl-0 pr-0'>
-                        {userRole !== 'gerente' ? (
-                      <>
-                        <div className='col-md-4 '>
-                          <Link to='/agregarColab' className='no-decoration'>
-                            <img src={Agregar} alt='Boton-Agregar'></img>
-                            <p className='placeBtn'>Agregar</p>
-                          </Link>
-                        </div>
-                        <div className='col-md-4'>
-                          <Link to='/editarColab' className='no-decoration'>
-                            <img src={Editar} alt='Boton-Editar'></img>
-                            <p className='placeBtn'>Editar</p>
-                          </Link>
-                        </div>
-                          <div className='col-md-4'>
-                            <Link to='/Equipos' className='no-decoration'>
-                              <i
-                                className='pi pi-users'
-                                style={{
-                                  color: '#ea4335',
-                                  fontSize: '6.8em',
-                                  width: '100%',
-                                }}
-                              ></i>
-                              <p className='placeBtn'>Entrar</p>
-                            </Link>
-                          </div>
-                      </>
-                    ) : (
-                      <div className='col-md-12'>
-                      <Link to='/Equipos' className='no-decoration'>
-                        <i
-                          className='pi pi-users'
-                          style={{
-                            color: '#ea4335',
-                            fontSize: '6.8em',
-                            width: '100%',
-                          }}
-                        ></i>
-                        <p className='placeBtn'>Entrar</p>
-                      </Link>
-                    </div>  
-                    )
-                    }
+                          {userRole !== 'gerente' ? (
+                            <>
+                              <div className='col-md-4 '>
+                                <Link
+                                  to='/agregarColab'
+                                  className='no-decoration'
+                                >
+                                  <img src={Agregar} alt='Boton-Agregar'></img>
+                                  <p className='placeBtn'>Agregar</p>
+                                </Link>
+                              </div>
+                              <div className='col-md-4'>
+                                <Link
+                                  to='/editarColab'
+                                  className='no-decoration'
+                                >
+                                  <img src={Editar} alt='Boton-Editar'></img>
+                                  <p className='placeBtn'>Editar</p>
+                                </Link>
+                              </div>
+                              <div className='col-md-4'>
+                                <Link to='/Equipos' className='no-decoration'>
+                                  <i
+                                    className='pi pi-users'
+                                    style={{
+                                      color: '#ea4335',
+                                      fontSize: '6.8em',
+                                      width: '100%',
+                                    }}
+                                  ></i>
+                                  <p className='placeBtn'>Entrar</p>
+                                </Link>
+                              </div>
+                            </>
+                          ) : (
+                            <div className='col-md-12'>
+                              <Link to='/Equipos' className='no-decoration'>
+                                <i
+                                  className='pi pi-users'
+                                  style={{
+                                    color: '#ea4335',
+                                    fontSize: '6.8em',
+                                    width: '100%',
+                                  }}
+                                ></i>
+                                <p className='placeBtn'>Entrar</p>
+                              </Link>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

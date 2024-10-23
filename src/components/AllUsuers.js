@@ -237,8 +237,7 @@ const AllUsuers = () => {
                   <div className='row w-100'>
                     <div className='col-md-6'>
                       <h6 className='textoBuscaSeg'>
-                        Selecciona al colaborador<br></br>y el tipo de
-                        seguimiento
+                        Selecciona al Asesor<br></br>y el tipo de seguimiento
                       </h6>
                     </div>
                     <div className='col-md-6'>

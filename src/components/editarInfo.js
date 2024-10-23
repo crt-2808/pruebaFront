@@ -107,7 +107,7 @@ const EditarInfo = () => {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
-        text: 'Ocurrió un error al actualizar la información del colaborador',
+        text: 'Ocurrió un error al actualizar la información del usuario',
       });
     }
   };

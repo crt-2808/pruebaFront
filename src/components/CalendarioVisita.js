@@ -253,11 +253,11 @@ function CalendarioVisita() {
       <div className='py-2 px-3'>
         {length === 0 ? (
           <>
-            <b>Ningún</b> colaborador seleccionado
+            <b>Ningún</b> asesor seleccionado
           </>
         ) : (
           <>
-            <b>{length}</b> colaborador{length > 1 ? 'es' : ''} seleccionado
+            <b>{length}</b> asesor{length > 1 ? 'es' : ''} seleccionado
             {length > 1 ? 's' : ''}.
           </>
         )}
@@ -305,7 +305,7 @@ function CalendarioVisita() {
             <Col xs={12} md={6}>
               <div className='p-field'>
                 <label htmlFor='NombreCompleto'>
-                  Colaboradores
+                  Asesores
                   <br />
                 </label>
               </div>
@@ -315,7 +315,7 @@ function CalendarioVisita() {
                   options={opcionesColaboradores}
                   onChange={handleColaboradoresChange}
                   panelFooterTemplate={panelFooterTemplate}
-                  placeholder='Selecciona colaboradores'
+                  placeholder='Selecciona asesores'
                   display='chip'
                   style={{ width: '100%' }}
                   filter

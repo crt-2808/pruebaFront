@@ -13,15 +13,15 @@ import 'primereact/resources/primereact.css'; // core css
 import { fetchWithToken } from '../utils/api';
 import { API_URL } from '../utils/api';
 import { Button } from 'primereact/button';
-import { useLocation } from "react-router-dom"; // Importar useLocation
-import { Message } from "primereact/message";
+import { useLocation } from 'react-router-dom'; // Importar useLocation
+import { Message } from 'primereact/message';
 
 function CrearEquipo() {
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const idGerente = params.get("idGerente");
+  const idGerente = params.get('idGerente');
   const {
     register,
     handleSubmit,
@@ -37,7 +37,6 @@ function CrearEquipo() {
       setMessage(`Se agregará el líder con ID: ${idGerente}`);
     }
   }, [idGerente]);
-
 
   const onSubmit = async (data) => {
     if (!data) {
@@ -62,7 +61,7 @@ function CrearEquipo() {
       data = {
         ...data,
         usuarios: idsUsuariosSeleccionados,
-        idGerente: idGerente
+        idGerente: idGerente,
       };
       let config = {
         method: 'POST',
@@ -134,24 +133,21 @@ function CrearEquipo() {
   const cargarColaboradores = async () => {
     try {
       let url = `${API_URL}/equipos/usuarios/sin-equipo`;
-    if (idGerente) {
-      url += `?idGerente=${idGerente}`;
-    }
-      const response = await fetchWithToken(
-        url,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      if (idGerente) {
+        url += `?idGerente=${idGerente}`;
+      }
+      const response = await fetchWithToken(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       const data = await response.json();
-      console.log(data)
+      console.log(data);
       const colaboradoresProcesados = data.map((colaborador) => ({
         id: colaborador.idUsuario,
         nombreCompleto: colaborador.NombreCompleto,
-        rol:colaborador.Rol,
+        rol: colaborador.Rol,
       }));
 
       console.log('Colaboradores: ', colaboradoresProcesados);
@@ -167,7 +163,6 @@ function CrearEquipo() {
   const opcionesColaboradores = colaboradores.map((colaborador) => ({
     label: `${colaborador.nombreCompleto} (${colaborador.rol})}`,
     value: `${colaborador.id}_${colaborador.nombreCompleto}`,
-    
   }));
   const panelFooterTemplate = () => {
     const length = colaboradoresSeleccionados
@@ -178,11 +173,11 @@ function CrearEquipo() {
       <div className='py-2 px-3'>
         {length === 0 ? (
           <>
-            <b>Ningún</b> colaborador seleccionado
+            <b>Ningún</b> asesor seleccionado
           </>
         ) : (
           <>
-            <b>{length}</b> colaborador{length > 1 ? 'es' : ''} seleccionado
+            <b>{length}</b> asesor{length > 1 ? 'es' : ''} seleccionado
             {length > 1 ? 's' : ''}.
           </>
         )}
@@ -201,10 +196,10 @@ function CrearEquipo() {
             backgroundColor: '#F1F5F8',
           }}
         >
-          <Link to={idGerente ? -1 : "/Equipos"}>
-            <ArrowLeft className="ml-4 regreso" />
-            <span style={{ marginBottom: "100px" }} id="indicador">
-              {idGerente ? "Regresar al gerente" : "Equipos"}
+          <Link to={idGerente ? -1 : '/Equipos'}>
+            <ArrowLeft className='ml-4 regreso' />
+            <span style={{ marginBottom: '100px' }} id='indicador'>
+              {idGerente ? 'Regresar al gerente' : 'Equipos'}
             </span>
           </Link>
         </div>
@@ -222,9 +217,9 @@ function CrearEquipo() {
           <h2 className='titulo-cambaceo px-5 '>Crear Equipo</h2>
           {message && (
             <Message
-              severity="info"
+              severity='info'
               text={message}
-              style={{ marginBottom: "1rem" }}
+              style={{ marginBottom: '1rem' }}
             />
           )}
         </div>
@@ -240,7 +235,6 @@ function CrearEquipo() {
                   <Form.Group>
                     <h5 style={{ textAlign: 'left' }}>Nombre del Equipo </h5>
                     <InputText
-                      
                       placeholder='Selecciona un nombre apropiado para el equipo'
                       {...register('nombre', {
                         required: 'El nombre debe ser uno valido',
@@ -256,13 +250,13 @@ function CrearEquipo() {
               <Col xs={12} md={6}>
                 <div style={{ marginTop: '15px' }}>
                   <Form.Group>
-                    <h5 style={{ textAlign: 'left' }}>Colaboradores </h5>
+                    <h5 style={{ textAlign: 'left' }}>Asesores </h5>
                     <MultiSelect
                       value={colaboradoresSeleccionados}
                       options={opcionesColaboradores}
                       onChange={handleColaboradoresChange}
                       panelFooterTemplate={panelFooterTemplate}
-                      placeholder='Selecciona colaboradores'
+                      placeholder='Selecciona asesores'
                       display='chip'
                       style={{ width: '100%' }}
                       filter

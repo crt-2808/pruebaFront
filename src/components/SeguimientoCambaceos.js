@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from "react";
-import Swal from "sweetalert2";
-import { InputText } from "primereact/inputtext";
-import { InputTextarea } from "primereact/inputtextarea";
-import { Link } from "react-router-dom";
-import { ArrowLeft, X } from "react-bootstrap-icons";
-import { Dialog } from "primereact/dialog";
-import Navbar from "./navbar";
-import { Row, Col } from "react-bootstrap";
-import { useAuthRedirect } from "../useAuthRedirect";
-import { API_URL, fetchWithToken } from "../utils/api";
-import { getUserRole } from "../utils/auth";
-import Usuario_sin_img from "../img/imagen-de-usuario-con-fondo-negro.png";
-import { useNavigate } from "react-router-dom";
-import { Tooltip } from "primereact/tooltip";
-import Map, { Marker, NavigationControl } from "react-map-gl";
-import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
-import "mapbox-gl/dist/mapbox-gl.css";
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
+import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
+import { InputText } from 'primereact/inputtext';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, X } from 'react-bootstrap-icons';
+import { Dialog } from 'primereact/dialog';
+import Navbar from './navbar';
+import { Row, Col } from 'react-bootstrap';
+import { useAuthRedirect } from '../useAuthRedirect';
+import { API_URL, fetchWithToken } from '../utils/api';
+import { getUserRole } from '../utils/auth';
+import Usuario_sin_img from '../img/imagen-de-usuario-con-fondo-negro.png';
+import { useNavigate } from 'react-router-dom';
+import { Tooltip } from 'primereact/tooltip';
+import Map, { Marker, NavigationControl } from 'react-map-gl';
+import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 const mapboxToken = process.env.REACT_APP_MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
@@ -30,12 +30,12 @@ const SeguimientoCambaceos = () => {
   const [modoCuestionario, setModoCuestionario] = useState(false);
   const [mostrarEspera, setMostrarEspera] = useState(true);
   const [registroSeleccionado, setregistroSeleccionado] = useState(null);
-  const [incidentesEditados, setIncidentesEditados] = useState("");
-  const [search, setSearch] = useState("");
+  const [incidentesEditados, setIncidentesEditados] = useState('');
+  const [search, setSearch] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalData, setModalData] = useState(null);
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState('');
   const userRole = getUserRole();
   const navigate = useNavigate();
   const [idPlanificador, setIdPlanificador] = useState(null);
@@ -54,27 +54,27 @@ const SeguimientoCambaceos = () => {
   // Función para cargar los registros desde el servidor
   const cargarRegistros = async () => {
     Swal.fire({
-      title: "Cargando...",
-      text: "Por favor espera un momento",
+      title: 'Cargando...',
+      text: 'Por favor espera un momento',
       allowOutsideClick: false,
     });
     Swal.showLoading();
     try {
       const response = await fetchWithToken(`${API_URL}/cambaceosPorId`, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
       Swal.close();
 
       if (!response.ok) {
-        console.error("Error al obtener registros:", response);
+        console.error('Error al obtener registros:', response);
         return Swal.fire({
-          icon: "error",
-          title: "Se produjo un error",
-          text: "No se pudieron cargar los registros",
+          icon: 'error',
+          title: 'Se produjo un error',
+          text: 'No se pudieron cargar los registros',
           timer: 2200,
           timerProgressBar: true,
         });
@@ -83,20 +83,20 @@ const SeguimientoCambaceos = () => {
       const data = await response.json();
       if (data.length === 0) {
         return Swal.fire({
-          title: "¡Atención!",
-          text: "No hay registros disponibles.",
-          icon: "info",
-          confirmButtonText: "Entendido",
+          title: '¡Atención!',
+          text: 'No hay registros disponibles.',
+          icon: 'info',
+          confirmButtonText: 'Entendido',
         });
       }
 
       // Modificar el tipo de registro
       const registrosModificados = data.map((registro) => {
         let nuevoTipo = registro.Tipo;
-        if (nuevoTipo === "Cambaceo_Semanal") {
-          nuevoTipo = "Semanal";
-        } else if (nuevoTipo === "Cambaceo_Diario") {
-          nuevoTipo = "Diario";
+        if (nuevoTipo === 'Cambaceo_Semanal') {
+          nuevoTipo = 'Semanal';
+        } else if (nuevoTipo === 'Cambaceo_Diario') {
+          nuevoTipo = 'Diario';
         }
         return { ...registro, Tipo: nuevoTipo };
       });
@@ -108,12 +108,12 @@ const SeguimientoCambaceos = () => {
       setRegistros(registrosOrdenados);
       setMostrarEspera(false);
     } catch (error) {
-      console.error("Error al obtener registros:", error);
+      console.error('Error al obtener registros:', error);
       Swal.close();
       return Swal.fire({
-        icon: "error",
-        title: "Se produjo un error",
-        text: "Error al cargar los registros",
+        icon: 'error',
+        title: 'Se produjo un error',
+        text: 'Error al cargar los registros',
         timer: 2200,
         timerProgressBar: true,
       });
@@ -128,10 +128,10 @@ const SeguimientoCambaceos = () => {
   // Función para formatear la fecha en un formato legible
   const formatearFecha = (fecha) => {
     if (!fecha) {
-      return ""; // Devuelve una cadena vacía si la fecha es nula o no válida
+      return ''; // Devuelve una cadena vacía si la fecha es nula o no válida
     }
-    const options = { day: "2-digit", month: "2-digit", year: "numeric" };
-    return new Intl.DateTimeFormat("es-ES", options).format(new Date(fecha));
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    return new Intl.DateTimeFormat('es-ES', options).format(new Date(fecha));
   };
 
   // Función para manejar el clic en el botón "Ver"
@@ -141,18 +141,18 @@ const SeguimientoCambaceos = () => {
     const fechaFormateada = formatearFecha(registro.FechaAsignacion);
     // Muestra el diálogo con SweetAlert2
     Swal.fire({
-      icon: "warning",
-      title: "Corrobora los datos seleccionados",
+      icon: 'warning',
+      title: 'Corrobora los datos seleccionados',
       html: `
         <h2>${registro.Direccion}</h2>
         <h4><h3> <span class="text-danger">Fecha Asignacion: </span></h3> ${fechaFormateada}</h4>
         <h3>Para un  <span class="text-danger">Seguimiento</span></h3>
       `,
       showCancelButton: true,
-      confirmButtonText: "Confirmar",
-      cancelButtonText: "Cancelar",
-      confirmButtonColor: "#ea4335",
-      cancelButtonColor: "#333333",
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#ea4335',
+      cancelButtonColor: '#333333',
     }).then((result) => {
       // Maneja la lógica después de hacer clic en Confirmar o Cancelar
       if (result.isConfirmed) {
@@ -180,18 +180,18 @@ const SeguimientoCambaceos = () => {
       const { features } = response.body;
 
       if (!features || features.length === 0) {
-        throw new Error("No se encontraron resultados de geocodificación.");
+        throw new Error('No se encontraron resultados de geocodificación.');
       }
 
       const { center } = features[0];
       setCoordinates({ latitude: center[1], longitude: center[0] });
       setAddress(direccion);
     } catch (error) {
-      console.error("Error al geocodificar la dirección:", error);
+      console.error('Error al geocodificar la dirección:', error);
       Swal.fire({
-        icon: "error",
-        title: "Error al geocodificar la dirección",
-        text: "No se pudo encontrar la ubicación en el mapa.",
+        icon: 'error',
+        title: 'Error al geocodificar la dirección',
+        text: 'No se pudo encontrar la ubicación en el mapa.',
       });
     }
   };
@@ -214,9 +214,9 @@ const SeguimientoCambaceos = () => {
       const response = await fetchWithToken(
         `${API_URL}/IncidenciasPorColab?idPlanificador=${idPlanificador}&idColaborador=${idColaborador}`,
         {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -229,56 +229,53 @@ const SeguimientoCambaceos = () => {
           setModalVisible(true);
         } else {
           // Mostrar modal especial para coordinadores si no hay incidencia registrada
-          if (userRole === "coordinador") {
+          if (userRole === 'coordinador') {
             Swal.fire({
-              title: "Colaborador sin incidencia registrada",
-              text: "El colaborador seleccionado no ha registrado incidencia. ¿Desea agregar una incidencia?",
-              icon: "warning",
+              title: 'Usuario sin incidencia registrada',
+              text: 'El usuario seleccionado no ha registrado incidencia. ¿Desea agregar una incidencia?',
+              icon: 'warning',
               showCancelButton: true,
-              confirmButtonColor: "#3085d6",
-              cancelButtonColor: "#d33",
-              confirmButtonText: "Confirmar",
-              cancelButtonText: "Cancelar",
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Confirmar',
+              cancelButtonText: 'Cancelar',
             }).then((result) => {
               if (result.isConfirmed) {
                 // Aquí puedes añadir lógica adicional para agregar la incidencia si es necesario
                 // Por ejemplo, podrías abrir un formulario de ingreso de incidencia
                 setIdPlanificador(idPlanificador);
                 setIdColaborador(idColaborador);
-                navigate("/Colaborador/Incidencia", {
+                navigate('/Colaborador/Incidencia', {
                   state: { idPlanificador, idColaborador },
                 });
               }
             });
           } else {
             Swal.fire({
-              title: "No hay incidencias registradas",
-              text: "No se encontraron incidencias para este colaborador",
+              title: 'No hay incidencias registradas',
+              text: 'No se encontraron incidencias para este usuario',
               timer: 5000, // Tiempo en milisegundos antes de que se cierre automáticamente
               timerProgressBar: true,
-              icon: "info",
+              icon: 'info',
             });
           }
         }
       } else {
-        console.error(
-          "Error al obtener incidencias por colaborador:",
-          response
-        );
+        console.error('Error al obtener incidencias por usuario:', response);
         Swal.fire({
-          icon: "error",
-          title: "Error al obtener incidencias",
-          text: "Hubo un problema al intentar obtener las incidencias por colaborador",
+          icon: 'error',
+          title: 'Error al obtener incidencias',
+          text: 'Hubo un problema al intentar obtener las incidencias por usuario',
           timer: 3000,
           timerProgressBar: true,
         });
       }
     } catch (error) {
-      console.error("Error en la solicitud:", error);
+      console.error('Error en la solicitud:', error);
       Swal.fire({
-        icon: "error",
-        title: "Error en la solicitud",
-        text: "Hubo un problema al intentar comunicarse con el servidor",
+        icon: 'error',
+        title: 'Error en la solicitud',
+        text: 'Hubo un problema al intentar comunicarse con el servidor',
         timer: 3000,
         timerProgressBar: true,
       });
@@ -293,85 +290,85 @@ const SeguimientoCambaceos = () => {
       e.preventDefault();
       window.location.reload();
     }
-    if (!modoCuestionario && userRole === "coordinador") {
+    if (!modoCuestionario && userRole === 'coordinador') {
       e.preventDefault();
-      window.location.href = "/land";
+      window.location.href = '/land';
     }
   };
 
   return (
-    <div className="fluid">
+    <div className='fluid'>
       <div>
         <Dialog
-          header="Incidencia Registrada"
+          header='Incidencia Registrada'
           visible={modalVisible}
           onHide={onHideModal}
         >
           <div>{modalData}</div>
         </Dialog>
       </div>
-      <Navbar style={{ backgroundColor: "##F8F9FA" }}></Navbar>
-      <div className="Colab" style={{ backgroundColor: "#F1F5F8" }}>
-        <div className="container-fluid px-4" style={{ paddingBottom: "3rem" }}>
-          <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
-            <Link to="/cambaceo" onClick={handleLinkClick}>
-              <ArrowLeft className="ml-4 regreso" />
-              <span id="indicador">
+      <Navbar style={{ backgroundColor: '##F8F9FA' }}></Navbar>
+      <div className='Colab' style={{ backgroundColor: '#F1F5F8' }}>
+        <div className='container-fluid px-4' style={{ paddingBottom: '3rem' }}>
+          <div className='col-md-12 d-flex justify-content-center align-items-center mb-3'>
+            <Link to='/cambaceo' onClick={handleLinkClick}>
+              <ArrowLeft className='ml-4 regreso' />
+              <span id='indicador'>
                 {modoCuestionario
-                  ? "Seleccionar Cambaceo"
-                  : userRole === "coordinador"
-                  ? "Pagina Principal"
-                  : "Menu Cambaceo"}
+                  ? 'Seleccionar Cambaceo'
+                  : userRole === 'coordinador'
+                  ? 'Pagina Principal'
+                  : 'Menu Cambaceo'}
               </span>
             </Link>
           </div>
 
-          <div className="col-12 mt-5 mb-md-1 mb-sm-0 px-4 pt-3">
+          <div className='col-12 mt-5 mb-md-1 mb-sm-0 px-4 pt-3'>
             {modoCuestionario ? (
-              <h1 className="textoSeguimiento mx-md-5 mx-sm-1">
+              <h1 className='textoSeguimiento mx-md-5 mx-sm-1'>
                 Cambaceo {registroSeleccionado?.Tipo}
               </h1>
             ) : (
-              <h1 className="textoSeguimiento mx-md-5 mx-sm-1">
+              <h1 className='textoSeguimiento mx-md-5 mx-sm-1'>
                 Seguimiento Cambaceos
               </h1>
             )}
           </div>
           <div
-            className="container-fluid mt-md-3 mb-md-5 p-md-5 p-3 mb-4 mt-4"
-            id="contenedor-cambaceo"
+            className='container-fluid mt-md-3 mb-md-5 p-md-5 p-3 mb-4 mt-4'
+            id='contenedor-cambaceo'
           >
             {modoCuestionario ? null : (
-              <div className="row">
-                <div className="col-md-6">
-                  <h3 className="textoBuscaSeg">Busca tu cambaceo</h3>
+              <div className='row'>
+                <div className='col-md-6'>
+                  <h3 className='textoBuscaSeg'>Busca tu cambaceo</h3>
                 </div>
-                <div className="col-md-6">
-                  <div className="input-wrapper">
+                <div className='col-md-6'>
+                  <div className='input-wrapper'>
                     <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Buscar por Nombre de Colaborador"
-                      aria-label="Buscar"
-                      aria-describedby="basic-addon1"
+                      type='text'
+                      className='form-control'
+                      placeholder='Buscar por Nombre de usuario'
+                      aria-label='Buscar'
+                      aria-describedby='basic-addon1'
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
-                    <X className="clear-icon" onClick={() => setSearch("")} />
+                    <X className='clear-icon' onClick={() => setSearch('')} />
                   </div>
                 </div>
               </div>
             )}
             <div
-              className="row align-items-center mt-sm-4 mb-sm-4 mt-md-0 mb-md-0"
-              id="opcionesCambaceo"
+              className='row align-items-center mt-sm-4 mb-sm-4 mt-md-0 mb-md-0'
+              id='opcionesCambaceo'
             >
-              <div className="container-fluid mt-5 mb-2">
-                <div className="row px-2 gy-4" id="Resultado">
+              <div className='container-fluid mt-5 mb-2'>
+                <div className='row px-2 gy-4' id='Resultado'>
                   {modoCuestionario ? (
                     // Renderiza la vista de cuestionario en dos columnas
                     <>
-                      <Row className="mb-5">
+                      <Row className='mb-5'>
                         <Col xs={12} md={6}>
                           <label>Fecha:</label>
                           <InputText
@@ -379,25 +376,25 @@ const SeguimientoCambaceos = () => {
                               registroSeleccionado?.FechaAsignacion
                             )}
                             disabled
-                            style={{ width: "100%" }}
+                            style={{ width: '100%' }}
                           />
-                          <div style={{ marginBottom: "10px" }}>
+                          <div style={{ marginBottom: '10px' }}>
                             <label>Descripcion:</label>
                             <InputTextarea
                               autoResize={true}
                               rows={5}
                               value={registroSeleccionado?.Descripcion}
-                              style={{ width: "100%" }}
+                              style={{ width: '100%' }}
                               disabled
                             />
                           </div>
-                          <div style={{ marginBottom: "10px" }}>
+                          <div style={{ marginBottom: '10px' }}>
                             <label>Direccion:</label>
                             <InputTextarea
                               autoResize={true}
                               rows={5}
                               value={registroSeleccionado?.Direccion}
-                              style={{ width: "100%" }}
+                              style={{ width: '100%' }}
                               disabled
                             />
                           </div>
@@ -407,16 +404,16 @@ const SeguimientoCambaceos = () => {
                             {...viewState}
                             onMove={(evt) => setViewState(evt.viewState)}
                             style={{
-                              width: "100%",
-                              height: "480px",
-                              borderRadius: "8px",
+                              width: '100%',
+                              height: '480px',
+                              borderRadius: '8px',
                             }}
-                            mapStyle="mapbox://styles/mapbox/streets-v11"
+                            mapStyle='mapbox://styles/mapbox/streets-v11'
                             onStyleLoad={(map) => {
                               map.setLayoutProperty(
-                                "country-label",
-                                "text-field",
-                                ["get", "name_es"]
+                                'country-label',
+                                'text-field',
+                                ['get', 'name_es']
                               );
                             }}
                             mapboxAccessToken={mapboxToken}
@@ -425,29 +422,29 @@ const SeguimientoCambaceos = () => {
                               longitude={coordinates.longitude}
                               latitude={coordinates.latitude}
                             />
-                            <NavigationControl position="top-right" />
+                            <NavigationControl position='top-right' />
                           </Map>
                           <div
                             style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              marginTop: "10px",
+                              display: 'flex',
+                              justifyContent: 'center',
+                              marginTop: '10px',
                             }}
                           ></div>
                         </Col>
                       </Row>
                       <Row>
                         <hr />
-                        <div className="col-12">
-                          <h3 style={{ marginLeft: "15px", textAlign: "left" }}>
+                        <div className='col-12'>
+                          <h3 style={{ marginLeft: '15px', textAlign: 'left' }}>
                             Seguimiento Individual
                           </h3>
-                          <div className="d-flex flex-wrap justify-content-left">
+                          <div className='d-flex flex-wrap justify-content-left'>
                             {/* Mostrar al líder */}
-                            <div className="colaborador-container mb-3 mx-2">
+                            <div className='colaborador-container mb-3 mx-2'>
                               {registroSeleccionado?.Creador && (
                                 <>
-                                  <i className="pi pi-crown crown-icon"></i>
+                                  <i className='pi pi-crown crown-icon'></i>
                                   <img
                                     src={
                                       registroSeleccionado.Creador.Foto ||
@@ -455,10 +452,10 @@ const SeguimientoCambaceos = () => {
                                     }
                                     alt={`Avatar de ${registroSeleccionado.Creador.NombreCompleto}`}
                                     style={{
-                                      width: "60px",
-                                      height: "60px",
-                                      borderRadius: "50%",
-                                      marginBottom: "10px",
+                                      width: '60px',
+                                      height: '60px',
+                                      borderRadius: '50%',
+                                      marginBottom: '10px',
                                     }}
                                     onError={(e) => {
                                       e.target.onerror = null;
@@ -473,10 +470,10 @@ const SeguimientoCambaceos = () => {
                                       registroSeleccionado.Creador
                                         .NombreCompleto
                                     }
-                                    className="avatar-tooltip"
+                                    className='avatar-tooltip'
                                   />
-                                  <Tooltip target=".avatar-tooltip" />
-                                  <div className="lider-texto">Líder</div>
+                                  <Tooltip target='.avatar-tooltip' />
+                                  <div className='lider-texto'>Líder</div>
                                 </>
                               )}
                             </div>
@@ -485,16 +482,16 @@ const SeguimientoCambaceos = () => {
                               (colaborador, idx) => (
                                 <div
                                   key={idx}
-                                  className="colaborador-container mb-3 mx-2"
+                                  className='colaborador-container mb-3 mx-2'
                                 >
                                   <img
                                     src={colaborador.Foto || Usuario_sin_img}
                                     alt={`Avatar de ${colaborador.NombreCompleto}`}
                                     style={{
-                                      width: "60px",
-                                      height: "60px",
-                                      borderRadius: "50%",
-                                      marginBottom: "10px",
+                                      width: '60px',
+                                      height: '60px',
+                                      borderRadius: '50%',
+                                      marginBottom: '10px',
                                     }}
                                     onError={(e) => {
                                       e.target.onerror = null;
@@ -509,9 +506,9 @@ const SeguimientoCambaceos = () => {
                                       );
                                     }}
                                     data-pr-tooltip={colaborador.NombreCompleto}
-                                    className="avatar-tooltip"
+                                    className='avatar-tooltip'
                                   />
-                                  <Tooltip target=".avatar-tooltip" />
+                                  <Tooltip target='.avatar-tooltip' />
                                 </div>
                               )
                             )}
@@ -536,35 +533,35 @@ const SeguimientoCambaceos = () => {
                             ...registro.Colaboradores,
                           ];
                           return (
-                            <div className="col-md-4" key={index}>
-                              <div className="card custom-card centrar p-3">
-                                <h2 className="card-title custom-card-title">
+                            <div className='col-md-4' key={index}>
+                              <div className='card custom-card centrar p-3'>
+                                <h2 className='card-title custom-card-title'>
                                   {registro.Tipo}
                                 </h2>
-                                <h4 className="card-subtitle mb-2 text-muted">
+                                <h4 className='card-subtitle mb-2 text-muted'>
                                   {formatearFecha(registro.FechaAsignacion)}
                                 </h4>
-                                <div className="avatars-container">
+                                <div className='avatars-container'>
                                   {colaboradoresConCreador
                                     .slice(0, maxAvatarsToShow)
                                     .map((colaborador, idx) => (
                                       <div
                                         key={idx}
-                                        className="avatar-container"
+                                        className='avatar-container'
                                       >
                                         {colaborador.esLider && (
                                           <>
-                                            <i className="pi pi-crown crown-icon"></i>
+                                            <i className='pi pi-crown crown-icon'></i>
                                             <img
                                               src={colaborador.Foto}
                                               alt={`Avatar de ${colaborador.NombreCompleto}`}
-                                              className="avatar"
+                                              className='avatar'
                                               onError={(e) => {
                                                 e.target.onerror = null;
                                                 e.target.src = Usuario_sin_img;
                                               }}
                                             />
-                                            <div className="lider-texto">
+                                            <div className='lider-texto'>
                                               Líder
                                             </div>
                                           </>
@@ -573,7 +570,7 @@ const SeguimientoCambaceos = () => {
                                           <img
                                             src={colaborador.Foto}
                                             alt={`Avatar de ${colaborador.NombreCompleto}`}
-                                            className="avatar"
+                                            className='avatar'
                                             onError={(e) => {
                                               e.target.onerror = null;
                                               e.target.src = Usuario_sin_img;
@@ -583,13 +580,13 @@ const SeguimientoCambaceos = () => {
                                       </div>
                                     ))}
                                   {extraAvatars > 0 && (
-                                    <div className="extra-avatars">
+                                    <div className='extra-avatars'>
                                       +{extraAvatars}
                                     </div>
                                   )}
                                 </div>
                                 <button
-                                  className="btn-custom"
+                                  className='btn-custom'
                                   onClick={() => handleVerClick(registro)}
                                 >
                                   Ver más

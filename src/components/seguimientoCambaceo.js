@@ -1,16 +1,16 @@
-import React, { useEffect, useState, useRef } from "react";
-import Navbar from "./navbar";
-import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, X, Download } from "react-bootstrap-icons";
-import { Tooltip } from "primereact/tooltip";
-import usuarioAnon from "../img/imagen-de-usuario-con-fondo-negro.png";
-import Swal from "sweetalert2";
-import { Toast } from "primereact/toast";
-import { useAuthRedirect } from "../useAuthRedirect";
-import axios from "axios";
-import "../theme.css";
-import "primereact/resources/primereact.css"; // core css
-import { API_URL, fetchWithToken } from "../utils/api";
+import React, { useEffect, useState, useRef } from 'react';
+import Navbar from './navbar';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, X, Download } from 'react-bootstrap-icons';
+import { Tooltip } from 'primereact/tooltip';
+import usuarioAnon from '../img/imagen-de-usuario-con-fondo-negro.png';
+import Swal from 'sweetalert2';
+import { Toast } from 'primereact/toast';
+import { useAuthRedirect } from '../useAuthRedirect';
+import axios from 'axios';
+import '../theme.css';
+import 'primereact/resources/primereact.css'; // core css
+import { API_URL, fetchWithToken } from '../utils/api';
 
 const SeguimientoCambaceo = () => {
   useAuthRedirect();
@@ -18,7 +18,7 @@ const SeguimientoCambaceo = () => {
 
   // Nuevo estado para los datos de los colaboradores
   const [data, setData] = useState([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [imageLoaded, setImageLoaded] = useState({});
   const [descargando, setDescargando] = useState(false);
@@ -26,9 +26,9 @@ const SeguimientoCambaceo = () => {
   const toast = useRef(null);
   const showToast = () => {
     toast.current.show({
-      severity: "warn",
-      summary: "Error",
-      detail: "No logramos acceder a la imagen del colaborador.",
+      severity: 'warn',
+      summary: 'Error',
+      detail: 'No logramos acceder a la imagen del usuario.',
       life: 2000,
     });
   };
@@ -53,13 +53,13 @@ const SeguimientoCambaceo = () => {
               />
               <span
                 className={'status-indicator ${
-                  isActive ? "active" : "inactive"
+                  isActive ? 'active' : 'inactive'
                 }'}
               ></span>
             </div>
             <h3>${colaborador.Nombre}</h3>
             <h4>${
-              colaborador.Apellido_pat + " " + colaborador.Apellido_mat
+              colaborador.Apellido_pat + ' ' + colaborador.Apellido_mat
             }</h4>
             <h6>${colaborador.Correo}</h6>
             <h6>${colaborador.Telefono}</h6>
@@ -73,17 +73,17 @@ const SeguimientoCambaceo = () => {
 
   const colab = async () => {
     Swal.fire({
-      title: "Cargando...",
-      text: "Por favor espera un momento",
+      title: 'Cargando...',
+      text: 'Por favor espera un momento',
       allowOutsideClick: false,
     });
     Swal.showLoading();
     try {
       const options = {
-        method: "GET",
-        mode: "cors",
+        method: 'GET',
+        mode: 'cors',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       };
       const response = await fetchWithToken(`${API_URL}/colaborador`, options);
@@ -92,9 +92,9 @@ const SeguimientoCambaceo = () => {
 
       if (errorStatusCodes.includes(response.status)) {
         return Swal.fire({
-          icon: "error",
-          title: "Se produjo un error",
-          text: "UDA",
+          icon: 'error',
+          title: 'Se produjo un error',
+          text: 'UDA',
           timer: 1200,
           timerProgressBar: true,
           backdrop: `
@@ -106,15 +106,15 @@ const SeguimientoCambaceo = () => {
       const data = await response.json();
       if (data.length === 0) {
         return Swal.fire({
-          title: "¡Atención!",
-          text: "Todavía no hay ningún colaborador registrado en tu equipo.",
-          icon: "info",
-          confirmButtonText: "Entendido",
+          title: '¡Atención!',
+          text: 'Todavía no hay ningún usuario registrado en tu equipo.',
+          icon: 'info',
+          confirmButtonText: 'Entendido',
         });
       }
       // Transformamos la data si es necesario
       const transformedData = data.map((item) => {
-        if (item.Imagen === "src") {
+        if (item.Imagen === 'src') {
           return { ...item, Imagen: usuarioAnon };
         }
         return item;
@@ -123,9 +123,9 @@ const SeguimientoCambaceo = () => {
     } catch (error) {
       console.log(error);
       Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Algo salió mal al cargar los colaboradores!",
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Algo salió mal al cargar los usuarios!',
       });
     }
   };
@@ -133,15 +133,15 @@ const SeguimientoCambaceo = () => {
   const handleClick = (type, colaborador) => {
     // showToast();
     Swal.fire({
-      title: "Corrobora los datos",
-      text: "Fecha",
-      icon: "warning",
+      title: 'Corrobora los datos',
+      text: 'Fecha',
+      icon: 'warning',
       showCancelButton: true,
       html: generateSwalTemplate(colaborador, type),
-      confirmButtonText: "Confirmar",
-      cancelButtonText: "Cancelar",
-      confirmButtonColor: "#ea4335",
-      cancelButtonColor: "#333333",
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#ea4335',
+      cancelButtonColor: '#333333',
     }).then((result) => {
       if (result.isConfirmed) {
         navigate(`/SeguimientoCambaceo/${type}/${colaborador.idUsuario}`);
@@ -163,126 +163,126 @@ const SeguimientoCambaceo = () => {
   };
   const handleDownload = async () => {
     Swal.fire({
-      title: "Descargando...",
-      text: "Por favor espera un momento",
+      title: 'Descargando...',
+      text: 'Por favor espera un momento',
       allowOutsideClick: false,
     });
     Swal.showLoading();
     try {
       const response = await fetchWithToken(`${API_URL}/descargarFechas`, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "text/csv", // Especifica el tipo de contenido que esperas recibir
+          'Content-Type': 'text/csv', // Especifica el tipo de contenido que esperas recibir
         },
       });
       Swal.close();
       if (response.status === 204) {
         return Swal.fire({
-          icon: "info",
-          title: "Información",
-          text: "No hay registros para la próxima semana aún.",
+          icon: 'info',
+          title: 'Información',
+          text: 'No hay registros para la próxima semana aún.',
         });
       }
       // Verificar si la respuesta es exitosa
       if (response.ok) {
         // Generar un enlace de descarga para el archivo CSV
         const blob = await response.blob();
-        const downloadLink = document.createElement("a");
+        const downloadLink = document.createElement('a');
         downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = "datos.csv";
+        downloadLink.download = 'datos.csv';
         downloadLink.click();
       } else {
         // Manejar errores de la solicitud
         console.error(
-          "Error al descargar el archivo CSV:",
+          'Error al descargar el archivo CSV:',
           response.statusText
         );
       }
     } catch (error) {
       // Manejar errores de red u otros errores
       Swal.close();
-      console.error("Error al descargar el archivo CSV:", error.message);
+      console.error('Error al descargar el archivo CSV:', error.message);
       Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Algo salió mal al descargar el archivo CSV!",
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Algo salió mal al descargar el archivo CSV!',
       });
-      console.error("Error de red:", error);
+      console.error('Error de red:', error);
     } finally {
       setDescargando(false);
     }
   };
 
   return (
-    <div className="fluid">
+    <div className='fluid'>
       <Navbar></Navbar>
       <Toast ref={toast} />
 
-      <div className="Colab">
-        <div className="container-fluid px-4">
-          <div className="row table_space mt-4">
-            <div className="col-md-12 d-flex justify-content-center align-items-center mb-3">
-              <Link to="/cambaceo">
-                <ArrowLeft className="ml-4 regreso" />
-                <span id="indicador">Cambaceo</span>
+      <div className='Colab'>
+        <div className='container-fluid px-4'>
+          <div className='row table_space mt-4'>
+            <div className='col-md-12 d-flex justify-content-center align-items-center mb-3'>
+              <Link to='/cambaceo'>
+                <ArrowLeft className='ml-4 regreso' />
+                <span id='indicador'>Cambaceo</span>
               </Link>
             </div>
           </div>
-          <div className="d-flex justify-content-between align-items-center col-12 mt-5 mb-md-1 mb-sm-0 px-4">
-            <h1 className="textoSeguimiento mx-md-5 mx-sm-1">Seguimiento</h1>
+          <div className='d-flex justify-content-between align-items-center col-12 mt-5 mb-md-1 mb-sm-0 px-4'>
+            <h1 className='textoSeguimiento mx-md-5 mx-sm-1'>Seguimiento</h1>
             <Download
-              className="descarga-cambaceo"
+              className='descarga-cambaceo'
               onClick={handleDownload}
-              data-pr-tooltip="Descarga el cambaceo semanal de la próxima semana"
-              data-pr-position="top"
+              data-pr-tooltip='Descarga el cambaceo semanal de la próxima semana'
+              data-pr-position='top'
             />
-            <Tooltip target=".descarga-cambaceo" className="custom-tooltip" />
+            <Tooltip target='.descarga-cambaceo' className='custom-tooltip' />
           </div>
           <div
-            className="container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4"
-            id="contenedor"
+            className='container-fluid mt-md-5 mb-md-5 p-md-5 p-3 mb-4 mt-4'
+            id='contenedor'
           >
-            <div className="row">
-              <div className="col-md-6">
-                <h6 className="textoBuscaSeg">
-                  Selecciona al colaborador<br></br>y el tipo de seguimiento
+            <div className='row'>
+              <div className='col-md-6'>
+                <h6 className='textoBuscaSeg'>
+                  Selecciona al usuario<br></br>y el tipo de seguimiento
                 </h6>
               </div>
-              <div className="col-md-6">
-                <div className="input-wrapper">
+              <div className='col-md-6'>
+                <div className='input-wrapper'>
                   <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Buscar por Nombre"
-                    aria-label="Buscar"
-                    aria-describedby="basic-addon1"
+                    type='text'
+                    className='form-control'
+                    placeholder='Buscar por Nombre'
+                    aria-label='Buscar'
+                    aria-describedby='basic-addon1'
                     value={search}
                     onChange={handleSearchChange}
                   />
-                  <X className="clear-icon" onClick={() => setSearch("")} />
+                  <X className='clear-icon' onClick={() => setSearch('')} />
                 </div>
               </div>
             </div>
             <div
-              className="row align-items-center mt-sm-4 mb-sm-4 mt-md-0 mb-md-0"
-              id="opcionesCambaceo"
+              className='row align-items-center mt-sm-4 mb-sm-4 mt-md-0 mb-md-0'
+              id='opcionesCambaceo'
             >
-              <div className="container-fluid mt-5 mb-2">
-                <div className="row px-2 gy-4" id="Resultado">
+              <div className='container-fluid mt-5 mb-2'>
+                <div className='row px-2 gy-4' id='Resultado'>
                   {filteredData.length > 0 ? (
                     filteredData.map((colaborador, index) => {
                       const isActive = colaborador.Activo === 1; // Obtener isActive aquí
                       return (
-                        <div className="col-md-3 " key={index}>
-                          <div className="card centrar p-3">
-                            <div className="user-status">
+                        <div className='col-md-3 ' key={index}>
+                          <div className='card centrar p-3'>
+                            <div className='user-status'>
                               <img
                                 src={colaborador.Imagen}
                                 className={`img-fluid fade-in ${
-                                  imageLoaded[colaborador.id] ? "loaded" : ""
+                                  imageLoaded[colaborador.id] ? 'loaded' : ''
                                 }`}
-                                id="img-card"
-                                alt="imagen de colaborador"
+                                id='img-card'
+                                alt='imagen de colaborador'
                                 onError={handleImageError}
                                 onLoad={() =>
                                   setImageLoaded((prevState) => ({
@@ -292,43 +292,43 @@ const SeguimientoCambaceo = () => {
                                 }
                                 style={
                                   imageLoaded[colaborador.id]
-                                    ? { opacity: 1, visibility: "visible" }
+                                    ? { opacity: 1, visibility: 'visible' }
                                     : {
                                         opacity: 0,
-                                        visibility: "hidden",
-                                        display: "none",
+                                        visibility: 'hidden',
+                                        display: 'none',
                                       }
                                 }
                               />
                               <span
                                 className={`status-indicator ${
-                                  isActive ? "active" : "inactive"
+                                  isActive ? 'active' : 'inactive'
                                 }`}
                               ></span>
                             </div>
                             <h3>{colaborador.Nombre}</h3>
                             <h4>
                               {colaborador.Apellido_pat +
-                                " " +
+                                ' ' +
                                 colaborador.Apellido_mat}
                             </h4>
-                            <h6 className="email">{colaborador.Correo}</h6>
+                            <h6 className='email'>{colaborador.Correo}</h6>
                             <h6>{colaborador.Telefono}</h6>
-                            <div className="col-md-12">
-                              <div className="row">
-                                <div className="col-md-12">
+                            <div className='col-md-12'>
+                              <div className='row'>
+                                <div className='col-md-12'>
                                   <button
-                                    className="btnDiario"
+                                    className='btnDiario'
                                     onClick={() =>
-                                      handleClick("Diario", colaborador)
+                                      handleClick('Diario', colaborador)
                                     }
                                   >
                                     Diario
                                   </button>
                                   <button
-                                    className="btnSemanal mt-md-2 mt-sm-0"
+                                    className='btnSemanal mt-md-2 mt-sm-0'
                                     onClick={() =>
-                                      handleClick("Semanal", colaborador)
+                                      handleClick('Semanal', colaborador)
                                     }
                                   >
                                     Semanal
@@ -342,7 +342,7 @@ const SeguimientoCambaceo = () => {
                     })
                   ) : (
                     <p>
-                      No se encontró ningún colaborador con el nombre "{search}
+                      No se encontró ningún usuario con el nombre "{search}
                       ".
                     </p>
                   )}

@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import Map, { Marker, NavigationControl } from "react-map-gl";
-import { InputText } from "primereact/inputtext";
-import { InputTextarea } from "primereact/inputtextarea";
-import "mapbox-gl/dist/mapbox-gl.css";
-import "primeicons/primeicons.css"; //iconos
-import { MultiSelect } from "primereact/multiselect";
-import { Button } from "primereact/button";
-import { ListBox } from "primereact/listbox";
-import { Form, Row, Col } from "react-bootstrap";
-import { ArrowLeft } from "react-bootstrap-icons";
-import Navbar from "./navbar";
-import { Link, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
-import { Calendar } from "primereact/calendar";
-import "../theme.css";
-import "primereact/resources/primereact.css"; // core css
-import { CalendarioEsp } from "../utils/calendarLocale";
-import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
-import { fetchWithToken } from "../utils/api";
-import { API_URL } from "../utils/api";
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import Map, { Marker, NavigationControl } from 'react-map-gl';
+import { InputText } from 'primereact/inputtext';
+import { InputTextarea } from 'primereact/inputtextarea';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import 'primeicons/primeicons.css'; //iconos
+import { MultiSelect } from 'primereact/multiselect';
+import { Button } from 'primereact/button';
+import { ListBox } from 'primereact/listbox';
+import { Form, Row, Col } from 'react-bootstrap';
+import { ArrowLeft } from 'react-bootstrap-icons';
+import Navbar from './navbar';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { Calendar } from 'primereact/calendar';
+import '../theme.css';
+import 'primereact/resources/primereact.css'; // core css
+import { CalendarioEsp } from '../utils/calendarLocale';
+import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
+import { fetchWithToken } from '../utils/api';
+import { API_URL } from '../utils/api';
 
 const mapboxToken = process.env.REACT_APP_MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
@@ -27,7 +27,7 @@ const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
 function CambaceoDiario() {
   CalendarioEsp();
   const navigate = useNavigate();
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState('');
   const [coordinates, setCoordinates] = useState({
     latitude: 26.084241,
     longitude: -98.303863,
@@ -46,14 +46,14 @@ function CambaceoDiario() {
         .forwardGeocode({
           query: address,
           limit: 5,
-          language: ["es"],
+          language: ['es'],
         })
         .send();
 
       const matches = response.body.features;
       setSuggestions(matches);
     } catch (error) {
-      console.error("Error en la geocodificación", error);
+      console.error('Error en la geocodificación', error);
       setSuggestions([]);
     }
   };
@@ -118,7 +118,7 @@ function CambaceoDiario() {
         setAddress(response.body.features[0].place_name);
       }
     } catch (error) {
-      console.error("Error al obtener la dirección", error);
+      console.error('Error al obtener la dirección', error);
     }
   };
 
@@ -139,7 +139,7 @@ function CambaceoDiario() {
     setAddress(e.target.value);
   };
   const clearAddress = () => {
-    setAddress("");
+    setAddress('');
   };
 
   useEffect(() => {
@@ -150,9 +150,9 @@ function CambaceoDiario() {
       };
 
       const teamConfig = {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(teamData),
       };
@@ -163,9 +163,9 @@ function CambaceoDiario() {
           teamConfig
         );
         const json = await res.json();
-        console.log("Respuesta del servidor:", json);
+        console.log('Respuesta del servidor:', json);
       } catch (error) {
-        console.error("Error al obtener los miembros del equipo:", error);
+        console.error('Error al obtener los miembros del equipo:', error);
       }
     };
 
@@ -175,17 +175,17 @@ function CambaceoDiario() {
   const onSubmit = async (data) => {
     if (!data || !address || !fechaInicio) {
       Swal.fire({
-        icon: "error",
-        title: "Se requiere llenar el formulario",
-        text: "Completa todos los campos obligatorios",
+        icon: 'error',
+        title: 'Se requiere llenar el formulario',
+        text: 'Completa todos los campos obligatorios',
         timer: 1200,
         timerProgressBar: true,
-        backdrop: "rgba(36,32,32,0.65)",
+        backdrop: 'rgba(36,32,32,0.65)',
       });
       return;
     }
     try {
-      console.log("Inicio: " + fechaInicio);
+      console.log('Inicio: ' + fechaInicio);
       const fechaAsignacion = new Date(fechaInicio);
       if (horaInicio) {
         fechaAsignacion.setHours(horaInicio.getHours());
@@ -198,21 +198,21 @@ function CambaceoDiario() {
       }
       const FechaAsignacion = formateoFecha(fechaAsignacion);
       const FechaConclusion = formateoFecha(fechaConclusion);
-      console.log("Hora inicio: " + horaInicio);
-      console.log("Hora fin: " + horaFin);
+      console.log('Hora inicio: ' + horaInicio);
+      console.log('Hora fin: ' + horaFin);
 
       const tipoColaborador = [];
       const tipoEquipo = [];
 
       colaboradoresSeleccionados.forEach((item) => {
-        const [id, nombreCompleto] = item.split("_");
+        const [id, nombreCompleto] = item.split('_');
         const colaborador = colaboradores.find(
           (col) => col.id === parseInt(id)
         );
 
-        if (colaborador.tipo === "Colaborador") {
+        if (colaborador.tipo === 'Colaborador') {
           tipoColaborador.push(id);
-        } else if (colaborador.tipo === "Equipo") {
+        } else if (colaborador.tipo === 'Equipo') {
           tipoEquipo.push(id);
         }
       });
@@ -224,9 +224,9 @@ function CambaceoDiario() {
         };
 
         const teamConfig = {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(teamData),
         };
@@ -251,23 +251,23 @@ function CambaceoDiario() {
           Direccion: address,
           idUsuarios: allUserIds,
           Activo: 1,
-          Tipo: "Cambaceo_Diario",
-          Documentos: "src",
-          SitioWeb: "src",
-          TipoEmpresa: "src",
+          Tipo: 'Cambaceo_Diario',
+          Documentos: 'src',
+          SitioWeb: 'src',
+          TipoEmpresa: 'src',
         };
 
         let config = {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(data),
         };
         try {
           Swal.fire({
-            title: "Cargando...",
-            text: "Por favor espera un momento",
+            title: 'Cargando...',
+            text: 'Por favor espera un momento',
             allowOutsideClick: false,
           });
           Swal.showLoading();
@@ -277,7 +277,7 @@ function CambaceoDiario() {
 
           if (res.ok) {
             const idPlanificador = data.idPlanificador;
-            console.log("idPlanificador: ", idPlanificador);
+            console.log('idPlanificador: ', idPlanificador);
 
             // Enviar idPlanificador y tipoEquipo a /addCambaceoEquipo
             if (tipoEquipo.length > 0) {
@@ -287,33 +287,33 @@ function CambaceoDiario() {
               };
 
               const addCambaceoEquipoConfig = {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                  "Content-Type": "application/json",
+                  'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(addCambaceoEquipoData),
               };
 
               try {
-                console.log("ya estoy en el try");
+                console.log('ya estoy en el try');
                 let addRes = await fetchWithToken(
                   `${API_URL}/addPlanificadorEquipo`,
                   addCambaceoEquipoConfig
                 );
                 const addResJson = await addRes.json();
-                console.log("Respuesta de addCambaceoEquipo: ", addResJson);
+                console.log('Respuesta de addCambaceoEquipo: ', addResJson);
 
                 if (!addRes.ok) {
                   throw new Error(
-                    addResJson.message || "Error al agregar equipos al cambaceo"
+                    addResJson.message || 'Error al agregar equipos al cambaceo'
                   );
                 }
               } catch (error) {
-                console.log("Error en addCambaceoEquipo: ", error);
+                console.log('Error en addCambaceoEquipo: ', error);
                 Swal.fire({
-                  icon: "error",
-                  title: "Error al agregar equipos al cambaceo",
-                  text: error.message || "UDA",
+                  icon: 'error',
+                  title: 'Error al agregar equipos al cambaceo',
+                  text: error.message || 'UDA',
                   timer: 1200,
                   timerProgressBar: true,
                   backdrop: `
@@ -326,9 +326,9 @@ function CambaceoDiario() {
           }
 
           Swal.fire({
-            icon: "success",
-            title: "Se agregó tu cambaceo diario correctamente",
-            text: "UDA",
+            icon: 'success',
+            title: 'Se agregó tu cambaceo diario correctamente',
+            text: 'UDA',
             timer: 1200,
             timerProgressBar: true,
             backdrop: `
@@ -336,14 +336,14 @@ function CambaceoDiario() {
             
           `,
           }).then(() => {
-            navigate("/Cambaceo");
+            navigate('/Cambaceo');
           });
         } catch (error) {
           console.log(error);
           return Swal.fire({
-            icon: "error",
-            title: "Se produjo un error",
-            text: "UDA",
+            icon: 'error',
+            title: 'Se produjo un error',
+            text: 'UDA',
             timer: 1200,
             timerProgressBar: true,
             backdrop: `
@@ -354,11 +354,11 @@ function CambaceoDiario() {
         }
       }
     } catch (error) {
-      console.log("Error al enviar los datos al servidor:", error);
+      console.log('Error al enviar los datos al servidor:', error);
       return Swal.fire({
-        icon: "error",
-        title: "Se requiere llenar el formulario",
-        text: "UDA",
+        icon: 'error',
+        title: 'Se requiere llenar el formulario',
+        text: 'UDA',
         timer: 1200,
         timerProgressBar: true,
         backdrop: `
@@ -377,17 +377,17 @@ function CambaceoDiario() {
 
     // Manejo de deseleccionados
     deseleccionados.forEach(async (item) => {
-      const [id, nombreCompleto] = item.split("_");
+      const [id, nombreCompleto] = item.split('_');
       const colaborador = colaboradores.find((col) => col.id === parseInt(id));
 
-      if (colaborador.tipo === "Colaborador") {
+      if (colaborador.tipo === 'Colaborador') {
         try {
           const res = await fetchWithToken(
             `${API_URL}/equipoPorColaborador/${id}`,
             {
-              method: "GET",
+              method: 'GET',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
               },
             }
           );
@@ -396,7 +396,7 @@ function CambaceoDiario() {
           if (data.id) {
             // Lógica para re-habilitar el equipo
             const updatedColaboradores = colaboradores.map((colab) => {
-              if (colab.tipo === "Equipo" && colab.id === data.id) {
+              if (colab.tipo === 'Equipo' && colab.id === data.id) {
                 return { ...colab, disabled: false };
               }
               return colab;
@@ -404,16 +404,16 @@ function CambaceoDiario() {
             setColaboradores(updatedColaboradores);
           }
         } catch (error) {
-          console.error("Error al obtener el equipo del colaborador:", error);
+          console.error('Error al obtener el equipo del colaborador:', error);
         }
-      } else if (colaborador.tipo === "Equipo") {
+      } else if (colaborador.tipo === 'Equipo') {
         try {
           const res = await fetchWithToken(
             `${API_URL}/colaboradoresPorEquipo/${id}`,
             {
-              method: "GET",
+              method: 'GET',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
               },
             }
           );
@@ -423,7 +423,7 @@ function CambaceoDiario() {
             // Lógica para re-habilitar los colaboradores del equipo
             const updatedColaboradores = colaboradores.map((colab) => {
               if (
-                colab.tipo === "Colaborador" &&
+                colab.tipo === 'Colaborador' &&
                 data.some((equipoColab) => equipoColab.id === colab.id)
               ) {
                 return { ...colab, disabled: false };
@@ -433,28 +433,25 @@ function CambaceoDiario() {
             setColaboradores(updatedColaboradores);
           }
         } catch (error) {
-          console.error(
-            "Error al obtener los colaboradores del equipo:",
-            error
-          );
+          console.error('Error al obtener los asesores del equipo:', error);
         }
       }
     });
 
     // Manejo de seleccionados
-    const colaboradorIds = seleccionados.map((item) => item.split("_")[0]);
+    const colaboradorIds = seleccionados.map((item) => item.split('_')[0]);
 
     colaboradorIds.forEach(async (id) => {
       const colaborador = colaboradores.find((col) => col.id === parseInt(id));
 
-      if (colaborador.tipo === "Colaborador") {
+      if (colaborador.tipo === 'Colaborador') {
         try {
           const res = await fetchWithToken(
             `${API_URL}/equipoPorColaborador/${id}`,
             {
-              method: "GET",
+              method: 'GET',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
               },
             }
           );
@@ -462,7 +459,7 @@ function CambaceoDiario() {
 
           if (
             data.message &&
-            data.message === "El colaborador no pertenece a ningún equipo"
+            data.message === 'El colaborador no pertenece a ningún equipo'
           ) {
             // No hacer nada si el colaborador no pertenece a ningún equipo
             console.log(
@@ -471,7 +468,7 @@ function CambaceoDiario() {
           } else if (data.id) {
             // Lógica para deshabilitar el equipo
             const updatedColaboradores = colaboradores.map((colab) => {
-              if (colab.tipo === "Equipo" && colab.id === data.id) {
+              if (colab.tipo === 'Equipo' && colab.id === data.id) {
                 return { ...colab, disabled: true };
               }
               return colab;
@@ -479,16 +476,16 @@ function CambaceoDiario() {
             setColaboradores(updatedColaboradores);
           }
         } catch (error) {
-          console.error("Error al obtener el equipo del colaborador:", error);
+          console.error('Error al obtener el equipo del colaborador:', error);
         }
-      } else if (colaborador.tipo === "Equipo") {
+      } else if (colaborador.tipo === 'Equipo') {
         try {
           const res = await fetchWithToken(
             `${API_URL}/colaboradoresPorEquipo/${id}`,
             {
-              method: "GET",
+              method: 'GET',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
               },
             }
           );
@@ -496,7 +493,7 @@ function CambaceoDiario() {
 
           if (
             data.message &&
-            data.message === "El equipo no tiene colaboradores"
+            data.message === 'El equipo no tiene colaboradores'
           ) {
             // No hacer nada si el equipo no tiene colaboradores
             console.log(
@@ -506,7 +503,7 @@ function CambaceoDiario() {
             // Lógica para deshabilitar los colaboradores del equipo
             const updatedColaboradores = colaboradores.map((colab) => {
               if (
-                colab.tipo === "Colaborador" &&
+                colab.tipo === 'Colaborador' &&
                 data.some((equipoColab) => equipoColab.id === colab.id)
               ) {
                 return { ...colab, disabled: true };
@@ -517,22 +514,22 @@ function CambaceoDiario() {
           }
         } catch (error) {
           console.error(
-            "Error al obtener los colaboradores del equipo:",
+            'Error al obtener los colaboradores del equipo:',
             error
           );
         }
       }
     });
 
-    console.log("Colaboradores seleccionados:", seleccionados);
+    console.log('Colaboradores seleccionados:', seleccionados);
   };
 
   const cargarColaboradores = async () => {
     try {
       const response = await fetchWithToken(`${API_URL}/nombresColaborador2`, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
       const data = await response.json();
@@ -542,14 +539,14 @@ function CambaceoDiario() {
       const colaboradoresProcesados = data.colaboradores.map((colaborador) => ({
         id: colaborador.idUsuario,
         nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
-        tipo: "Colaborador",
+        tipo: 'Colaborador',
       }));
 
       // Procesar equipos
       const equiposProcesados = data.equipos.map((equipo) => ({
         id: equipo.IDEquipo, // Asegúrate de que esto coincide con el campo en la respuesta de la API
         nombreEquipo: equipo.Nombre,
-        tipo: "Equipo",
+        tipo: 'Equipo',
       }));
 
       // Combinar colaboradores y equipos
@@ -562,13 +559,13 @@ function CambaceoDiario() {
         })),
       ];
 
-      console.log("Combinados: ", combinados);
+      console.log('Combinados: ', combinados);
 
       // Actualizar estado
       setColaboradores(combinados);
     } catch (error) {
       console.error(
-        "Error al cargar nombres de colaboradores y equipos:",
+        'Error al cargar nombres de colaboradores y equipos:',
         error
       );
     }
@@ -579,7 +576,7 @@ function CambaceoDiario() {
   }, []);
   const getLabelStyle = (tipo) => {
     return {
-      color: tipo === "Colaborador" ? "green" : "blue",
+      color: tipo === 'Colaborador' ? 'green' : 'blue',
     };
   };
   const opcionesColaboradores = colaboradores.map((colaborador) => ({
@@ -594,15 +591,15 @@ function CambaceoDiario() {
       : 0;
 
     return (
-      <div className="py-2 px-3">
+      <div className='py-2 px-3'>
         {length === 0 ? (
           <>
-            <b>Ningún</b> colaborador seleccionado
+            <b>Ningún</b> asesor seleccionado
           </>
         ) : (
           <>
-            <b>{length}</b> colaborador{length > 1 ? "es" : ""} seleccionado
-            {length > 1 ? "s" : ""}.
+            <b>{length}</b> asesor{length > 1 ? 'es' : ''} seleccionado
+            {length > 1 ? 's' : ''}.
           </>
         )}
       </div>
@@ -610,30 +607,30 @@ function CambaceoDiario() {
   };
   const formateoFecha = (fechaI) => {
     const year = fechaI.getFullYear();
-    const month = ("0" + (fechaI.getMonth() + 1)).slice(-2);
-    const day = ("0" + fechaI.getDate()).slice(-2);
-    const hours = ("0" + fechaI.getHours()).slice(-2);
-    const minutes = ("0" + fechaI.getMinutes()).slice(-2);
-    const seconds = ("0" + fechaI.getSeconds()).slice(-2);
+    const month = ('0' + (fechaI.getMonth() + 1)).slice(-2);
+    const day = ('0' + fechaI.getDate()).slice(-2);
+    const hours = ('0' + fechaI.getHours()).slice(-2);
+    const minutes = ('0' + fechaI.getMinutes()).slice(-2);
+    const seconds = ('0' + fechaI.getSeconds()).slice(-2);
     const FechaNueva = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     return FechaNueva;
   };
 
   return (
-    <div className="fluid">
-      <Navbar style={{ backgroundColor: "##F8F9FA" }}></Navbar>
+    <div className='fluid'>
+      <Navbar style={{ backgroundColor: '##F8F9FA' }}></Navbar>
 
-      <div style={{ backgroundColor: "#F1F5F8" }}>
+      <div style={{ backgroundColor: '#F1F5F8' }}>
         <div
           style={{
-            paddingTop: "10px",
-            paddingBottom: "10px",
-            backgroundColor: "#F1F5F8",
+            paddingTop: '10px',
+            paddingBottom: '10px',
+            backgroundColor: '#F1F5F8',
           }}
         >
-          <Link to="/Cambaceo">
-            <ArrowLeft className="ml-4 regreso" />
-            <span style={{ marginBottom: "100px" }} id="indicador">
+          <Link to='/Cambaceo'>
+            <ArrowLeft className='ml-4 regreso' />
+            <span style={{ marginBottom: '100px' }} id='indicador'>
               Menu Cambaceo
             </span>
           </Link>
@@ -641,45 +638,45 @@ function CambaceoDiario() {
       </div>
 
       <div
-        className="py-md-4"
-        style={{ backgroundColor: "#F1F5F8", padding: "1.5rem 0" }}
+        className='py-md-4'
+        style={{ backgroundColor: '#F1F5F8', padding: '1.5rem 0' }}
       >
-        <div className="col-12 px-5">
-          <h2 className="titulo-cambaceo px-5 ">Cambaceo Diario</h2>
+        <div className='col-12 px-5'>
+          <h2 className='titulo-cambaceo px-5 '>Cambaceo Diario</h2>
         </div>
 
         <div
-          className="container-fluid mt-md-2 mb-md-5 p-md-5 p-3 mb-4 mt-4"
-          id="contenedor-cambaceo"
+          className='container-fluid mt-md-2 mb-md-5 p-md-5 p-3 mb-4 mt-4'
+          id='contenedor-cambaceo'
         >
-          <Form onSubmit={handleSubmit(onSubmit)} className="mt-2 mt-md-0">
-            <Row className="mb-2">
+          <Form onSubmit={handleSubmit(onSubmit)} className='mt-2 mt-md-0'>
+            <Row className='mb-2'>
               <Col xs={12} md={6}>
                 <div>
                   <Form.Group>
-                    <h5 style={{ textAlign: "left" }}>Colaboradores </h5>
+                    <h5 style={{ textAlign: 'left' }}>Asesores </h5>
                     <MultiSelect
                       value={colaboradoresSeleccionados}
                       options={opcionesColaboradores}
                       onChange={handleColaboradoresChange}
                       panelFooterTemplate={panelFooterTemplate}
-                      placeholder="Selecciona colaboradores o equipos"
-                      display="chip"
-                      style={{ width: "100%" }}
+                      placeholder='Selecciona usuarios o equipos'
+                      display='chip'
+                      style={{ width: '100%' }}
                       filter
                     />
                   </Form.Group>
                 </div>
-                <div style={{ marginTop: "15px" }}>
+                <div style={{ marginTop: '15px' }}>
                   <Form.Group>
-                    <h5 style={{ textAlign: "left" }}>Dirección</h5>
+                    <h5 style={{ textAlign: 'left' }}>Dirección</h5>
                     <span
-                      className="p-input-icon-right"
-                      style={{ width: "100%" }}
+                      className='p-input-icon-right'
+                      style={{ width: '100%' }}
                     >
                       {address && (
                         <i
-                          className="pi pi-times cursor-pointer"
+                          className='pi pi-times cursor-pointer'
                           onClick={clearAddress}
                         />
                       )}
@@ -688,72 +685,72 @@ function CambaceoDiario() {
                         onChange={handleAddressChange}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
-                        placeholder="Buscar dirección..."
-                        className="p-inputtext-sm p-d-block p-mb-2"
-                        style={{ width: "100%" }}
+                        placeholder='Buscar dirección...'
+                        className='p-inputtext-sm p-d-block p-mb-2'
+                        style={{ width: '100%' }}
                       />
                     </span>
                     {isFocused && suggestions.length > 0 && (
                       <ListBox
                         options={listboxSuggestions}
                         onChange={(e) => handleSelect(e.value)}
-                        optionLabel="label"
-                        style={{ width: "100%" }}
+                        optionLabel='label'
+                        style={{ width: '100%' }}
                       />
                     )}
                   </Form.Group>
                 </div>
-                <div style={{ marginTop: "15px" }}>
+                <div style={{ marginTop: '15px' }}>
                   <Form.Group>
-                    <h5 style={{ textAlign: "left" }}>Descripcion</h5>
+                    <h5 style={{ textAlign: 'left' }}>Descripcion</h5>
                     <InputTextarea
                       autoResize
                       rows={4}
                       cols={30}
-                      placeholder="Descripcion de la actividad diaria"
-                      {...register("Descripcion", {
-                        required: "La descripción es obligatoria",
+                      placeholder='Descripcion de la actividad diaria'
+                      {...register('Descripcion', {
+                        required: 'La descripción es obligatoria',
                       })}
-                      style={{ width: "100%" }}
+                      style={{ width: '100%' }}
                     />
                     {errors.Descripcion && (
-                      <small className="p-error">
+                      <small className='p-error'>
                         {errors.Descripcion.message}
                       </small>
                     )}
                   </Form.Group>
                 </div>
-                <div style={{ marginTop: "15px" }}>
+                <div style={{ marginTop: '15px' }}>
                   <Row>
                     <Col>
                       <Form.Group>
-                        <h6 style={{ textAlign: "left" }}>Fecha Inicio</h6>
+                        <h6 style={{ textAlign: 'left' }}>Fecha Inicio</h6>
                         <Calendar
-                          id="calendar-24h-inicio"
+                          id='calendar-24h-inicio'
                           value={fechaInicio}
                           onChange={(e) => setfechaInicio(e.value)}
                           touchUI
-                          placeholder="Ingresa la fecha"
-                          locale="es"
-                          dateFormat="dd/mm/yy"
-                          className="custom-calendar"
+                          placeholder='Ingresa la fecha'
+                          locale='es'
+                          dateFormat='dd/mm/yy'
+                          className='custom-calendar'
                           showIcon
                         />
                       </Form.Group>
                     </Col>
                   </Row>
                 </div>
-                <div style={{ marginTop: "15px" }}>
+                <div style={{ marginTop: '15px' }}>
                   <Row>
                     <Col>
                       <Form.Group>
-                        <h6 style={{ textAlign: "left" }}>Horario</h6>
-                        <div className="row">
-                          <div className="col-md-6">
+                        <h6 style={{ textAlign: 'left' }}>Horario</h6>
+                        <div className='row'>
+                          <div className='col-md-6'>
                             <Calendar
-                              id="calendar-24h-fin"
+                              id='calendar-24h-fin'
                               value={horaInicio}
-                              className="custom-calendar"
+                              className='custom-calendar'
                               onChange={(e) => {
                                 sethoraInicio(e.value);
                                 const horaFinNueva = new Date(
@@ -762,25 +759,25 @@ function CambaceoDiario() {
                                 sethoraFin(horaFinNueva);
                               }}
                               timeOnly
-                              hourFormat="24"
-                              dateFormat="dd/mm/yy"
-                              locale="es"
-                              placeholder="Hora Inicio"
+                              hourFormat='24'
+                              dateFormat='dd/mm/yy'
+                              locale='es'
+                              placeholder='Hora Inicio'
                               showIcon
                             />
                           </div>
-                          <div className="col-md-6 mt-3 mt-md-0">
+                          <div className='col-md-6 mt-3 mt-md-0'>
                             <Calendar
-                              id="calendar-24h-fin"
+                              id='calendar-24h-fin'
                               value={horaFin}
-                              className="custom-calendar"
+                              className='custom-calendar'
                               onChange={(e) => sethoraFin(e.value)}
                               timeOnly
-                              hourFormat="24"
-                              dateFormat="dd/mm/yy"
-                              locale="es"
+                              hourFormat='24'
+                              dateFormat='dd/mm/yy'
+                              locale='es'
                               showIcon
-                              placeholder="Hora Fin"
+                              placeholder='Hora Fin'
                               minDate={
                                 horaInicio
                                   ? new Date(horaInicio.getTime() + 60000)
@@ -794,20 +791,20 @@ function CambaceoDiario() {
                   </Row>
                 </div>
               </Col>
-              <Col xs={12} md={6} className="mt-4 mt-md-0">
+              <Col xs={12} md={6} className='mt-4 mt-md-0'>
                 <Map
                   {...viewState}
                   onMove={(evt) => setViewState(evt.viewState)}
                   style={{
-                    width: "100%",
-                    height: "480px",
-                    borderRadius: "8px",
+                    width: '100%',
+                    height: '480px',
+                    borderRadius: '8px',
                   }}
-                  mapStyle="mapbox://styles/mapbox/streets-v11"
+                  mapStyle='mapbox://styles/mapbox/streets-v11'
                   onStyleLoad={(map) => {
-                    map.setLayoutProperty("country-label", "text-field", [
-                      "get",
-                      "name_es",
+                    map.setLayoutProperty('country-label', 'text-field', [
+                      'get',
+                      'name_es',
                     ]);
                   }}
                   mapboxAccessToken={mapboxToken}
@@ -818,16 +815,16 @@ function CambaceoDiario() {
                     draggable
                     onDragEnd={onMarkerDragEnd}
                   />
-                  <NavigationControl position="top-right" />
+                  <NavigationControl position='top-right' />
                 </Map>
                 <Row>
-                  <div style={{ marginTop: "20px" }}>
+                  <div style={{ marginTop: '20px' }}>
                     <Button
-                      type="submit"
-                      value="Enviar"
-                      style={{ float: "right", borderRadius: "20px" }}
-                      variant="outline-danger"
-                      size="lg"
+                      type='submit'
+                      value='Enviar'
+                      style={{ float: 'right', borderRadius: '20px' }}
+                      variant='outline-danger'
+                      size='lg'
                     >
                       Agregar
                     </Button>

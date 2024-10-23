@@ -95,6 +95,8 @@ function Login() {
         if (
           userRole === 'admin' ||
           userRole === 'lider' ||
+          userRole === 'coordinador' ||
+          userRole === 'gerente' ||
           userRole === 'colaborador'
         ) {
           navigate('/land');
