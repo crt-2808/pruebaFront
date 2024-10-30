@@ -49,7 +49,7 @@ function AgregarColab() {
   const formData = new FormData();
   const roles = [
     { label: 'Gerente', value: 'gerente' },
-    { label: 'Colaborador', value: 'colaborador' },
+    { label: 'Asesor', value: 'colaborador' },
     { label: 'Coordinador', value: 'coordinador' },
   ];
   const [assignToAnother, setAssignToAnother] = useState(false);

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './navbar';
-import { ArrowLeft, Trash, Pencil } from 'react-bootstrap-icons';
+import { ArrowLeft, Trash, Pencil, ArrowRepeat } from 'react-bootstrap-icons';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { showNotification } from '../utils/utils';
 import Usuario_sin_img from '../img/imagen-de-usuario-con-fondo-negro.png';
 import { useAuthRedirect } from '../useAuthRedirect';
 import { API_URL, fetchWithToken } from '../utils/api';
+import { Tooltip } from 'primereact/tooltip';
 import { getUserRole, isUserAdmin } from '../utils/auth';
+import {Button} from "primereact/button";
 
 const EditarColab = () => {
   useAuthRedirect();
@@ -35,17 +37,13 @@ const EditarColab = () => {
         },
       });
       Swal.close();
-      if (!response) {
-        // Si fetchWithToken redirige al usuario, no continuamos el flujo
-        return;
-      }
+      if (!response) return; // Si se redirige al usuario, no continuar
       if (!response.ok) {
         console.log('Error: ', response);
         return showNotification('error', 'Se produjo un error', 'UDA');
       }
-
+  
       const data = await response.json();
-      console.log('Colaboradores: ', data);
       if (data.length === 0) {
         return showNotification(
           'info',
@@ -53,17 +51,33 @@ const EditarColab = () => {
           'UDA'
         );
       }
-      // Ordenar colaboradores: activos primero, inactivos después
-      const colaboradoresOrdenados = data.sort((a, b) => {
-        return b.Activo - a.Activo;
-      });
-
+  
+      // Ordenar colaboradores: primero por estado activo, luego por rol
+      const colaboradoresOrdenados = data
+        .sort((a, b) => b.Activo - a.Activo) // Activos primero
+        .sort((a, b) => rolPrioridad(a.Rol) - rolPrioridad(b.Rol)); // Gerente > Coordinador > Asesor
+  
       setColaboradores(colaboradoresOrdenados);
     } catch (error) {
       console.error(error);
       return showNotification('error', 'Se produjo un error', 'UDA');
     }
   };
+  
+  // Asignar prioridad a los roles
+  const rolPrioridad = (rol) => {
+    switch (rol) {
+      case 'gerente':
+        return 1;
+      case 'coordinador':
+        return 2;
+      case 'Asesor': // Asesor (antes colaborador)
+        return 3;
+      default:
+        return 4; // Por si se agrega un rol no contemplado
+    }
+  };
+  
   useEffect(() => {
     fetchColaboradores();
   }, []);
@@ -316,6 +330,30 @@ const EditarColab = () => {
 
   const ColaboradorCard = ({ data }) => {
     const isActive = data.Activo === 1;
+    const showReassignIcon = ['coordinador', 'Asesor'].includes(data.Rol);
+  
+    const handleReactivarClick = async (idUsuario) => {
+      try {
+        const response = await fetchWithToken(`${API_URL}/reactivarColaborador/${idUsuario}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        const result = await response.json();
+        if (response.ok) {
+          showNotification('success', 'Reactivado', result.message);
+          window.location.reload(); // Refrescar la página
+        } else {
+          showNotification('error', 'Error', result.message);
+        }
+      } catch (error) {
+        console.error('Error al reactivar el usuario:', error);
+        showNotification('error', 'Error', 'Ocurrió un error al reactivar el usuario.');
+      }
+    };
+  
     return (
       <div className='col-md-3'>
         <div className='card centrar p-3'>
@@ -334,34 +372,19 @@ const EditarColab = () => {
           <h3>{data.Nombre}</h3>
           <h4>{`${data.Apellido_pat} ${data.Apellido_mat}`}</h4>
           <h5>{data.Rol}</h5>
-          <h6 className='email'> {data.Correo}</h6>
+          <h6 className='email'>{data.Correo}</h6>
           <h6>{data.Telefono}</h6>
-          {!isActive && (
-            <div>
-              <strong>Razón de Baja:</strong>
-              <p>{data.RazonBaja || 'No especificada'}</p>
+  
+          {!isActive ? (
+            <div className='col-12 centrar'>
+              <Button
+                label='Reactivar'
+                icon='pi pi-refresh'
+                className='p-button-success'
+                onClick={() => handleReactivarClick(data.idUsuario)}
+              />
             </div>
-          )}
-          {isAdmin && (
-            <div>
-              <strong>Creado por:</strong>
-              <p>{data.creado_por || 'No especificada'}</p>
-              <strong>Fecha creación:</strong>
-              <p>{data.fecha_creacion || 'No especificada'}</p>
-
-              {data.fecha_modificacion && (
-                <div>
-                  <strong>Fecha modificación:</strong>
-                  <p>{data.fecha_modificacion}</p>
-                </div>
-              )}
-
-              <strong>Id Usuario:</strong>
-              <p>{data.idUsuario || 'No especificado'}</p>
-            </div>
-          )}
-
-          {isActive && (
+          ) : (
             <div className='col-12 centrar'>
               <Pencil
                 className='editar'
@@ -373,12 +396,145 @@ const EditarColab = () => {
                 value={data.ID_Colab}
                 onClick={() => handleDeleteClick(data)}
               />
+              {showReassignIcon && (
+                <>
+                  <span
+                    id={`tooltip-${data.idUsuario}`}
+                    className='reassign-icon'
+                    onClick={() => handleReassignClick(data)}
+                  >
+                    <ArrowRepeat className='editar' />
+                  </span>
+                  <Tooltip
+                    target={`#tooltip-${data.idUsuario}`}
+                    content='Reasignar usuario'
+                    position='top'
+                  />
+                </>
+              )}
             </div>
           )}
         </div>
       </div>
     );
   };
+  
+
+  const handleReassignClick = async (colaborador) => {
+    try {
+      const htmlContent = `
+        <div class='row centrar' style='overflow: hidden;'>
+          <h4>¿Seguro que deseas reasignar a este usuario?</h4>
+          <div class='col-md-3 col-xs-6'>
+            <div class='card centrar p-3 mt-3'>
+              <img 
+                src='${colaborador.Imagen || Usuario_sin_img}' 
+                class='img-fluid' 
+                id='img-card' 
+                onerror="this.onerror=null; this.src='${Usuario_sin_img}';" 
+              />
+              <h3>${colaborador.Nombre}</h3>
+              <h4>${colaborador.Apellido_pat} ${colaborador.Apellido_mat}</h4>
+              <h6>${colaborador.Correo}</h6>
+              <h6>${colaborador.Telefono}</h6>
+            </div>
+          </div>
+        </div>
+      `;
+  
+      const result = await Swal.fire({
+        width: 1100,
+        title: '<strong>REASIGNAR <p>Usuario</p></strong>',
+        icon: 'warning',
+        html: htmlContent,
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        confirmButtonText: 'Seleccionar Gerente',
+      });
+  
+      if (result.isConfirmed) {
+        const gerentes = colaboradores.filter((colab) => colab.Rol === 'gerente');
+  
+        await Swal.fire({
+          title: 'Selecciona un Gerente',
+          html: `
+            <div class="container">
+              <div class="row">
+                ${gerentes
+                  .map(
+                    (gerente) => `
+                    <div class="col-md-4">
+                      <div class="card gerente-card" data-id="${gerente.idUsuario}">
+                        <img 
+                          src="${gerente.Imagen || Usuario_sin_img}" 
+                          class="card-img-top" 
+                          alt="Imagen de Gerente" 
+                        />
+                        <div class="card-body">
+                          <h5 class="card-title">${gerente.Nombre} ${gerente.Apellido_pat}</h5>
+                          <p class="card-text">${gerente.Correo}</p>
+                        </div>
+                      </div>
+                    </div>
+                  `
+                  )
+                  .join('')}
+              </div>
+            </div>
+          `,
+          showCancelButton: true,
+          cancelButtonText: 'Cancelar',
+          showConfirmButton: false,
+          didOpen: () => {
+            document.querySelectorAll('.gerente-card').forEach((card) => {
+              card.addEventListener('click', (e) => {
+                const selectedGerenteId = card.getAttribute('data-id');
+                console.log(`ID del Colaborador: ${colaborador.idUsuario}`);
+                console.log(`ID del Gerente seleccionado: ${selectedGerenteId}`);
+  
+                // Llamar a la API de reasignación
+                reasignar(colaborador.idUsuario, selectedGerenteId);
+              });
+            });
+          },
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      showNotification('error', 'Se produjo un error', 'UDA');
+    }
+  };
+  
+  
+  const reasignar = async (idUsuario, idGerente) => {
+    try {
+      const response = await fetchWithToken(`${API_URL}/reasignarUsuario`, {
+        method: 'PUT',
+        mode: "cors",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idUsuario, idGerente }),
+      });
+  
+      const result = await response.json();
+      if (response.ok) {
+        console.log(result.message);
+        showNotification('success', 'Reasignado', result.message);
+      } else {
+        console.error(result.message);
+        showNotification('error', 'Error', result.message);
+      }
+    } catch (error) {
+      console.error('Error al reasignar el usuario:', error);
+      showNotification('error', 'Error', 'Ocurrió un error al reasignar el usuario.');
+    } finally{
+      window.location.reload();
+    }
+  };
+  
+    
+  
   return (
     <div className='fluid'>
       <Navbar></Navbar>
