@@ -210,7 +210,7 @@ function CambaceoDiario() {
           (col) => col.id === parseInt(id)
         );
 
-        if (colaborador.tipo === 'Colaborador') {
+        if (colaborador.tipo === 'Colaborador'||colaborador.tipo==="coordinador") {
           tipoColaborador.push(id);
         } else if (colaborador.tipo === 'Equipo') {
           tipoEquipo.push(id);
@@ -374,13 +374,13 @@ function CambaceoDiario() {
       (item) => !seleccionados.includes(item)
     );
     setColaboradoresSeleccionados(seleccionados);
-
+  
     // Manejo de deseleccionados
     deseleccionados.forEach(async (item) => {
       const [id, nombreCompleto] = item.split('_');
       const colaborador = colaboradores.find((col) => col.id === parseInt(id));
-
-      if (colaborador.tipo === 'Colaborador') {
+  
+      if (colaborador.tipo === 'Asesor' || colaborador.tipo === 'Coordinador') {
         try {
           const res = await fetchWithToken(
             `${API_URL}/equipoPorColaborador/${id}`,
@@ -392,9 +392,8 @@ function CambaceoDiario() {
             }
           );
           const data = await res.json();
-
+  
           if (data.id) {
-            // Lógica para re-habilitar el equipo
             const updatedColaboradores = colaboradores.map((colab) => {
               if (colab.tipo === 'Equipo' && colab.id === data.id) {
                 return { ...colab, disabled: false };
@@ -418,12 +417,11 @@ function CambaceoDiario() {
             }
           );
           const data = await res.json();
-
+  
           if (data.length > 0) {
-            // Lógica para re-habilitar los colaboradores del equipo
             const updatedColaboradores = colaboradores.map((colab) => {
               if (
-                colab.tipo === 'Colaborador' &&
+                (colab.tipo === 'Asesor' || colab.tipo === 'Coordinador') &&
                 data.some((equipoColab) => equipoColab.id === colab.id)
               ) {
                 return { ...colab, disabled: false };
@@ -437,14 +435,14 @@ function CambaceoDiario() {
         }
       }
     });
-
+  
     // Manejo de seleccionados
     const colaboradorIds = seleccionados.map((item) => item.split('_')[0]);
-
+  
     colaboradorIds.forEach(async (id) => {
       const colaborador = colaboradores.find((col) => col.id === parseInt(id));
-
-      if (colaborador.tipo === 'Colaborador') {
+  
+      if (colaborador.tipo === 'Asesor' || colaborador.tipo === 'Coordinador') {
         try {
           const res = await fetchWithToken(
             `${API_URL}/equipoPorColaborador/${id}`,
@@ -456,17 +454,8 @@ function CambaceoDiario() {
             }
           );
           const data = await res.json();
-
-          if (
-            data.message &&
-            data.message === 'El colaborador no pertenece a ningún equipo'
-          ) {
-            // No hacer nada si el colaborador no pertenece a ningún equipo
-            console.log(
-              `El colaborador ${colaborador.nombreCompleto} no pertenece a ningún equipo`
-            );
-          } else if (data.id) {
-            // Lógica para deshabilitar el equipo
+  
+          if (data.id) {
             const updatedColaboradores = colaboradores.map((colab) => {
               if (colab.tipo === 'Equipo' && colab.id === data.id) {
                 return { ...colab, disabled: true };
@@ -490,20 +479,11 @@ function CambaceoDiario() {
             }
           );
           const data = await res.json();
-
-          if (
-            data.message &&
-            data.message === 'El equipo no tiene colaboradores'
-          ) {
-            // No hacer nada si el equipo no tiene colaboradores
-            console.log(
-              `El equipo ${colaborador.nombreCompleto} no tiene colaboradores`
-            );
-          } else if (data.length > 0) {
-            // Lógica para deshabilitar los colaboradores del equipo
+  
+          if (data.length > 0) {
             const updatedColaboradores = colaboradores.map((colab) => {
               if (
-                colab.tipo === 'Colaborador' &&
+                (colab.tipo === 'Asesor' || colab.tipo === 'Coordinador') &&
                 data.some((equipoColab) => equipoColab.id === colab.id)
               ) {
                 return { ...colab, disabled: true };
@@ -513,17 +493,13 @@ function CambaceoDiario() {
             setColaboradores(updatedColaboradores);
           }
         } catch (error) {
-          console.error(
-            'Error al obtener los colaboradores del equipo:',
-            error
-          );
+          console.error('Error al obtener los colaboradores del equipo:', error);
         }
       }
     });
-
+  
     console.log('Colaboradores seleccionados:', seleccionados);
   };
-
   const cargarColaboradores = async () => {
     try {
       const response = await fetchWithToken(`${API_URL}/nombresColaborador2`, {
@@ -533,13 +509,13 @@ function CambaceoDiario() {
         },
       });
       const data = await response.json();
-      console.log(data);
+      console.log("esta es la data ", data);
 
       // Procesar colaboradores
-      const colaboradoresProcesados = data.colaboradores.map((colaborador) => ({
+      const colaboradoresProcesados = data.colaboradores.filter((colaborador) => colaborador.Rol !== 'gerente').map((colaborador) => ({
         id: colaborador.idUsuario,
         nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
-        tipo: 'Colaborador',
+        tipo: colaborador.Rol === 'colaborador' ? 'Asesor' : colaborador.Rol,
       }));
 
       // Procesar equipos
