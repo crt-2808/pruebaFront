@@ -9,7 +9,7 @@ import { useAuthRedirect } from '../useAuthRedirect';
 import { API_URL, fetchWithToken } from '../utils/api';
 import { Tooltip } from 'primereact/tooltip';
 import { getUserRole, isUserAdmin } from '../utils/auth';
-import {Button} from "primereact/button";
+import { Button } from 'primereact/button';
 
 const EditarColab = () => {
   useAuthRedirect();
@@ -42,7 +42,7 @@ const EditarColab = () => {
         console.log('Error: ', response);
         return showNotification('error', 'Se produjo un error', 'UDA');
       }
-  
+
       const data = await response.json();
       if (data.length === 0) {
         return showNotification(
@@ -51,19 +51,19 @@ const EditarColab = () => {
           'UDA'
         );
       }
-  
+
       // Ordenar colaboradores: primero por estado activo, luego por rol
       const colaboradoresOrdenados = data
         .sort((a, b) => b.Activo - a.Activo) // Activos primero
         .sort((a, b) => rolPrioridad(a.Rol) - rolPrioridad(b.Rol)); // Gerente > Coordinador > Asesor
-  
+
       setColaboradores(colaboradoresOrdenados);
     } catch (error) {
       console.error(error);
       return showNotification('error', 'Se produjo un error', 'UDA');
     }
   };
-  
+
   // Asignar prioridad a los roles
   const rolPrioridad = (rol) => {
     switch (rol) {
@@ -77,7 +77,7 @@ const EditarColab = () => {
         return 4; // Por si se agrega un rol no contemplado
     }
   };
-  
+
   useEffect(() => {
     fetchColaboradores();
   }, []);
@@ -331,16 +331,19 @@ const EditarColab = () => {
   const ColaboradorCard = ({ data }) => {
     const isActive = data.Activo === 1;
     const showReassignIcon = ['coordinador', 'Asesor'].includes(data.Rol);
-  
+
     const handleReactivarClick = async (idUsuario) => {
       try {
-        const response = await fetchWithToken(`${API_URL}/reactivarColaborador/${idUsuario}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-  
+        const response = await fetchWithToken(
+          `${API_URL}/reactivarColaborador/${idUsuario}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
         const result = await response.json();
         if (response.ok) {
           showNotification('success', 'Reactivado', result.message);
@@ -350,10 +353,14 @@ const EditarColab = () => {
         }
       } catch (error) {
         console.error('Error al reactivar el usuario:', error);
-        showNotification('error', 'Error', 'Ocurrió un error al reactivar el usuario.');
+        showNotification(
+          'error',
+          'Error',
+          'Ocurrió un error al reactivar el usuario.'
+        );
       }
     };
-  
+
     return (
       <div className='col-md-3'>
         <div className='card centrar p-3'>
@@ -374,7 +381,7 @@ const EditarColab = () => {
           <h5>{data.Rol}</h5>
           <h6 className='email'>{data.Correo}</h6>
           <h6>{data.Telefono}</h6>
-  
+
           {!isActive ? (
             <div className='col-12 centrar'>
               <Button
@@ -418,7 +425,6 @@ const EditarColab = () => {
       </div>
     );
   };
-  
 
   const handleReassignClick = async (colaborador) => {
     try {
@@ -441,7 +447,7 @@ const EditarColab = () => {
           </div>
         </div>
       `;
-  
+
       const result = await Swal.fire({
         width: 1100,
         title: '<strong>REASIGNAR <p>Usuario</p></strong>',
@@ -451,28 +457,36 @@ const EditarColab = () => {
         cancelButtonText: 'Cancelar',
         confirmButtonText: 'Seleccionar Gerente',
       });
-  
+
       if (result.isConfirmed) {
-        const gerentes = colaboradores.filter((colab) => colab.Rol === 'gerente');
-  
+        const gerentes = colaboradores.filter(
+          (colab) => colab.Rol === 'gerente' || colab.Rol === 'coordinador'
+        );
+
         await Swal.fire({
-          title: 'Selecciona un Gerente',
+          width: 1100,
+          title: 'Selecciona un Gerente o Coordinador',
           html: `
-            <div class="container">
-              <div class="row">
+            <div class="container px-5">
+              <div class="row px-4">
                 ${gerentes
                   .map(
                     (gerente) => `
-                    <div class="col-md-4">
-                      <div class="card gerente-card" data-id="${gerente.idUsuario}">
+                    <div class="col-md-4 my-1">
+                      <div class="card gerente-card" data-id="${
+                        gerente.idUsuario
+                      }">
                         <img 
                           src="${gerente.Imagen || Usuario_sin_img}" 
                           class="card-img-top" 
                           alt="Imagen de Gerente" 
                         />
                         <div class="card-body">
-                          <h5 class="card-title">${gerente.Nombre} ${gerente.Apellido_pat}</h5>
+                          <h5 class="card-title">${gerente.Nombre} ${
+                      gerente.Apellido_pat
+                    }</h5>
                           <p class="card-text">${gerente.Correo}</p>
+                          <h5 class="card-title">${gerente.Rol}</h5>
                         </div>
                       </div>
                     </div>
@@ -490,8 +504,10 @@ const EditarColab = () => {
               card.addEventListener('click', (e) => {
                 const selectedGerenteId = card.getAttribute('data-id');
                 console.log(`ID del Colaborador: ${colaborador.idUsuario}`);
-                console.log(`ID del Gerente seleccionado: ${selectedGerenteId}`);
-  
+                console.log(
+                  `ID del Gerente seleccionado: ${selectedGerenteId}`
+                );
+
                 // Llamar a la API de reasignación
                 reasignar(colaborador.idUsuario, selectedGerenteId);
               });
@@ -504,19 +520,18 @@ const EditarColab = () => {
       showNotification('error', 'Se produjo un error', 'UDA');
     }
   };
-  
-  
+
   const reasignar = async (idUsuario, idGerente) => {
     try {
       const response = await fetchWithToken(`${API_URL}/reasignarUsuario`, {
         method: 'PUT',
-        mode: "cors",
+        mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ idUsuario, idGerente }),
       });
-  
+
       const result = await response.json();
       if (response.ok) {
         console.log(result.message);
@@ -527,14 +542,16 @@ const EditarColab = () => {
       }
     } catch (error) {
       console.error('Error al reasignar el usuario:', error);
-      showNotification('error', 'Error', 'Ocurrió un error al reasignar el usuario.');
-    } finally{
+      showNotification(
+        'error',
+        'Error',
+        'Ocurrió un error al reasignar el usuario.'
+      );
+    } finally {
       window.location.reload();
     }
   };
-  
-    
-  
+
   return (
     <div className='fluid'>
       <Navbar></Navbar>
