@@ -5,8 +5,7 @@ import latino from '../img/logo Latino.jpg';
 import univic from '../img/logo univic (2).jpg';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../userProvider';
-import { useGoogleLogout } from 'react-google-login';
-import { clientId } from '../utils/googleAuth';
+import { googleLogout } from '@react-oauth/google';
 import Swal from 'sweetalert2';
 import { FaUser, FaEdit, FaSignOutAlt } from 'react-icons/fa'; // Import icons
 
@@ -65,22 +64,23 @@ const Navbar = () => {
   const { usuario, toggleUser } = useUserContext();
   const navigate = useNavigate();
 
-  const onLogoutSuccess = () => {
-    sessionStorage.removeItem('jwtToken');
-    toggleUser(null);
-    navigate('/');
-  };
+  // const onLogoutSuccess = () => {
+  //   sessionStorage.removeItem('jwtToken');
+  //   toggleUser(null);
+  //   navigate('/');
+  // };
 
-  const { signOut } = useGoogleLogout({
-    clientId,
-    onLogoutSuccess,
-    onFailure: () => console.log('logout fail'),
-  });
+  // const { signOut } = useGoogleLogout({
+  //   clientId,
+  //   onLogoutSuccess,
+  //   onFailure: () => console.log('logout fail'),
+  // });
 
   const handleLogout = () => {
+    // Eliminar información de sesión
     sessionStorage.removeItem('jwtToken');
     toggleUser(null);
-    signOut();
+    googleLogout(); // Llama a googleLogout para cerrar sesión en Google
     navigate('/');
   };
 

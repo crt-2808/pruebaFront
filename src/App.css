@@ -311,6 +311,15 @@ label {
   top: 2px;
   font-size: 14px; }
 
+ 
+  .google-login-scale {
+    transform: scale(1.2); /* Escala al 150% del tamaño original */
+    display: inline-block; /* Mantén el botón en línea */
+  }
+  
+ 
+  
+  
 .social-login a {
   text-decoration: none;
   position: relative;

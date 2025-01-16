@@ -7,6 +7,8 @@ import Navbar from '../navbar';
 import Planeador from '../../img/Planeador.png';
 import { useAuthRedirect } from '../../useAuthRedirect';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 import { API_URL, fetchWithToken } from '../../utils/api';
 import 'primeicons/primeicons.css';
 const upperCaseFirstLetter = (string) =>
@@ -30,6 +32,64 @@ const Land_Colab = () => {
   const [cobranza, setCobranza] = useState('');
   const [trabajoPropio, setTrabajoPropio] = useState('');
   const [userRole, setRole] = useState('');
+
+  const createTourSteps = (role) => {
+    const steps = [
+      {
+        element: '.bienvenidoText',
+        popover: {
+          title: 'Bienvenida',
+          description:
+            'Este es tu espacio principal donde puedes gestionar tus actividades.',
+          position: 'bottom',
+        },
+      },
+      {
+        element: '.btn-exportar',
+        popover: {
+          title: 'Agregar Incidencias',
+          description: 'Haz clic aquí para registrar tus actividades diarias.',
+          position: 'right',
+        },
+      },
+      {
+        element: '#contenedor-land',
+        popover: {
+          title: 'Información Principal',
+          description:
+            'Aquí puedes ver información sobre tu líder y acceder al planeador.',
+          position: 'top',
+        },
+      },
+    ];
+
+    if (role === 'coordinador') {
+      steps.push({
+        element: '#seguimiento-equipo',
+        popover: {
+          title: 'Seguimiento de Cambaceos',
+          description: 'Accede aquí para dar seguimiento a tu equipo.',
+          position: 'left',
+        },
+      });
+    }
+
+    return steps;
+  };
+
+  useEffect(() => {
+    if (userRole) {
+      const steps = createTourSteps(userRole);
+
+      const driverObj = driver({
+        showProgress: true,
+        steps,
+      });
+
+      // Iniciar el tour
+      driverObj.drive();
+    }
+  }, [userRole]);
 
   const cargarLider = async () => {
     try {
@@ -204,6 +264,7 @@ const Land_Colab = () => {
                             <Button
                               label='Seguimiento Equipo'
                               className='p-button-outlined mt-3'
+                              id='seguimiento-equipo'
                             />
                           </Link>
                         )}

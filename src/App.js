@@ -6,7 +6,6 @@ import UserProvider from './userProvider';
 import AgregarColab from './components/agregarColab';
 import EditarColab from './components/editarColab';
 import CalendarioVisita from './components/CalendarioVisita';
-import PruebaMaps from './components/pruebaMaps';
 import SeguimientoCambaceo from './components/seguimientoCambaceo';
 import CalendarioLlamada from './components/CalendarioLlamada';
 import SeguimientoColab from './components/seguimientoColab';
@@ -47,7 +46,6 @@ function App() {
           <Route path='*' element={<LandView />} />
           <Route path='/prueba/mapa' element={<PruebaMapsLeaflet />} />
           <Route path='/unAuthorized' element={<NotFound />} />
-          <Route path='/prueba' element={<PruebaMaps />} />
           <Route path='/blocked' element={<Blocked />} />
           <Route path='/editarInfo' element={<EditarInfo />} />
 
@@ -55,7 +53,13 @@ function App() {
           <Route
             element={
               <ProtectedRoutes
-                allowedRoles={['lider', 'admin', 'colaborador', 'coordinador', 'gerente']}
+                allowedRoles={[
+                  'lider',
+                  'admin',
+                  'colaborador',
+                  'coordinador',
+                  'gerente',
+                ]}
                 exact
               />
             }
@@ -72,14 +76,17 @@ function App() {
           {/*Ruta de lider o admin */}
           <Route
             element={
-              <ProtectedRoutes allowedRoles={['lider', 'admin', 'gerente','coordinador']} exact />
+              <ProtectedRoutes
+                allowedRoles={['lider', 'admin', 'gerente', 'coordinador']}
+                exact
+              />
             }
           >
             <Route path='/Equipos' element={<Equipos />} />
             <Route path='/agregarColab' element={<AgregarColab />} />
             <Route path='/editarColab' element={<EditarColab />} />
-            <Route path='/crearEquipo' element={<CrearEquipo/>} />
-            <Route path='/EditarEquipo/:id' element={<EditarEquipo/>}/>
+            <Route path='/crearEquipo' element={<CrearEquipo />} />
+            <Route path='/EditarEquipo/:id' element={<EditarEquipo />} />
             <Route
               path='/SeguimientoCambaceo'
               element={<SeguimientoCambaceo />}
@@ -95,18 +102,28 @@ function App() {
             <Route path='/CalendarioVisita' element={<CalendarioVisita />} />
             <Route path='/CalendarioLlamada' element={<CalendarioLlamada />} />
             <Route path='/SeguimientoVisita' element={<SeguimientoVisita />} />
-            <Route path='/SeguimientoCambaceos' element={<SeguimientoCambaceos />} />
+            <Route
+              path='/SeguimientoCambaceos'
+              element={<SeguimientoCambaceos />}
+            />
             <Route
               path='/SeguimientoLlamada'
               element={<SeguimientoLlamada />}
             />
-            <Route path='/EquipoGerente/:idUsuario' element={<EquipoGerente/>}/>
-    
+            <Route
+              path='/EquipoGerente/:idUsuario'
+              element={<EquipoGerente />}
+            />
           </Route>
 
           {/*Ruta de los colaboradores */}
           <Route
-            element={<ProtectedRoutes allowedRoles={['colaborador', 'coordinador']} exact />}
+            element={
+              <ProtectedRoutes
+                allowedRoles={['colaborador', 'coordinador']}
+                exact
+              />
+            }
           >
             <Route
               element={<Colab_PruebaMaps />}
