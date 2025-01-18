@@ -280,16 +280,6 @@ function AgregarColab() {
                 </Form.Group>
 
                 <br />
-                <Form.Group controlId='ColbID'>
-                  <Form.Label>ColabID</Form.Label>
-                  <Form.Control
-                    type='string'
-                    {...register('ID_Colab', { required: true })}
-                    placeholder='Ingresa el ID'
-                  />
-                  {errors.ID_Colab && <p>Este campo es requerido</p>}
-                </Form.Group>
-                <br />
                 <Form.Group>
                   <Form.Label>Nombre</Form.Label>
                   <Form.Control
@@ -408,7 +398,7 @@ function AgregarColab() {
                 )}
               </Col>
               <Col>
-                <Button type='submit' variant='success' size='lg'>
+                <Button type='submit' variant='success' size='lg' style={{marginTop: '20px'}}>
                   Confirmar
                 </Button>
               </Col>

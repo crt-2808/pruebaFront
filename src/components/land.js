@@ -352,7 +352,7 @@ const Land = () => {
                                       width: '100%',
                                     }}
                                   ></i>
-                                  <p className='placeBtn'>Entrar</p>
+                                  <p className='placeBtn'>Equipos</p>
                                 </Link>
                               </div>
                             </>
