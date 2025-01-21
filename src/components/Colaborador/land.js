@@ -7,10 +7,9 @@ import Navbar from '../navbar';
 import Planeador from '../../img/Planeador.png';
 import { useAuthRedirect } from '../../useAuthRedirect';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
 import { API_URL, fetchWithToken } from '../../utils/api';
 import 'primeicons/primeicons.css';
+import { startTour } from '../../utils/tourConfigColab';
 const upperCaseFirstLetter = (string) =>
   `${string.slice(0, 1).toUpperCase()}${string.slice(1)}`;
 
@@ -33,62 +32,8 @@ const Land_Colab = () => {
   const [trabajoPropio, setTrabajoPropio] = useState('');
   const [userRole, setRole] = useState('');
 
-  const createTourSteps = (role) => {
-    const steps = [
-      {
-        element: '.bienvenidoText',
-        popover: {
-          title: 'Bienvenida',
-          description:
-            'Este es tu espacio principal donde puedes gestionar tus actividades.',
-          position: 'bottom',
-        },
-      },
-      {
-        element: '.btn-exportar',
-        popover: {
-          title: 'Agregar Incidencias',
-          description: 'Haz clic aquí para registrar tus actividades diarias.',
-          position: 'right',
-        },
-      },
-      {
-        element: '#contenedor-land',
-        popover: {
-          title: 'Información Principal',
-          description:
-            'Aquí puedes ver información sobre tu líder y acceder al planeador.',
-          position: 'top',
-        },
-      },
-    ];
-
-    if (role === 'coordinador') {
-      steps.push({
-        element: '#seguimiento-equipo',
-        popover: {
-          title: 'Seguimiento de Cambaceos',
-          description: 'Accede aquí para dar seguimiento a tu equipo.',
-          position: 'left',
-        },
-      });
-    }
-
-    return steps;
-  };
-
   useEffect(() => {
-    if (userRole) {
-      const steps = createTourSteps(userRole);
-
-      const driverObj = driver({
-        showProgress: true,
-        steps,
-      });
-
-      // Iniciar el tour
-      driverObj.drive();
-    }
+    startTour('land', userRole);
   }, [userRole]);
 
   const cargarLider = async () => {
@@ -217,7 +162,7 @@ const Land_Colab = () => {
           </div>
         </div>
       </Dialog>
-      <div className='container land pt-4 pb-4  d-flex' id='landing-p'>
+      <div className='container land pt-4 pb-4  d-flex Colab' id='landing-p'>
         <div className='row w-100'>
           <div className='col-12 mt-2 mb-md-3 mb-sm-0'></div>
           <div className='col-12 mt-2 mb-md-2 mb-sm-0 d-sm-block d-md-flex justify-content-sm-between align-items-center text-center'>
@@ -273,7 +218,7 @@ const Land_Colab = () => {
                   </div>
                 </div>
               </div>
-              <div className='col-md-6'>
+              <div className='col-md-6' id='btn-planeador'>
                 <div className='row'>
                   <div className='col-12'>
                     <h4 className='subTituloLand'>Planeador</h4>

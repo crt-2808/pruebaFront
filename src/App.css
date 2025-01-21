@@ -607,6 +607,15 @@ color: #172126;
 .links-cambaceo:hover{
   color: #EE5253;
 }
+.links-cambaceo img{
+  width: 25rem;
+  height: auto;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+}
+.Colab{
+  min-height: 90.5vh;
+}
 
 
 
