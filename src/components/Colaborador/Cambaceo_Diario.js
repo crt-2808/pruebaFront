@@ -6,13 +6,14 @@ import Navbar from '../navbar';
 import { useAuthRedirect } from '../../useAuthRedirect';
 import { useUserContext } from '../../userProvider';
 import { API_URL, fetchWithToken } from '../../utils/api';
+import { startTour } from '../../utils/tourConfigColab';
 
 // Componente principal
 const Cambaceo_Diario_Colab = () => {
   useAuthRedirect();
   const [registros, setRegistros] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const navigate = useNavigate();
 
@@ -54,6 +55,7 @@ const Cambaceo_Diario_Colab = () => {
 
         // Actualizar los registros con los filtrados por semana
         setRegistros(registrosSemana);
+        startTour('cambaceoDiario');
         if (registrosSemana.length === 0) {
           Swal.fire({
             icon: 'info',
@@ -92,16 +94,16 @@ const Cambaceo_Diario_Colab = () => {
     const searchTextValue = e.target.value;
     if (searchTextValue) {
       const filteredRegistros = registros.filter((registro) =>
-  registro.Telefono.toLowerCase().includes(searchTextValue.toLowerCase())
-);
+        registro.Telefono.toLowerCase().includes(searchTextValue.toLowerCase())
+      );
       setRegistros(filteredRegistros);
-    } else if(searchTextValue==''){
+    } else if (searchTextValue == '') {
       // Mostrar la lista completa de registros
       setRegistros(registros);
     }
   };
   const handleVerClick = (registro) => {
-    console.log(registro)
+    console.log(registro);
     navigate('/Colaborador/pruebaMaps', { state: { registro } });
   };
   const formatearFecha = (fecha) => {
@@ -164,16 +166,16 @@ const Cambaceo_Diario_Colab = () => {
               </div>
               <div className='col-md-6'>
                 <div className='input-wrapper'>
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Buscar por Direccion"
-                    aria-label="Buscar"
-                    aria-describedby="basic-addon1"
+                  <input
+                    type='text'
+                    className='form-control'
+                    placeholder='Buscar por Direccion'
+                    aria-label='Buscar'
+                    aria-describedby='basic-addon1'
                     value={search}
                     onChange={handleSearchChange}
                   />
-                  <X className="clear-icon" onClick={() => setSearch("")} />
+                  <X className='clear-icon' onClick={() => setSearch('')} />
                 </div>
               </div>
             </div>

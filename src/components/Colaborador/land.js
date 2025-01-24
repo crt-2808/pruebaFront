@@ -184,7 +184,7 @@ const Land_Colab = () => {
             <div className='row pt-md-5 mt-md-4 pb-md-4 mb-md-3'>
               <div className='col-md-6'>
                 <div className='row no-padding'>
-                  <div className='col-12'>
+                  <div className='col-12' id='perfil-lider'>
                     <h4 className='subTituloLand'>Tu lider:</h4>
                     {liderData && (
                       <div>
