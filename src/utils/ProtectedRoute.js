@@ -1,26 +1,26 @@
 import React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
-import { getUserRole, isAuthenticated } from './auth';
+import { SessionManager } from './sessionManager';
 import { useUserContext } from '../userProvider';
 
 const ProtectedRoutes = ({ allowedRoles }) => {
-  const user_auth = isAuthenticated();
-  const user_role = getUserRole();
   const { isBlocked } = useUserContext();
+  const isValidSession = SessionManager.isSessionValid();
+  const userRole = SessionManager.getRole();
+
   if (isBlocked) {
-    // Si el usuario está bloqueado, redirige a la ruta de bloqueo
-    return <Navigate to='/blocked' />;
+    return <Navigate to='/blocked' replace />;
   }
 
-  return user_auth ? (
-    allowedRoles.includes(user_role) ? (
-      <Outlet />
-    ) : (
-      <Navigate to='/unAuthorized' />
-    )
-  ) : (
-    <Navigate to='/' />
-  );
+  if (!isValidSession) {
+    return <Navigate to='/' replace />;
+  }
+
+  if (!allowedRoles.includes(userRole)) {
+    return <Navigate to='/unAuthorized' replace />;
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoutes;

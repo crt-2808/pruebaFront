@@ -11,6 +11,7 @@ import { Toast } from 'primereact/toast';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import { showNotification } from '../utils/utils';
+import { SessionManager } from '../utils/sessionManager';
 const mostrarMensajeUsuarioNoRegistrado = () => {
   Swal.fire({
     title: 'Usuario No Registrado',
@@ -22,32 +23,14 @@ const mostrarMensajeUsuarioNoRegistrado = () => {
 function Login() {
   useAuthRedirect();
   const navigate = useNavigate();
-  const [tokenVencido, setTokenVencido] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const { toggleUser, usuario, toggleUserBlocked } = useUserContext();
 
-  const showTokenExpiredToast = () => {
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 5000);
-  };
   useEffect(() => {
-    // Verificar si el token está vencido aquí
-    const isTokenExpired = () => {
-      const jwtToken = sessionStorage.getItem('jwtToken');
-      if (jwtToken) {
-        const tokenData = JSON.parse(atob(jwtToken.split('.')[1]));
-        const currentTimestamp = Math.floor(Date.now() / 1000);
-        return tokenData.exp < currentTimestamp;
-      }
-      return true;
-    };
-    if (isTokenExpired()) {
-      setTokenVencido(true);
-      showTokenExpiredToast();
+    if (SessionManager.isSessionValid()) {
+      navigate('/land');
     }
-  }, []);
+  }, [navigate]);
 
   const onSuccess = async (credentialResponse) => {
     try {
@@ -80,24 +63,22 @@ function Login() {
       const { token, role } = await response.json();
       console.log('Autenticación exitosa:', { token, role });
 
-      // Guardar datos del token y el rol
-      sessionStorage.setItem('jwtToken', token);
-      sessionStorage.setItem('userRole', role);
-
-      // Actualizar el contexto del usuario
-      toggleUser({
+      const userData = {
         name,
         email,
         imageUrl: picture,
         givenName: given_name,
         familyName: family_name,
-      });
+      };
+
+      // Set session data
+      SessionManager.setSession(token, role, userData);
+      // Actualizar el contexto del usuario
+      toggleUser(userData);
       toggleUserBlocked(false);
 
       // Redirigir según el rol del usuario
-      setTimeout(() => {
-        navigate(role === 'colaborador' ? '/land' : '/');
-      }, 100);
+      navigate('/land', { replace: true });
     } catch (error) {
       console.error('Error en la autenticación:', error);
       showNotification(
