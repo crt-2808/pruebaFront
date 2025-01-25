@@ -6,23 +6,18 @@ import Navbar from '../navbar';
 import { useAuthRedirect } from '../../useAuthRedirect';
 import { useUserContext } from '../../userProvider';
 import { API_URL, fetchWithToken } from '../../utils/api';
+import { showInfoAlert, showLoadingAlert } from '../../utils/alerts';
 
 // Componente principal
 const Llamada_Colab = () => {
   useAuthRedirect();
   const [registros, setRegistros] = useState([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
   const navigate = useNavigate();
   const getInfo = async () => {
-    Swal.fire({
-      title: 'Cargando...',
-      text: 'Por favor espera un momento',
-      allowOutsideClick: false,
-      timer: 1000,
-    });
-    Swal.showLoading();
+    showLoadingAlert();
     try {
       const response = await fetchWithToken(`${API_URL}/ColaboradorLlamada`, {
         method: 'GET',
@@ -46,21 +41,13 @@ const Llamada_Colab = () => {
         // Actualizar los registros con los filtrados por mes
         setRegistros(registrosMes);
         if (registrosMes.length === 0) {
-          Swal.fire({
-            icon: 'info',
-            title: 'No hay registros para esta semana',
-            text: 'No se encontraron registros para mostrar en la semana actual.',
-          });
+          showInfoAlert('No hay registros para esta semana');
         }
 
         // Resto del código...
       } else {
         // Mostrar alerta si no hay registros
-        Swal.fire({
-          icon: 'info',
-          title: 'No hay registros',
-          text: 'No se encontraron registros para mostrar.',
-        });
+        showInfoAlert('No hay registros para esta semana');
       }
     } catch (error) {
       console.error('Error al obtener los datos del getInfo', error);
@@ -79,9 +66,6 @@ const Llamada_Colab = () => {
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
-
-
-
 
   const handleVerClick = (registro) => {
     navigate('/Colaborador/Incidencia', { state: { registro } });
@@ -145,17 +129,16 @@ const Llamada_Colab = () => {
               </div>
               <div className='col-md-6'>
                 <div className='input-wrapper'>
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Buscar por número de teléfono"
-                    aria-label="Buscar"
-                    aria-describedby="basic-addon1"
+                  <input
+                    type='text'
+                    className='form-control'
+                    placeholder='Buscar por número de teléfono'
+                    aria-label='Buscar'
+                    aria-describedby='basic-addon1'
                     value={search}
                     onChange={handleSearchChange}
                   />
-                  <X className="clear-icon" onClick={() => setSearch("")} />
-
+                  <X className='clear-icon' onClick={() => setSearch('')} />
                 </div>
               </div>
             </div>

@@ -17,6 +17,13 @@ import { Form, Row, Col } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { MultiSelect } from 'primereact/multiselect';
 import 'primeicons/primeicons.css';
+import {
+  showConfirmationAlert,
+  showErrorAlert,
+  showInfoAlert,
+  showLoadingAlert,
+  showSuccessAlert,
+} from '../utils/alerts';
 
 function EditarEquipo() {
   useAuthRedirect();
@@ -43,12 +50,7 @@ function EditarEquipo() {
     e.target.src = usuarioAnon; // imagen predeterminada
   };
   const colab = async () => {
-    Swal.fire({
-      title: 'Cargando...',
-      text: 'Por favor espera un momento',
-      allowOutsideClick: false,
-    });
-    Swal.showLoading();
+    showLoadingAlert();
     try {
       const options = {
         method: 'GET',
@@ -64,26 +66,15 @@ function EditarEquipo() {
       Swal.close();
       const errorStatusCodes = [500, 404, 400];
       if (errorStatusCodes.includes(response.status)) {
-        return Swal.fire({
-          icon: 'error',
-          title: 'Se produjo un error',
-          text: 'UDA',
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-        rgba(36,32,32,0.65)
-        `,
-        });
+        return showErrorAlert('Se produjo un error', 'UDA');
       }
       const data = await response.json();
       setNombreEquipo(data[0].NombreEquipo);
       if (data.length === 0) {
-        return Swal.fire({
-          title: '¡Atención!',
-          text: 'Todavía no hay ningún usuario registrado en tu equipo.',
-          icon: 'info',
-          confirmButtonText: 'Entendido',
-        });
+        return showInfoAlert(
+          '¡Atención!',
+          'Todavía no hay ningún usuario registrado en tu equipo.'
+        );
       }
       // Transformamos la data si es necesario
       const transformedData = data.map((item) => {
@@ -104,11 +95,7 @@ function EditarEquipo() {
       }
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Algo salió mal al cargar los usuarios!',
-      });
+      showErrorAlert('Oops...', 'Algo salió mal al cargar los usuarios!');
     }
   };
 
@@ -126,56 +113,33 @@ function EditarEquipo() {
         options
       );
       if (response.ok) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Usuario eliminado',
-          text: 'El usuario fue eliminado correctamente.',
-          timer: 1200,
-          timerProgressBar: true,
-        }).then(() => {
-          window.location.reload();
-        });
+        showSuccessAlert(
+          'Usuario eliminado',
+          'El usuario fue eliminado correctamente.'
+        );
+        colab();
       }
       const errorStatusCodes = [500, 404, 400];
       if (errorStatusCodes.includes(response.status)) {
-        return Swal.fire({
-          icon: 'error',
-          title: 'Se produjo un error',
-          text: 'UDA',
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-        rgba(36,32,32,0.65)
-        `,
-        });
+        return showErrorAlert('Se produjo un error', 'UDA');
       }
     } catch (error) {
       console.error('Error eliminando el colaborador del equipo:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Algo salió mal al eliminar al colaborador!',
-      });
+      showErrorAlert('Oops...', 'Algo salió mal al eliminar al colaborador!');
     }
   };
 
-  const handleDeleteConfirmation = (colaborador) => {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: `¿Realmente deseas eliminar a ${colaborador.Nombre} del equipo?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Confirmar',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log(colaborador.IDEquipo);
-        console.log(colaborador.idUsuario);
-        deleteColaborador(colaborador.IDEquipo, colaborador.idUsuario);
-      }
-    });
+  const handleDeleteConfirmation = async (colaborador) => {
+    const isConfirmed = await showConfirmationAlert(
+      '¿Estás seguro?',
+      `¿Realmente deseas eliminar a ${colaborador.Nombre} del equipo?`
+    );
+
+    if (isConfirmed) {
+      console.log(colaborador.IDEquipo);
+      console.log(colaborador.idUsuario);
+      deleteColaborador(colaborador.IDEquipo, colaborador.idUsuario);
+    }
   };
   const handleOpenModal = () => {
     setShowModal(true);
@@ -189,14 +153,10 @@ function EditarEquipo() {
     // Comenta todo lo relacionado con el envío de datos a la base de datos
 
     if (!data) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Se requiere llenar el formulario',
-        text: 'Completa todos los campos obligatorios',
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: 'rgba(36,32,32,0.65)',
-      });
+      showErrorAlert(
+        'Se requiere llenar el formulario',
+        'Completa todos los campos obligatorios'
+      );
       return;
     }
     try {
@@ -221,57 +181,23 @@ function EditarEquipo() {
         body: JSON.stringify(data),
       };
       try {
-        Swal.fire({
-          title: 'Cargando...',
-          text: 'Por favor espera un momento',
-          allowOutsideClick: false,
-        });
+        showLoadingAlert();
         handleCloseModal();
-        Swal.showLoading();
+
         let res = await fetchWithToken(`${API_URL}/AddUsersToTeam`, config);
         Swal.close();
 
         let json = await res.json();
         console.log(json);
-        Swal.fire({
-          icon: 'success',
-          title: 'Se agregó tu equipo correctamente',
-          text: 'UDA',
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-                    rgba(36,32,32,0.65)
-                    
-                  `,
-        }).then(() => {
-          navigate('/Equipos');
-        });
+        showSuccessAlert('Se agregó tu equipo correctamente', 'UDA');
+        navigate('/Equipos');
       } catch (error) {
         console.log(error);
-        return Swal.fire({
-          icon: 'error',
-          title: 'Se produjo un error',
-          text: 'UDA',
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-                    rgba(36,32,32,0.65)
-                    
-                  `,
-        });
+        return showErrorAlert('Se produjo un error', 'UDA');
       }
     } catch (error) {
       console.log('Error al enviar los datos al servidor:', error);
-      return Swal.fire({
-        icon: 'error',
-        title: 'Se requiere llenar el formulario',
-        text: 'UDA',
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: `
-                  rgba(36,32,32,0.65)
-                `,
-      });
+      return showErrorAlert('Se requiere llenar el formulario', 'UDA');
     }
   };
 
@@ -390,31 +316,19 @@ function EditarEquipo() {
       // Ejecutar acciones adicionales si es necesario después de la operación
 
       // Ejemplo de mensaje de éxito utilizando SweetAlert2
-      Swal.fire({
-        icon: 'success',
-        title: 'Se hizo coordinador correctamente',
-        text: 'UDA',
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: 'rgba(36,32,32,0.65)',
-      }).then(() => {
-        // Recargar la página después del mensaje de éxito
-        window.location.reload();
-      });
+      showConfirmationAlert('Se hizo coordinador correctamente', 'UDA').then(
+        () => {
+          // Recargar la página después del mensaje de éxito
+          window.location.reload();
+        }
+      );
 
       // Aquí podrías actualizar el estado, recargar datos, etc.
     } catch (error) {
       console.error('Error al hacer coordinador', error.message);
 
       // Manejar errores, mostrar mensajes al usuario, etc.
-      Swal.fire({
-        icon: 'error',
-        title: 'Se produjo un error',
-        text: 'UDA',
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: 'rgba(36,32,32,0.65)',
-      });
+      showErrorAlert('Se produjo un error', 'UDA');
     }
   };
 
@@ -455,28 +369,14 @@ function EditarEquipo() {
       const responseData = await response.json();
       console.log('Respuesta del servidor:', responseData);
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Nombre de equipo actualizado correctamente',
-        text: 'UDA',
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: 'rgba(36,32,32,0.65)',
-      });
+      showSuccessAlert('Nombre de equipo actualizado correctamente', 'UDA');
 
       setEditingNombreEquipo(false);
       // Opcional: Actualizar el estado o realizar otras acciones necesarias después de la actualización
     } catch (error) {
       console.error('Error al actualizar el nombre del equipo:', error.message);
 
-      Swal.fire({
-        icon: 'error',
-        title: 'Se produjo un error al actualizar el nombre del equipo',
-        text: 'UDA',
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: 'rgba(36,32,32,0.65)',
-      });
+      showErrorAlert('Se produjo un error al actualizar el nombre del equipo');
     }
   };
 

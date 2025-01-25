@@ -11,6 +11,11 @@ import axios from 'axios';
 import '../theme.css';
 import 'primereact/resources/primereact.css'; // core css
 import { API_URL, fetchWithToken } from '../utils/api';
+import {
+  showErrorAlert,
+  showInfoAlert,
+  showLoadingAlert,
+} from '../utils/alerts';
 
 const SeguimientoCambaceo = () => {
   useAuthRedirect();
@@ -72,12 +77,7 @@ const SeguimientoCambaceo = () => {
   };
 
   const colab = async () => {
-    Swal.fire({
-      title: 'Cargando...',
-      text: 'Por favor espera un momento',
-      allowOutsideClick: false,
-    });
-    Swal.showLoading();
+    showLoadingAlert();
     try {
       const options = {
         method: 'GET',
@@ -91,26 +91,15 @@ const SeguimientoCambaceo = () => {
       const errorStatusCodes = [500, 404, 400];
 
       if (errorStatusCodes.includes(response.status)) {
-        return Swal.fire({
-          icon: 'error',
-          title: 'Se produjo un error',
-          text: 'UDA',
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-      rgba(36,32,32,0.65)
-    `,
-        });
+        return showErrorAlert('Se produjo un error', 'UDA');
       }
 
       const data = await response.json();
       if (data.length === 0) {
-        return Swal.fire({
-          title: '¡Atención!',
-          text: 'Todavía no hay ningún usuario registrado en tu equipo.',
-          icon: 'info',
-          confirmButtonText: 'Entendido',
-        });
+        return showInfoAlert(
+          '¡Atención!',
+          'Todavía no hay ningún usuario registrado en tu equipo.'
+        );
       }
       // Transformamos la data si es necesario
       const transformedData = data.map((item) => {
@@ -122,11 +111,7 @@ const SeguimientoCambaceo = () => {
       setData(transformedData);
     } catch (error) {
       console.log(error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Algo salió mal al cargar los usuarios!',
-      });
+      showErrorAlert('Oops...', 'Algo salió mal al cargar los usuarios!');
     }
   };
 
@@ -162,12 +147,7 @@ const SeguimientoCambaceo = () => {
     setSearch(e.target.value);
   };
   const handleDownload = async () => {
-    Swal.fire({
-      title: 'Descargando...',
-      text: 'Por favor espera un momento',
-      allowOutsideClick: false,
-    });
-    Swal.showLoading();
+    showLoadingAlert();
     try {
       const response = await fetchWithToken(`${API_URL}/descargarFechas`, {
         method: 'GET',
@@ -177,11 +157,10 @@ const SeguimientoCambaceo = () => {
       });
       Swal.close();
       if (response.status === 204) {
-        return Swal.fire({
-          icon: 'info',
-          title: 'Información',
-          text: 'No hay registros para la próxima semana aún.',
-        });
+        return showInfoAlert(
+          'Información',
+          'No hay registros para la próxima semana aún.'
+        );
       }
       // Verificar si la respuesta es exitosa
       if (response.ok) {
@@ -202,11 +181,7 @@ const SeguimientoCambaceo = () => {
       // Manejar errores de red u otros errores
       Swal.close();
       console.error('Error al descargar el archivo CSV:', error.message);
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Algo salió mal al descargar el archivo CSV!',
-      });
+      showErrorAlert('Oops...', 'Algo salió mal al descargar el archivo CSV!');
       console.error('Error de red:', error);
     } finally {
       setDescargando(false);

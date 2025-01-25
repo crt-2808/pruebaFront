@@ -10,6 +10,12 @@ import { Row, Col } from 'react-bootstrap';
 import { useAuthRedirect } from '../useAuthRedirect';
 import { useUserContext } from '../userProvider';
 import { API_URL, fetchWithToken } from '../utils/api';
+import {
+  showErrorAlert,
+  showInfoAlert,
+  showLoadingAlert,
+  showSuccessAlert,
+} from '../utils/alerts';
 // Componente principal
 const SeguimientoLlamada = () => {
   useAuthRedirect();
@@ -26,12 +32,7 @@ const SeguimientoLlamada = () => {
 
   // Función para cargar los registros desde el servidor
   const cargarRegistros = async () => {
-    Swal.fire({
-      title: 'Cargando...',
-      text: 'Por favor espera un momento',
-      allowOutsideClick: false,
-    });
-    Swal.showLoading();
+    showLoadingAlert();
     try {
       const response = await fetchWithToken(`${API_URL}/llamada`, {
         method: 'GET',
@@ -43,22 +44,14 @@ const SeguimientoLlamada = () => {
       Swal.close();
       if (!response.ok) {
         console.error('Error al obtener registros:', response);
-        return Swal.fire({
-          icon: 'error',
-          title: 'Se produjo un error',
-          text: 'No se pudieron cargar los registros',
-          timer: 2200,
-          timerProgressBar: true,
-        });
+        return showErrorAlert(
+          'Se produjo un error',
+          'No se pudieron cargar los registros'
+        );
       }
       const data = await response.json();
       if (data.length === 0) {
-        return Swal.fire({
-          title: '¡Atención!',
-          text: 'No hay registros disponibles.',
-          icon: 'info',
-          confirmButtonText: 'Entendido',
-        });
+        return showInfoAlert('¡Atención!', 'No hay registros disponibles.');
       }
       setRegistros(data);
       console.log('Registros: ', data);
@@ -66,13 +59,10 @@ const SeguimientoLlamada = () => {
     } catch (error) {
       console.error('Error al obtener registros:', error);
       Swal.close();
-      return Swal.fire({
-        icon: 'error',
-        title: 'Se produjo un error',
-        text: 'Error al cargar los registros',
-        timer: 2200,
-        timerProgressBar: true,
-      });
+      return showErrorAlert(
+        'Se produjo un error',
+        'Error al cargar los registros'
+      );
     }
   };
 
@@ -127,11 +117,10 @@ const SeguimientoLlamada = () => {
   };
   const handleGuardarCuestionario = async () => {
     if (incidentesEditados === registroSeleccionado?.Incidentes) {
-      Swal.fire({
-        icon: 'error',
-        title: 'No se detectaron cambios',
-        text: 'Edita las incidencias antes de guardar.',
-      });
+      showErrorAlert(
+        'No se detectaron cambios',
+        'Edita las incidencias antes de guardar.'
+      );
       return;
     }
     const envioIncidentes = { Incidentes: incidentesEditados };
@@ -149,12 +138,7 @@ const SeguimientoLlamada = () => {
       );
 
       if (response.ok) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Incidencia registrada correctamente',
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        showSuccessAlert('Incidencia registrada correctamente');
         // Actualizar el registro en el estado local
         const registrosActualizados = registros.map((registro) => {
           if (registro.ID === registroSeleccionado.ID) {
@@ -166,12 +150,7 @@ const SeguimientoLlamada = () => {
         setModoCuestionario(false);
       } else {
         console.log(response);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al registrar la incidencia',
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        showErrorAlert('Error', 'No se pudo guardar los cambios');
       }
     } catch (error) {
       console.error('Error al guardar los cambios:', error);

@@ -18,6 +18,11 @@ import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
+import {
+  showErrorAlert,
+  showInfoAlert,
+  showLoadingAlert,
+} from '../utils/alerts';
 
 const mapboxToken = process.env.REACT_APP_MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
@@ -53,12 +58,7 @@ const SeguimientoCambaceos = () => {
 
   // Función para cargar los registros desde el servidor
   const cargarRegistros = async () => {
-    Swal.fire({
-      title: 'Cargando...',
-      text: 'Por favor espera un momento',
-      allowOutsideClick: false,
-    });
-    Swal.showLoading();
+    showLoadingAlert();
     try {
       const response = await fetchWithToken(`${API_URL}/cambaceosPorId`, {
         method: 'GET',
@@ -71,23 +71,12 @@ const SeguimientoCambaceos = () => {
 
       if (!response.ok) {
         console.error('Error al obtener registros:', response);
-        return Swal.fire({
-          icon: 'error',
-          title: 'Se produjo un error',
-          text: 'No se pudieron cargar los registros',
-          timer: 2200,
-          timerProgressBar: true,
-        });
+        return showErrorAlert('Error', 'No se pudo cargar los registros');
       }
 
       const data = await response.json();
       if (data.length === 0) {
-        return Swal.fire({
-          title: '¡Atención!',
-          text: 'No hay registros disponibles.',
-          icon: 'info',
-          confirmButtonText: 'Entendido',
-        });
+        return showInfoAlert('¡Atención!', 'No hay registros disponibles.');
       }
 
       // Modificar el tipo de registro
@@ -110,13 +99,7 @@ const SeguimientoCambaceos = () => {
     } catch (error) {
       console.error('Error al obtener registros:', error);
       Swal.close();
-      return Swal.fire({
-        icon: 'error',
-        title: 'Se produjo un error',
-        text: 'Error al cargar los registros',
-        timer: 2200,
-        timerProgressBar: true,
-      });
+      return showErrorAlert('Error', 'No se pudo cargar los registros');
     }
   };
 
@@ -188,11 +171,7 @@ const SeguimientoCambaceos = () => {
       setAddress(direccion);
     } catch (error) {
       console.error('Error al geocodificar la dirección:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error al geocodificar la dirección',
-        text: 'No se pudo encontrar la ubicación en el mapa.',
-      });
+      showErrorAlert('Error', 'No se pudo encontrar la ubicación en el mapa.');
     }
   };
 
@@ -251,34 +230,19 @@ const SeguimientoCambaceos = () => {
               }
             });
           } else {
-            Swal.fire({
-              title: 'No hay incidencias registradas',
-              text: 'No se encontraron incidencias para este usuario',
-              timer: 5000, // Tiempo en milisegundos antes de que se cierre automáticamente
-              timerProgressBar: true,
-              icon: 'info',
-            });
+            showInfoAlert(
+              'No hay incidencias registradas',
+              'No se encontraron incidencias para este usuario'
+            );
           }
         }
       } else {
         console.error('Error al obtener incidencias por usuario:', response);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al obtener incidencias',
-          text: 'Hubo un problema al intentar obtener las incidencias por usuario',
-          timer: 3000,
-          timerProgressBar: true,
-        });
+        showErrorAlert('Error', 'No se pudo obtener las incidencias');
       }
     } catch (error) {
       console.error('Error en la solicitud:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error en la solicitud',
-        text: 'Hubo un problema al intentar comunicarse con el servidor',
-        timer: 3000,
-        timerProgressBar: true,
-      });
+      showErrorAlert('Error', 'No se pudo obtener las incidencias');
     }
   };
   const onHideModal = () => {

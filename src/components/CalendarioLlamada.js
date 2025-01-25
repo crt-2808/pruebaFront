@@ -3,7 +3,6 @@ import { Button } from 'primereact/button';
 import { Calendar } from 'primereact/calendar';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FileUpload } from 'primereact/fileupload';
-import Swal from 'sweetalert2';
 import Navbar from './navbar';
 import { ArrowLeft } from 'react-bootstrap-icons';
 import { InputMask } from 'primereact/inputmask';
@@ -14,6 +13,7 @@ import { formatearFecha } from '../utils/utils';
 import { CalendarioEsp } from '../utils/calendarLocale';
 import { API_URL, fetchWithToken } from '../utils/api';
 import { MultiSelect } from 'primereact/multiselect';
+import { showErrorAlert, showSuccessAlert } from '../utils/alerts';
 
 function CalendarioLlamada() {
   useAuthRedirect();
@@ -50,47 +50,19 @@ function CalendarioLlamada() {
   };
   const verificaDatos = () => {
     if (colaboradoresSeleccionados.length === 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Selecciona al menos un asesor',
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: `rgba(36,32,32,0.65)`,
-      });
+      showErrorAlert('Error', 'Selecciona al menos un asesor');
       return false;
     }
     if (!Telefono) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ingresa un número de teléfono',
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: `rgba(36,32,32,0.65)`,
-      });
+      showErrorAlert('Error', 'Ingresa un número de teléfono');
       return false;
     }
     if (!FechaAsignacion) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Selecciona una fecha y hora',
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: `rgba(36,32,32,0.65)`,
-      });
+      showErrorAlert('Error', 'Selecciona una fecha y hora');
       return false;
     }
     if (!Descripcion) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ingresa una descripción',
-        timer: 1200,
-        timerProgressBar: true,
-        backdrop: `rgba(36,32,32,0.65)`,
-      });
+      showErrorAlert('Error', 'Ingresa una descripción');
       return false;
     }
 
@@ -144,30 +116,12 @@ function CalendarioLlamada() {
         return response.json(); // Parsea la respuesta a JSON
       })
       .then((responseData) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Éxito',
-          text: 'Los datos se han registrado correctamente',
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `rgba(36,32,32,0.65)`,
-        }).then(() => {
-          navigate('/Llamada');
-        });
+        showSuccessAlert('Éxito', 'Los datos se han registrado correctamente');
+        navigate('/Llamada');
       })
       .catch((error) => {
         // Muestra una alerta de error
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Hubo un error al registrar los datos',
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-        rgba(36,32,32,0.65)
-        
-      `,
-        });
+        showErrorAlert('Error', 'No se pudo registrar la llamada');
         console.error('Error al enviar los datos al servidor:', error);
       });
   };

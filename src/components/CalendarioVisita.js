@@ -8,7 +8,6 @@ import { InputMask } from 'primereact/inputmask';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import 'primeicons/primeicons.css'; //iconos
 import Map, { Marker, NavigationControl } from 'react-map-gl';
-import Swal from 'sweetalert2';
 import Navbar from './navbar';
 import { formatearFecha } from '../utils/utils';
 import { ArrowLeft } from 'react-bootstrap-icons';
@@ -19,6 +18,11 @@ import { CalendarioEsp } from '../utils/calendarLocale';
 import { API_URL, fetchWithToken } from '../utils/api';
 import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 import { ListBox } from 'primereact/listbox';
+import {
+  showErrorAlert,
+  showSuccessAlert,
+  showSuccessToast,
+} from '../utils/alerts';
 
 function CalendarioVisita() {
   useAuthRedirect();
@@ -168,33 +172,12 @@ function CalendarioVisita() {
       .then((response) => {
         // Muestra una alerta de éxito
         console.log(response);
-        Swal.fire({
-          icon: 'success',
-          title: 'Éxito',
-          text: 'Los datos se han registrado correctamente',
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-        rgba(36,32,32,0.65)
-        
-      `,
-        }).then(() => {
-          navigate('/VisitaProgramada');
-        });
+        showSuccessAlert('Éxito', 'La visita se ha registrado correctamente');
+        navigate('/VisitaProgramada');
       })
       .catch((error) => {
         // Muestra una alerta de error
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Hubo un error al registrar los datos',
-          timer: 1200,
-          timerProgressBar: true,
-          backdrop: `
-        rgba(36,32,32,0.65)
-        
-      `,
-        });
+        showErrorAlert('Error', 'Hubo un error al registrar la visita');
         console.error('Error al enviar los datos al servidor:', error);
       });
   };
