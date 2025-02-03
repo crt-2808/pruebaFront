@@ -9,8 +9,9 @@ import { Button } from 'primereact/button';
 import { API_URL, fetchWithToken } from '../utils/api';
 import { showNotification } from '../utils/utils';
 import { isUserAdmin } from '../utils/auth';
-import Usuario_sin_img from '../img/imagen-de-usuario-con-fondo-negro.png';
 import Swal from 'sweetalert2';
+import UserAvatar from '../components/shared/UserAvatar';
+import { Tag } from 'primereact/tag';
 
 const AllUsuers = () => {
   const [users, setUsers] = useState([]);
@@ -180,41 +181,16 @@ const AllUsuers = () => {
       }
     }
   };
-  //   const onStatusChange = (user, newStatus) => {
-  // Lógica para cambiar el estado del usuario
-  // ...
-  //   };
-
-  //   const deactivateUser = (user) => {
-  // Lógica para dar de baja al usuario
-  // ...
-  //   };
-  const imageBodyTemplate = (rowData) => {
-    const handleImageError = (e) => {
-      e.target.src = Usuario_sin_img;
-    };
-    const imageSrc =
-      rowData.Imagen && rowData.Imagen !== 'src'
-        ? rowData.Imagen
-        : Usuario_sin_img;
-    return (
-      <img
-        src={imageSrc}
-        alt={rowData.Nombre}
-        onError={handleImageError}
-        style={{
-          width: '50px',
-          height: '50px',
-          borderRadius: '50%',
-          aspectRatio: '1/1',
-          objectFit: 'cover',
-        }}
-      />
-    );
-  };
 
   // Template para la columna "Asignado a"
   const asignadoBodyTemplate = (rowData) => {
+    if (rowData.Rol.toLowerCase() === 'admin') {
+      return (
+        <span className='text-muted'>
+          {rowData.asignado_a || 'No asignado'}
+        </span>
+      );
+    }
     return (
       <Dropdown
         value={rowData.asignado_a}
@@ -222,13 +198,22 @@ const AllUsuers = () => {
         onChange={(e) => onAsignadoChange(rowData, e.value)}
         placeholder='Seleccionar usuario'
         optionLabel='label'
+        style={{ maxWidth: '9rem', minWidth: '9rem' }}
       />
     );
   };
-  const nameBodyTemplate = (rowData) => {
+
+  const userBodyTemplate = (rowData) => {
     return (
-      <div>
-        <span>{rowData.Nombre + ' ' + rowData.Apellido_pat}</span>
+      <div className='d-flex align-items-center gap-2'>
+        <UserAvatar
+          image={rowData.Imagen}
+          firstName={rowData.Nombre}
+          lastName={rowData.Apellido_pat}
+        />
+        <span className='font-semibold'>
+          {rowData.Nombre} {rowData.Apellido_pat}
+        </span>
       </div>
     );
   };
@@ -242,18 +227,19 @@ const AllUsuers = () => {
         placeholder='Seleccionar Rol'
         optionLabel='label'
         disabled={isDisabled}
+        style={{ maxWidth: '9rem', minWidth: '9rem' }}
       />
     );
   };
 
   const statusBodyTemplate = (rowData) => {
-    const statusLabel =
-      rowData.Activo === null
-        ? 'Indefinido'
-        : rowData.Activo
-        ? 'Activo'
-        : 'Inactivo';
-    return <span>{statusLabel}</span>;
+    return (
+      <Tag
+        value={rowData.Activo ? 'Activo' : 'Inactivo'}
+        severity={rowData.Activo ? 'success' : 'danger'}
+        className='p-mr-2'
+      />
+    );
   };
 
   //   const actionsBodyTemplate = (rowData) => {
@@ -294,19 +280,14 @@ const AllUsuers = () => {
           <div className='row'>
             <div className='col-12 px-0 px-md-5 mb-4 mb-md-0 d-flex justify-content-between'>
               <div className='row w-100'>
-                <div className='col-md-4 col-12 centrar'>
+                {/* <div className='col-md-4 col-12 centrar'>
                   <h4 className='titulo-cambaceo text-start  p-0 p-sm-4'>
                     Usuarios
                   </h4>
                 </div>
                 <div className='col-md-8 col-12 centrar'>
                   <div className='row w-100'>
-                    <div className='col-md-6'>
-                      <h6 className='textoBuscaSeg'>
-                        Selecciona al Asesor<br></br>y el tipo de seguimiento
-                      </h6>
-                    </div>
-                    <div className='col-md-6'>
+                    <div className='col-md-12 d-flex justify-content-between'>
                       <div className='input-wrapper'>
                         <input
                           type='text'
@@ -316,6 +297,7 @@ const AllUsuers = () => {
                           aria-describedby='basic-addon1'
                           value={search}
                           onChange={handleSearchChange}
+                          style={{ width: '15rem' }}
                         />
                         <X
                           className='clear-icon'
@@ -324,28 +306,51 @@ const AllUsuers = () => {
                       </div>
                     </div>
                   </div>
+                </div> */}
+                <div className='col-md-12 d-flex justify-content-between'>
+                  <div className='col-md-6 col-12 centrar'>
+                    <h4 className='titulo-cambaceo text-start  p-0 p-sm-4'>
+                      Usuarios
+                    </h4>
+                  </div>
+                  <div className='col-md-6 col-12 d-flex align-items-center justify-content-end'>
+                    <div className='input-wrapper' style={{ width: '15rem' }}>
+                      <input
+                        type='text'
+                        className='form-control'
+                        placeholder='Buscar por Nombre'
+                        aria-label='Buscar'
+                        aria-describedby='basic-addon1'
+                        value={search}
+                        onChange={handleSearchChange}
+                      />
+                      <X className='clear-icon' onClick={() => setSearch('')} />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <DataTable value={filteredUsers}>
+            <DataTable value={filteredUsers} sortMode='multiple' removableSort>
               <Column
-                field='Imagen'
-                header='Imagen'
-                body={imageBodyTemplate}
+                field='Usuario'
+                header='Usuario'
+                body={userBodyTemplate}
+                sortable
               ></Column>
+              <Column field='Correo' header='Correo' sortable></Column>
+              <Column field='Telefono' header='Teléfono' sortable></Column>
               <Column
-                field='Nombre'
-                header='Nombre'
-                body={nameBodyTemplate}
+                field='Rol'
+                header='Rol'
+                body={roleBodyTemplate}
+                sortable
               ></Column>
-              <Column field='Correo' header='Correo'></Column>
-              <Column field='Telefono' header='Teléfono'></Column>
-              <Column field='Rol' header='Rol' body={roleBodyTemplate}></Column>
               <Column
                 field='Activo'
                 header='Estado'
                 body={statusBodyTemplate}
+                sortable
               ></Column>
               <Column
                 field='asignado_a'

@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
-import { Avatar } from 'primereact/avatar';
 import { Tag } from 'primereact/tag';
 import { Dropdown } from 'primereact/dropdown';
-import { ProgressSpinner } from 'primereact/progressspinner';
-import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import Navbar from './navbar';
 import { ArrowLeft } from 'react-bootstrap-icons';
@@ -73,9 +70,9 @@ const GestionUsuariosLider = () => {
             : user
         )
       );
-      showNotification('success', 'User assigned successfully', 'UDA');
+      showNotification('success', 'Usuario asignado correctamente', 'UDA');
     } catch (error) {
-      showNotification('error', 'Error assigning user', 'UDA');
+      showNotification('error', 'Error al asignar usuario', 'UDA');
     }
   };
 
@@ -108,6 +105,16 @@ const GestionUsuariosLider = () => {
     </span>
   );
 
+  const statusBodyTemplate = (rowData) => {
+    return (
+      <Tag
+        value={rowData.Activo ? 'Activo' : 'Inactivo'}
+        severity={rowData.Activo ? 'success' : 'danger'}
+        className='p-mr-2'
+      />
+    );
+  };
+
   const assigneeTemplate = (rowData) => {
     // Buscar el nombre del usuario asignado
     const assignedUser = assignableUsers.find(
@@ -136,6 +143,7 @@ const GestionUsuariosLider = () => {
         optionValue='idUsuario'
         placeholder='Seleccionar Asignado'
         className='w-full md:w-14rem'
+        style={{ maxWidth: '9rem', minWidth: '9rem' }}
       />
     );
   };
@@ -191,7 +199,7 @@ const GestionUsuariosLider = () => {
 
       <div className='col-12 min-vh-90 todo pt-3'>
         <div
-          className='container mt-sm-5 mt-md-2 mb-4 p-5 mt-md-5'
+          className='container mt-sm-5 mb-4 p-5 mt-md-1'
           id='contenedor-land'
         >
           <div className='row'>
@@ -206,8 +214,8 @@ const GestionUsuariosLider = () => {
                         onSelectionChange={(e) => setSelectedUsers(e.value)}
                         dataKey='idUsuario'
                         paginator
-                        rows={10}
-                        rowsPerPageOptions={[5, 10, 25]}
+                        rows={8}
+                        rowsPerPageOptions={[8, 10, 25]}
                         paginatorTemplate='FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown'
                         currentPageReportTemplate='Elementos {first} a {last} de {totalRecords} usuarios'
                         globalFilter={globalFilter}
@@ -220,7 +228,7 @@ const GestionUsuariosLider = () => {
                         sortMode='multiple'
                         removableSort
                         scrollable
-                        scrollHeight='500px'
+                        scrollHeight='570px'
                         tableStyle={{ borderRadius: '15px' }}
                       >
                         <Column
@@ -250,10 +258,17 @@ const GestionUsuariosLider = () => {
                           style={{ minWidth: '8rem' }}
                         />
                         <Column
+                          field='Activo'
+                          header='Estado'
+                          body={statusBodyTemplate}
+                          sortable
+                          style={{ minWidth: '2rem' }}
+                        />
+                        <Column
                           field='asignado_a'
                           header='Asignado a'
                           body={assigneeTemplate}
-                          style={{ minWidth: '14rem' }}
+                          style={{ maxWidth: '10rem' }}
                         />
                       </DataTable>
                     </div>

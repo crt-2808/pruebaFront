@@ -424,7 +424,7 @@ const EditarColab = () => {
     return (
       <div className='col-12 col-sm-6 col-md-3 mb-3'>
         <div
-          className='card p-3 shadow-sm'
+          className='card p-3 shadow-sm w-100'
           style={{
             display: 'flex',
             flexDirection: 'row',
@@ -737,7 +737,7 @@ const EditarColab = () => {
             </div>
           </div>
           <div className='container-fluid mt-3 mt-md-5 mb-5'>
-            <div className='row px-2 gy-2' id='Resultado'>
+            <div className='row px-3 gy-2' id='Resultado'>
               {colaboradores.map((colab, index) => (
                 <ColaboradorCard key={index} data={colab} />
               ))}
