@@ -274,6 +274,32 @@ const Land = () => {
                           </div>
                         </div>
                       </div>
+                      <div className='col-md-12'>
+                        <div className='row'>
+                          <div className='col-12'>
+                            <h4 className='subTituloLand'>Gestion</h4>
+                          </div>
+                          <div className='col-12'>
+                            <div className='row pt-5'>
+                              <div className='col-md-12'>
+                                <Link
+                                  to='/GestionUsuarios'
+                                  className='no-decoration'
+                                >
+                                  <i
+                                    className='pi pi-user-plus'
+                                    style={{
+                                      color: '#ea4335',
+                                      fontSize: '6em',
+                                    }}
+                                  ></i>
+                                  <p className='placeBtn'>Asignación</p>
+                                </Link>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -392,6 +418,34 @@ const Land = () => {
                       </div>
                     </div>
                   </div>
+                  {userRole === 'lider' && (
+                    <div className='col-md-6'>
+                      <div className='row'>
+                        <div className='col-12'>
+                          <h4 className='subTituloLand'>Gestion</h4>
+                        </div>
+                        <div className='col-12'>
+                          <div className='row pt-5'>
+                            <div className='col-md-12'>
+                              <Link
+                                to='/GestionUsuarios'
+                                className='no-decoration'
+                              >
+                                <i
+                                  className='pi pi-user-plus'
+                                  style={{
+                                    color: '#ea4335',
+                                    fontSize: '6em',
+                                  }}
+                                ></i>
+                                <p className='placeBtn'>Asignación</p>
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 const AllUsuers = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
+  const [usuariosAsignables, setUsuariosAsignables] = useState([]);
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
@@ -53,12 +54,18 @@ const AllUsuers = () => {
         return showNotification('error', 'Se produjo un error', 'UDA');
       }
 
-      const data = await response.json();
-      console.log('Usuarios: ', data);
-      if (data.length === 0) {
+      const { users, usuariosAsignables } = await response.json();
+      console.log('Usuarios: ', users);
+      if (users.length === 0) {
         return showNotification('info', 'No hay usuarios displonibles.', 'UDA');
       }
-      setUsers(data);
+      setUsers(users);
+      setUsuariosAsignables(
+        usuariosAsignables.map((user) => ({
+          label: `${user.Nombre} ${user.Apellido_pat}`,
+          value: user.idUsuario,
+        }))
+      );
     } catch (error) {
       console.error(error);
       return showNotification('error', 'Se produjo un error', 'UDA');
@@ -126,6 +133,53 @@ const AllUsuers = () => {
       }
     }
   };
+
+  // Manejar el cambio de asignado_a
+  const onAsignadoChange = async (user, nuevoAsignado) => {
+    const result = await Swal.fire({
+      title: 'Confirmar Asignación',
+      text: `¿Deseas asignar a ${user.Nombre} ${user.Apellido_pat} a otro usuario?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, asignar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (result.isConfirmed) {
+      Swal.showLoading();
+      try {
+        const response = await fetchWithToken(`${API_URL}/actualizarAsignado`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            idUsuario: user.idUsuario,
+            asignadoA: nuevoAsignado,
+          }),
+        });
+
+        if (response.ok) {
+          const updatedUsers = users.map((u) =>
+            u.idUsuario === user.idUsuario
+              ? { ...u, asignado_a: nuevoAsignado }
+              : u
+          );
+          setUsers(updatedUsers);
+          Swal.close();
+          showNotification(
+            'success',
+            'Asignado a actualizado correctamente',
+            'UDA'
+          );
+        } else {
+          Swal.close();
+          showNotification('error', 'Error al actualizar asignado a', 'UDA');
+        }
+      } catch (error) {
+        console.error('Error al actualizar asignado_a:', error);
+        showNotification('error', 'Error al actualizar asignado_a', 'UDA');
+      }
+    }
+  };
   //   const onStatusChange = (user, newStatus) => {
   // Lógica para cambiar el estado del usuario
   // ...
@@ -159,6 +213,18 @@ const AllUsuers = () => {
     );
   };
 
+  // Template para la columna "Asignado a"
+  const asignadoBodyTemplate = (rowData) => {
+    return (
+      <Dropdown
+        value={rowData.asignado_a}
+        options={usuariosAsignables}
+        onChange={(e) => onAsignadoChange(rowData, e.value)}
+        placeholder='Seleccionar usuario'
+        optionLabel='label'
+      />
+    );
+  };
   const nameBodyTemplate = (rowData) => {
     return (
       <div>
@@ -280,6 +346,11 @@ const AllUsuers = () => {
                 field='Activo'
                 header='Estado'
                 body={statusBodyTemplate}
+              ></Column>
+              <Column
+                field='asignado_a'
+                header='Asignado a'
+                body={asignadoBodyTemplate}
               ></Column>
               {/* <Column body={actionsBodyTemplate}></Column> */}
             </DataTable>

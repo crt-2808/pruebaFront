@@ -60,7 +60,7 @@ function Login() {
       }
 
       // Manejo exitoso
-      const { token, role } = await response.json();
+      const { token, role, vistoTour } = await response.json();
       console.log('Autenticación exitosa:', { token, role });
 
       const userData = {
@@ -72,7 +72,7 @@ function Login() {
       };
 
       // Set session data
-      SessionManager.setSession(token, role, userData);
+      SessionManager.setSession(token, role, userData, vistoTour);
       // Actualizar el contexto del usuario
       toggleUser(userData);
       toggleUserBlocked(false);

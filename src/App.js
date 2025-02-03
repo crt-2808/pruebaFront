@@ -35,6 +35,7 @@ import CrearEquipo from './components/CrearEquipo';
 import EditarEquipo from './components/EditarEquipo';
 import EditarInfo from './components/editarInfo';
 import EquipoGerente from './components/EquipoGerente';
+import GestionUsuariosLider from './components/GestionUsuariosLider';
 
 function App() {
   return (
@@ -114,6 +115,7 @@ function App() {
               path='/EquipoGerente/:idUsuario'
               element={<EquipoGerente />}
             />
+            <Route path='/GestionUsuarios' element={<GestionUsuariosLider />} />
           </Route>
 
           {/*Ruta de los colaboradores */}

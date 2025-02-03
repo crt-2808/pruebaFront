@@ -7,6 +7,7 @@ import { useAuthRedirect } from '../../useAuthRedirect';
 import { useUserContext } from '../../userProvider';
 import { API_URL, fetchWithToken } from '../../utils/api';
 import { startTour } from '../../utils/tourConfigColab';
+import { SessionManager } from '../../utils/sessionManager';
 
 // Componente principal
 const Cambaceo_Semanal_Colab = () => {
@@ -14,6 +15,7 @@ const Cambaceo_Semanal_Colab = () => {
   const [registros, setRegistros] = useState([]);
   const [search, setSearch] = useState('');
   const [filteredData, setFilteredData] = useState([]);
+  const role = SessionManager.getRole();
   const navigate = useNavigate();
   const getInfo = async () => {
     Swal.fire({
@@ -51,13 +53,16 @@ const Cambaceo_Semanal_Colab = () => {
 
         // Actualizar los registros con los filtrados por semana
         setRegistros(registrosSemana);
-        startTour('cambaceoSemanal');
         if (registrosSemana.length === 0) {
           Swal.fire({
             icon: 'info',
             title: 'No hay registros para esta semana',
             text: 'No se encontraron registros para mostrar en la semana actual.',
           });
+        }
+        if (registrosSemana.length > 0) {
+          console.log('Inicio de tour');
+          startTour('cambaceoSemanal', role);
         }
 
         // Resto del código...

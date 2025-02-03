@@ -13,6 +13,7 @@ import '../../theme.css';
 import 'primereact/resources/primereact.css'; // core css
 import { addLocale } from 'primereact/api';
 import { startTour } from '../../utils/tourConfigColab';
+import { SessionManager } from '../../utils/sessionManager';
 
 const mapboxToken = process.env.REACT_APP_MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
@@ -29,6 +30,7 @@ function Colab_PruebaMaps() {
   const [horaInicio, setHoraInicio] = useState('');
   const [horario, setHorario] = useState('');
   const [horaConlcusion, setHoraConclusion] = useState('');
+  const role = SessionManager.getRole();
 
   const [coordinates, setCoordinates] = useState({
     latitude: 26.084241,
@@ -53,7 +55,7 @@ function Colab_PruebaMaps() {
   };
 
   useEffect(() => {
-    startTour('colabPruebaMaps');
+    startTour('colabPruebaMaps', role);
     // Verificamos si existe el objeto registro en location.state
     if (location.state && location.state.registro) {
       const {

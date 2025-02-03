@@ -7,7 +7,6 @@ import usuarioAnon from '../img/imagen-de-usuario-con-fondo-negro.png';
 import Swal from 'sweetalert2';
 import { Toast } from 'primereact/toast';
 import { useAuthRedirect } from '../useAuthRedirect';
-import axios from 'axios';
 import '../theme.css';
 import 'primereact/resources/primereact.css'; // core css
 import { API_URL, fetchWithToken } from '../utils/api';

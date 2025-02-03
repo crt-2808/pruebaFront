@@ -7,13 +7,14 @@ import Cambaceo from '../../img/Cambaceo.png';
 import Visita from '../../img/Visita.png';
 import Llamada from '../../img/Llamada.png';
 import { startTour } from '../../utils/tourConfigColab';
+import { SessionManager } from '../../utils/sessionManager';
 
 const Planeador_Colab = () => {
   useAuthRedirect();
-
+  const role = SessionManager.getRole();
   useEffect(() => {
-    startTour('planeador');
-  }, []);
+    startTour('planeador', role);
+  }, [role]);
   return (
     <div className='fluid'>
       <Navbar></Navbar>

@@ -1,5 +1,43 @@
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
+import { API_URL, fetchWithToken } from '../utils/api';
+import { SessionManager } from '../utils/sessionManager';
+
+// Función para marcar el tour como visto en la base de datos
+const marcarTourComoVisto = async () => {
+  try {
+    console.log('Marcando tour como visto');
+    await fetchWithToken(`${API_URL}/marcarTourVisto`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    SessionManager.setVistoTour(1);
+  } catch (error) {
+    console.error('Error marcando tour como visto:', error);
+  }
+};
+
+// ✅ Función que se ejecuta cuando el tour finaliza en una vista
+const handleTourCompletion = async (viewName) => {
+  console.log(`Tour de ${viewName} finalizado, marcando como visto.`);
+  SessionManager.addVistaTour(viewName);
+
+  // ✅ Lista de vistas que el usuario debe completar antes de marcar el tour como visto en la BD
+  const vistasRequeridas = [
+    'land',
+    'planeador',
+    'cambaceoDiario',
+    'cambaceoSemanal',
+  ];
+
+  const vistasCompletadas = SessionManager.getVistasTour();
+  if (vistasRequeridas.every((vista) => vistasCompletadas.includes(vista))) {
+    console.log(
+      'El usuario ha completado todos los tours, marcando como visto en la BD.'
+    );
+    await marcarTourComoVisto();
+  }
+};
 
 // Definir los pasos del tour por vista
 export const tourSteps = {
@@ -231,7 +269,27 @@ export const tourSteps = {
 };
 
 // Función para iniciar el tour según la vista actual y el rol del usuario
-export const startTour = (viewName, role = 'colaborador') => {
+export const startTour = (viewName, user) => {
+  const { role } = user;
+
+  // Verificar si el usuario ya ha visto el tour
+  const yaVioTour = SessionManager.getVistoTour();
+  console.log(yaVioTour);
+  if (yaVioTour === '1') {
+    console.log('Si ya vio el tour:', yaVioTour);
+    return false;
+  }
+  if (yaVioTour === '0') {
+    console.log('No lo ha visto');
+  }
+
+  const vistasVistas = SessionManager.getVistasTour();
+
+  if (vistasVistas.includes(viewName)) {
+    console.log(`El usuario ya vio el tour de ${viewName}, no se ejecuta.`);
+    return false;
+  }
+
   if (tourSteps[viewName]) {
     const steps =
       typeof tourSteps[viewName] === 'function'
@@ -247,6 +305,7 @@ export const startTour = (viewName, role = 'colaborador') => {
       prevBtnText: 'Anterior',
       showButtons: true,
       keyboardControl: true,
+      onDestroyed: () => handleTourCompletion(viewName),
     });
 
     driverObj.drive();
