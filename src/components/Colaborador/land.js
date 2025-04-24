@@ -218,7 +218,7 @@ const Land_Colab = () => {
                   </div>
                 </div>
               </div>
-              <div className='col-md-6' id='btn-planeador'>
+              <div className='col-md-6 btn-planeador-tour'>
                 <div className='row'>
                   <div className='col-12'>
                     <h4 className='subTituloLand'>Planeador</h4>

@@ -12,6 +12,8 @@ import { Dialog } from 'primereact/dialog';
 import { useEffect } from 'react';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { API_URL, fetchWithToken } from '../utils/api';
+import { startTour } from '../utils/tourConfigColab';
+import { SessionManager } from '../utils/sessionManager';
 
 const upperCaseFirstLetter = (string) =>
   `${string.slice(0, 1).toUpperCase()}${string.slice(1)}`;
@@ -31,7 +33,7 @@ const Land = () => {
   const [trabajoPropio, setTrabajoPropio] = useState('');
   const [Nombre_usuario, setUsuario] = useState('');
   const [incidenciaRegistrada, setIncidenciaRegistrada] = useState('');
-  const userRole = sessionStorage.getItem('userRole');
+  const userRole = SessionManager.getRole();
 
   useEffect(() => {
     const nombreUsuario = usuario.givenName;
@@ -62,6 +64,7 @@ const Land = () => {
     };
 
     fetchIncidenciaRegistrada();
+    startTour('land', userRole);
   }, []);
 
   const handleClickGuardar = async () => {
@@ -163,7 +166,7 @@ const Land = () => {
                   </div>
                 </div>
                 <div className='row pt-md-5 mt-md-4 pb-md-4 mb-md-3'>
-                  <div className='col-md-6'>
+                  <div className='col-md-6' id='tourUser'>
                     <div className='row no-padding'>
                       <div className='col-12'>
                         <h4 className='subTituloLand'>Usuarios</h4>
@@ -187,7 +190,7 @@ const Land = () => {
                     </div>
                   </div>
 
-                  <div className='col-md-6'>
+                  <div className='col-md-6 btn-planeador-tour'>
                     <div className='row'>
                       <div className='col-12'>
                         <h4 className='subTituloLand'>Planeador</h4>
@@ -238,7 +241,7 @@ const Land = () => {
                         <div className='row'>
                           <div className='col-12'>
                             <div className='row pt-5'>
-                              <div className='col-md-12'>
+                              <div className='col-md-12 verEquipos'>
                                 <Link to='/Equipos' className='no-decoration'>
                                   <i
                                     className='pi pi-users'
@@ -274,7 +277,7 @@ const Land = () => {
                           </div>
                         </div>
                       </div>
-                      <div className='col-md-12'>
+                      <div className='col-md-12 todosUsuarios'>
                         <div className='row'>
                           <div className='col-12'>
                             <h4 className='subTituloLand'>Gestion</h4>
@@ -368,7 +371,7 @@ const Land = () => {
                                   <p className='placeBtn'>Editar</p>
                                 </Link>
                               </div>
-                              <div className='col-md-4'>
+                              <div className='col-md-4 verEquipos'>
                                 <Link to='/Equipos' className='no-decoration'>
                                   <i
                                     className='pi pi-users'
@@ -383,7 +386,7 @@ const Land = () => {
                               </div>
                             </>
                           ) : (
-                            <div className='col-md-12'>
+                            <div className='col-md-12 verEquipos'>
                               <Link to='/Equipos' className='no-decoration'>
                                 <i
                                   className='pi pi-users'
@@ -401,7 +404,7 @@ const Land = () => {
                       </div>
                     </div>
                   </div>
-                  <div className='col-md-6'>
+                  <div className='col-md-6 btn-planeador-tour'>
                     <div className='row'>
                       <div className='col-12'>
                         <h4 className='subTituloLand'>Planeador</h4>

@@ -224,7 +224,6 @@ const GestionUsuariosLider = () => {
                         emptyMessage='No hay usuarios disponibles.'
                         className='p-datatable-sm rounded'
                         // scrollHeight='calc(100vh - 200px)'
-
                         sortMode='multiple'
                         removableSort
                         scrollable

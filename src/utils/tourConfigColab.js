@@ -52,33 +52,9 @@ export const tourSteps = {
           position: 'bottom',
         },
       },
+
       {
-        element: '.btn-exportar',
-        popover: {
-          title: 'Agregar Incidencias',
-          description: 'Haz clic aquí para registrar tus actividades diarias.',
-          position: 'right',
-        },
-      },
-      {
-        element: '#contenedor-land',
-        popover: {
-          title: 'Información Principal',
-          description:
-            'Aquí puedes ver información sobre tu líder y acceder al planeador.',
-          position: 'top',
-        },
-      },
-      {
-        element: '#perfil-lider',
-        popover: {
-          title: 'Lider',
-          description: 'Información util sobre tu líder.',
-          position: 'top',
-        },
-      },
-      {
-        element: '#btn-planeador',
+        element: '.btn-planeador-tour',
         popover: {
           title: 'Planeador',
           description: 'Accede al planeador para gestionar tus actividades.',
@@ -94,6 +70,67 @@ export const tourSteps = {
         },
       },
     ];
+
+    if (role === 'admin') {
+      steps.push(
+        {
+          element: '#tourUser',
+          popover: {
+            title: 'Usuarios',
+            description: 'Agrega o edita usuarios.',
+            position: 'top',
+          },
+        },
+        {
+          element: '.verEquipos',
+          popover: {
+            title: 'Equipos',
+            description: 'Accede y gestiona tus equipos.',
+            position: 'top',
+          },
+        },
+        {
+          element: '.todosUsuarios',
+          popover: {
+            title: 'Todos los usuarios',
+            description:
+              'Accede a la página de todos los usuarios y a quien esta asigando.',
+            position: 'top',
+          },
+        }
+      );
+    }
+
+    if (role === 'colaborador') {
+      steps.push(
+        {
+          element: '.btn-exportar',
+          popover: {
+            title: 'Agregar Incidencias',
+            description:
+              'Haz clic aquí para registrar tus actividades diarias.',
+            position: 'right',
+          },
+        },
+        {
+          element: '#contenedor-land',
+          popover: {
+            title: 'Información Principal',
+            description:
+              'Aquí puedes ver información sobre tu líder y acceder al planeador.',
+            position: 'top',
+          },
+        },
+        {
+          element: '#perfil-lider',
+          popover: {
+            title: 'Lider',
+            description: 'Información util sobre tu líder.',
+            position: 'top',
+          },
+        }
+      );
+    }
 
     // Si el usuario es coordinador, añadir pasos adicionales
     if (role === 'coordinador') {
@@ -269,9 +306,7 @@ export const tourSteps = {
 };
 
 // Función para iniciar el tour según la vista actual y el rol del usuario
-export const startTour = (viewName, user) => {
-  const { role } = user;
-
+export const startTour = (viewName, role) => {
   // Verificar si el usuario ya ha visto el tour
   const yaVioTour = SessionManager.getVistoTour();
   console.log(yaVioTour);
