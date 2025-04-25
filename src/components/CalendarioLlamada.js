@@ -14,10 +14,13 @@ import { CalendarioEsp } from '../utils/calendarLocale';
 import { API_URL, fetchWithToken } from '../utils/api';
 import { MultiSelect } from 'primereact/multiselect';
 import { showErrorAlert, showSuccessAlert } from '../utils/alerts';
+import { startTour } from '../utils/tourConfigColab';
+import { SessionManager } from '../utils/sessionManager';
 
 function CalendarioLlamada() {
   useAuthRedirect();
   CalendarioEsp();
+  const role = SessionManager.getRole();
   const navigate = useNavigate();
   const [Telefono, setTelefono] = useState('');
   const [FechaAsignacion, setFecha] = useState(null);
@@ -164,6 +167,9 @@ function CalendarioLlamada() {
     );
   };
 
+  useEffect(() => {
+    startTour('createdLlamada', role);
+  }, [role]);
   return (
     <div className='fluid'>
       <Navbar style={{ backgroundColor: '##F8F9FA' }}></Navbar>
@@ -222,12 +228,13 @@ function CalendarioLlamada() {
                   display='chip'
                   style={{ width: '100%' }}
                   filter
+                  id='users-tour'
                 />
               </div>
               <div className='p-field'>
                 <label htmlFor='Telefono'>Teléfono</label>
               </div>
-              <div>
+              <div id='phone-tour'>
                 <InputMask
                   id='Telefono'
                   value={Telefono}
@@ -241,7 +248,7 @@ function CalendarioLlamada() {
               <div className='p-field'>
                 <label htmlFor='FechaAsignacion'>Fecha y Hora</label>
               </div>
-              <div>
+              <div id='date-tour'>
                 <Calendar
                   id='FechaAsignacion'
                   value={FechaAsignacion}

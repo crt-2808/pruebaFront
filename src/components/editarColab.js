@@ -10,10 +10,13 @@ import { API_URL, fetchWithToken } from '../utils/api';
 import { Tooltip } from 'primereact/tooltip';
 import { Button } from 'primereact/button';
 import UserAvatar from './shared/UserAvatar';
+import { startTour } from '../utils/tourConfigColab';
+import { SessionManager } from '../utils/sessionManager';
 
 const EditarColab = () => {
   useAuthRedirect();
   const [colaboradores, setColaboradores] = useState([]);
+  const role = SessionManager.getRole();
   const roleOptions = [
     { label: 'Gerente', value: 'gerente' },
     { label: 'Coordinador', value: 'coordinador' },
@@ -424,7 +427,7 @@ const EditarColab = () => {
     return (
       <div className='col-12 col-sm-6 col-md-3 mb-3'>
         <div
-          className='card p-3 shadow-sm w-100'
+          className='card p-3 shadow-sm w-100 tour-card'
           style={{
             display: 'flex',
             flexDirection: 'row',
@@ -444,12 +447,12 @@ const EditarColab = () => {
               size='xlarge'
               shape='circle'
               style={{ width: '90px', height: '90px' }}
-              className='p-5'
+              className='p-5 tour-card-avatar'
             />
             <div className='ml-3 text-start'>
               {/* Nombre y apellido paterno en primer plano */}
               <h5
-                className='mb-1 text-truncate'
+                className='mb-1 text-truncate tour-card-name'
                 style={{
                   fontWeight: 'bold',
                   fontSize: '1.1rem',
@@ -460,7 +463,7 @@ const EditarColab = () => {
               </h5>
               {/* Rol */}
               <span
-                className='p-2 rounded text-center mb-1 d-inline-block'
+                className='p-2 rounded text-center mb-1 d-inline-block tour-card-role'
                 style={{
                   ...getRoleStyle(data.Rol),
                   minWidth: '90px',
@@ -474,7 +477,7 @@ const EditarColab = () => {
               </span>
               {/* Correo */}
               <p
-                className='mb-1 text-truncate'
+                className='mb-1 text-truncate tour-card-email'
                 style={{
                   fontSize: '0.85rem',
                   color: '#555',
@@ -485,7 +488,7 @@ const EditarColab = () => {
               </p>
               {/* Teléfono */}
               <p
-                className='mb-0'
+                className='mb-0 tour-card-phone'
                 style={{ fontSize: '0.85rem', color: '#555' }}
               >
                 {data.Telefono}
@@ -498,7 +501,10 @@ const EditarColab = () => {
             {isActive ? (
               <>
                 {/* Ícono Editar */}
-                <span id={`tooltip-edit-${data.idUsuario}`} className='mb-2'>
+                <span
+                  id={`tooltip-edit-${data.idUsuario}`}
+                  className='mb-2 tour-edit'
+                >
                   <Pencil
                     onClick={() => handleEditClick(data)}
                     style={{ cursor: 'pointer', fontSize: '1.2rem' }}
@@ -511,7 +517,10 @@ const EditarColab = () => {
                 />
 
                 {/* Ícono Dar de baja */}
-                <span id={`tooltip-delete-${data.idUsuario}`} className='mb-2'>
+                <span
+                  id={`tooltip-delete-${data.idUsuario}`}
+                  className='mb-2 tour-delete'
+                >
                   <Trash
                     onClick={() => handleDeleteClick(data)}
                     style={{ cursor: 'pointer', fontSize: '1.2rem' }}
@@ -528,7 +537,7 @@ const EditarColab = () => {
                   <>
                     <span
                       id={`tooltip-reassign-${data.idUsuario}`}
-                      className='mb-2'
+                      className='mb-2 tour-reassign'
                     >
                       <ArrowRepeat
                         onClick={() => handleReassignClick(data)}
@@ -546,7 +555,10 @@ const EditarColab = () => {
             ) : (
               <>
                 {/* Botón Reactivar solo con ícono */}
-                <span id={`tooltip-reactivate-${data.idUsuario}`}>
+                <span
+                  id={`tooltip-reactivate-${data.idUsuario}`}
+                  className='tour-reactivate'
+                >
                   <Button
                     icon='pi pi-refresh'
                     className='p-button-success p-button-rounded p-button-text'
@@ -722,6 +734,9 @@ const EditarColab = () => {
     }
   };
 
+  useEffect(() => {
+    startTour('editUser', role);
+  }, [role]);
   return (
     <div className='fluid'>
       <Navbar></Navbar>
@@ -736,7 +751,7 @@ const EditarColab = () => {
               <h3 className='fs-4 text-center m-0 '>Usuarios</h3>
             </div>
           </div>
-          <div className='container-fluid mt-3 mt-md-5 mb-5'>
+          <div className='container-fluid mt-3 mt-md-5 mb-5' id='tourUsersEdit'>
             <div className='row px-3 gy-2' id='Resultado'>
               {colaboradores.map((colab, index) => (
                 <ColaboradorCard key={index} data={colab} />

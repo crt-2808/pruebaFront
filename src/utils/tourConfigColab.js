@@ -146,48 +146,51 @@ export const tourSteps = {
 
     return steps;
   },
-  planeador: [
-    {
-      element: '.regreso',
-      popover: {
-        title: 'Volver a Inicio',
-        description: 'Haz clic aquí para regresar a la pantalla principal.',
-        position: 'bottom',
+  planeador: (role) => {
+    const steps = [
+      {
+        element: '.regreso',
+        popover: {
+          title: 'Volver a Inicio',
+          description: 'Haz clic aquí para regresar a la pantalla principal.',
+          position: 'bottom',
+        },
       },
-    },
-    {
-      element: '#contenedor-land',
-      popover: {
-        title: 'Planeador',
-        description: 'Esta es tu vista principal para gestionar actividades.',
-        position: 'bottom',
+      {
+        element: '#contenedor-land',
+        popover: {
+          title: 'Planeador',
+          description: 'Esta es tu vista principal para gestionar actividades.',
+          position: 'bottom',
+        },
       },
-    },
-    {
-      element: '#planeador-cambaceo',
-      popover: {
-        title: 'Cambaceo',
-        description: 'Accede a la sección de Cambaceo desde aquí.',
-        position: 'top',
+      {
+        element: '#planeador-cambaceo',
+        popover: {
+          title: 'Cambaceo',
+          description: 'Accede a la sección de Cambaceo desde aquí.',
+          position: 'top',
+        },
       },
-    },
-    {
-      element: '#planeador-visita',
-      popover: {
-        title: 'Visita Programada',
-        description: 'Aquí puedes gestionar tus visitas programadas.',
-        position: 'top',
+      {
+        element: '#planeador-visita',
+        popover: {
+          title: 'Visita Programada',
+          description: 'Aquí puedes gestionar tus visitas programadas.',
+          position: 'top',
+        },
       },
-    },
-    {
-      element: '#planeador-llamada',
-      popover: {
-        title: 'Llamada',
-        description: 'Haz clic para acceder a las tareas de llamadas.',
-        position: 'top',
+      {
+        element: '#planeador-llamada',
+        popover: {
+          title: 'Llamada',
+          description: 'Haz clic para acceder a las tareas de llamadas.',
+          position: 'top',
+        },
       },
-    },
-  ],
+    ];
+    return steps;
+  },
   cambaceoDiario: [
     {
       element: '#contenedor',
@@ -250,59 +253,553 @@ export const tourSteps = {
       },
     },
   ],
-  colabPruebaMaps: [
-    {
-      element: '#contenedor-cambaceo',
-      popover: {
-        title: 'Información del Registro',
-        description: 'Aquí puedes ver toda la información del registro.',
-        position: 'bottom',
+  colabPruebaMaps: (role) => {
+    const steps = [
+      {
+        element: '#contenedor-cambaceo',
+        popover: {
+          title: 'Información del Registro',
+          description: 'Aquí puedes ver toda la información del registro.',
+          position: 'bottom',
+        },
       },
-    },
-    {
-      element: '.btn-danger',
-      popover: {
-        title: 'Agregar Incidencia',
-        description:
-          'Si encuentras problemas, regístralos aquí como una incidencia.',
+    ];
+    if (role === 'admin' || role === 'lider') {
+      steps.push(
+        {
+          element: '#asignarUserTour',
+          popover: {
+            title: 'Asignar Usuarios',
+            description:
+              'Aquí puedes asignar tanto uusuarios como equipos a la actividad.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '#direccionTour',
+          popover: {
+            title: 'Dirección',
+            description:
+              'Aquí puedes buscar o confirmar la dirección del registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.mapboxgl-map',
+          popover: {
+            title: 'Mapa de Ubicación',
+            description:
+              'Visualiza la ubicación del registro en el mapa interactivo. Puedes agregar la direccion manualmente o arrastrar el marcador para confirmarla.',
+            position: 'right',
+          },
+        },
+        {
+          element: '#fecha-inicio',
+          popover: {
+            title: 'Fecha de Inicio',
+            description:
+              'Aquí puedes asignar la fecha de inicio de la actividad programada.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '#horario',
+          popover: {
+            title: 'Horario',
+            description: 'Asigna el horario programado de la actividad.',
+            position: 'bottom',
+          },
+        }
+      );
+    }
+
+    if (role === 'colaborador') {
+      steps.push(
+        {
+          element: '.mapboxgl-map',
+          popover: {
+            title: 'Mapa de Ubicación',
+            description:
+              'Visualiza la ubicación del registro en el mapa interactivo.',
+            position: 'right',
+          },
+        },
+        {
+          element: '#fecha-inicio',
+          popover: {
+            title: 'Fecha de Inicio',
+            description:
+              'Aquí se muestra la fecha de inicio de la actividad programada.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '#horario',
+          popover: {
+            title: 'Horario',
+            description: 'Consulta el horario programado de la actividad.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.btn-exportar',
+          popover: {
+            title: 'Abrir en Google Maps',
+            description:
+              'Haz clic aquí para abrir la ubicación en Google Maps.',
+            position: 'top',
+          },
+        }
+      );
+    }
+    return steps;
+  },
+  createdSemanal: (role) => {
+    const steps = [
+      {
+        element: '#contenedor-cambaceo',
+        popover: {
+          title: 'Información del Registro',
+          description: 'Aquí puedes ver toda la información del registro.',
+          position: 'bottom',
+        },
+      },
+    ];
+    if (role === 'admin' || role === 'lider') {
+      steps.push(
+        {
+          element: '#asignarUserTour',
+          popover: {
+            title: 'Asignar Usuarios',
+            description:
+              'Aquí puedes asignar tanto uusuarios como equipos a la actividad.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '#direccionTour',
+          popover: {
+            title: 'Dirección',
+            description:
+              'Aquí puedes buscar o confirmar la dirección del registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.mapboxgl-map',
+          popover: {
+            title: 'Mapa de Ubicación',
+            description:
+              'Visualiza la ubicación del registro en el mapa interactivo. Puedes agregar la direccion manualmente o arrastrar el marcador para confirmarla.',
+            position: 'right',
+          },
+        },
+        {
+          element: '#fecha-inicio',
+          popover: {
+            title: 'Fecha de Inicio',
+            description:
+              'Aquí puedes asignar la fecha de inicio de la actividad programada.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '#fecha-fin',
+          popover: {
+            title: 'Fecha de Fin',
+            description:
+              'Aquí puedes asignar la fecha de fin de la actividad programada.',
+            position: 'bottom',
+          },
+        }
+      );
+    }
+    return steps;
+  },
+  trackCambaceo: (role) => {
+    const steps = [
+      {
+        element: '#contenedor-cambaceo',
+        popover: {
+          title: 'Información del Registro',
+          description: 'Aquí puedes ver toda la información del registro.',
+          position: 'bottom',
+        },
         position: 'top',
       },
-    },
-    {
-      element: '.mapboxgl-map',
-      popover: {
-        title: 'Mapa de Ubicación',
-        description:
-          'Visualiza la ubicación del registro en el mapa interactivo.',
-        position: 'right',
+    ];
+    if (role === 'admin' || role === 'lider') {
+      steps.push(
+        {
+          element: '#buscarUsuario',
+          popover: {
+            title: 'Buscar Usuario',
+            description:
+              'Aquí puedes buscar un usuario específico para ver su actividad.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.cambaceoCard',
+          popover: {
+            title: 'Cambaceo',
+            description: 'Aquí puedes ver toda la información del registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.cambaceoCardTitle',
+          popover: {
+            title: 'Tipo de Registro',
+            description:
+              'Aquí puedes ver el tipo de registro que se está mostrando.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.cambaceoCardDate',
+          popover: {
+            title: 'Fecha de Inicio',
+            description: 'Aquí puedes ver la fecha de inicio del registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.cambaceoCardAvatars',
+          popover: {
+            title: 'Colaboradores',
+            description:
+              'Aquí puedes ver todos los colaboradores que asignaron el registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.cambaceoCardBtn',
+          popover: {
+            title: 'Ver Detalles',
+            description: 'Haz clic aquí para ver más información del registro.',
+            position: 'bottom',
+          },
+        }
+      );
+    }
+    return steps;
+  },
+  createdVisita: (role) => {
+    const steps = [
+      {
+        element: '#contenedor-cambaceo',
+        popover: {
+          title: 'Información del Registro',
+          description: 'Aquí puedes ver toda la información del registro.',
+          position: 'bottom',
+        },
       },
-    },
-    {
-      element: '#fecha-inicio',
-      popover: {
-        title: 'Fecha de Inicio',
-        description:
-          'Aquí se muestra la fecha de inicio de la actividad programada.',
-        position: 'bottom',
-      },
-    },
-    {
-      element: '#horario',
-      popover: {
-        title: 'Horario',
-        description: 'Consulta el horario programado de la actividad.',
-        position: 'bottom',
-      },
-    },
-    {
-      element: '.btn-exportar',
-      popover: {
-        title: 'Abrir en Google Maps',
-        description: 'Haz clic aquí para abrir la ubicación en Google Maps.',
+    ];
+    if (role === 'admin' || role === 'lider') {
+      steps.push(
+        {
+          element: '#users-tour',
+          popover: {
+            title: 'Usuarios',
+            description:
+              'Aquí puedes asignar tanto usuarios como equipos a la actividad.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '#phone-tour',
+          popover: {
+            title: 'Teléfono',
+            description: 'Añade el teléfono un telefono',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '#date-tour',
+          popover: {
+            title: 'Fecha de Inicio',
+            description:
+              'Aquí puedes asignar la fecha de inicio de la actividad programada.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '#address-tour',
+          popover: {
+            title: 'Dirección',
+            description:
+              'Aquí puedes buscar o confirmar la dirección del registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.mapboxgl-map',
+          popover: {
+            title: 'Mapa de Ubicación',
+            description:
+              'Visualiza la ubicación del registro en el mapa interactivo. Puedes agregar la direccion manualmente o arrastrar el marcador para confirmarla.',
+            position: 'right',
+          },
+        },
+        {
+          element: '#description-tour',
+          popover: {
+            title: 'Descripción',
+            description: 'Consulta la descripción del registro.',
+            position: 'bottom',
+          },
+        }
+      );
+    }
+    return steps;
+  },
+  trackVisita: (role) => {
+    const steps = [
+      {
+        element: '#contenedor',
+        popover: {
+          title: 'Información del Registro',
+          description: 'Aquí puedes ver toda la información del registro.',
+          position: 'bottom',
+        },
         position: 'top',
       },
-    },
-  ],
+    ];
+    if (role === 'admin' || role === 'lider') {
+      steps.push(
+        {
+          element: '#buscarUsuario',
+          popover: {
+            title: 'Buscar Usuario',
+            description:
+              'Aquí puedes buscar un usuario específico para ver su actividad.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card',
+          popover: {
+            title: 'Registro',
+            description: 'Aquí puedes ver toda la información del registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card-title',
+          popover: {
+            title: 'Empresa',
+            description:
+              'Aquí puedes ver el nombre de la empresa del registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card-date',
+          popover: {
+            title: 'Fecha de Inicio',
+            description: 'Aquí puedes ver la fecha de inicio del registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card-btn',
+          popover: {
+            title: 'Ver Detalles',
+            description:
+              'Haz clic en este botón para ver más información del registro.',
+            position: 'bottom',
+          },
+        }
+      );
+    }
+    return steps;
+  },
+  createdLlamada: (role) => {
+    const steps = [
+      {
+        element: '#contenedor-cambaceo',
+        popover: {
+          title: 'Información del Registro',
+          description: 'Aquí puedes ver toda la información del registro.',
+          position: 'bottom',
+        },
+      },
+    ];
+    if (role === 'admin' || role === 'lider') {
+      steps.push(
+        {
+          element: '#users-tour',
+          popover: {
+            title: 'Usuarios',
+            description:
+              'Aquí puedes asignar tanto usuarios como equipos a la actividad.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '#phone-tour',
+          popover: {
+            title: 'Teléfono',
+            description: 'Añade el teléfono un telefono',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '#date-tour',
+          popover: {
+            title: 'Fecha de Inicio',
+            description:
+              'Aquí puedes asignar la fecha de inicio de la actividad programada.',
+            position: 'bottom',
+          },
+        }
+      );
+    }
+    return steps;
+  },
+  trackLlamada: (role) => {
+    const steps = [
+      {
+        element: '#contenedor',
+        popover: {
+          title: 'Información del Registro',
+          description: 'Aquí puedes ver toda la información del registro.',
+          position: 'bottom',
+        },
+        position: 'top',
+      },
+    ];
+    if (role === 'admin' || role === 'lider') {
+      steps.push(
+        {
+          element: '#buscarUsuario',
+          popover: {
+            title: 'Buscar Usuario',
+            description:
+              'Aquí puedes buscar un usuario específico para ver su actividad.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card',
+          popover: {
+            title: 'Registro',
+            description: 'Aquí puedes ver toda la información del registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card-title',
+          popover: {
+            title: 'Usuario',
+            description: 'Aquí puedes ver al usuario que asigna el registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card-date',
+          popover: {
+            title: 'Fecha de Inicio',
+            description: 'Aquí puedes ver la fecha de inicio del registro.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-phone',
+          popover: {
+            title: 'Teléfono',
+            description: 'Aquí puedes ver el teléfono del usuario.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card-btn',
+          popover: {
+            title: 'Ver Detalles',
+            description:
+              'Haz clic en este botón para ver más información del registro.',
+            position: 'bottom',
+          },
+        }
+      );
+    }
+    return steps;
+  },
+  editUser: (role) => {
+    const steps = [
+      {
+        element: '#tourUsersEdit',
+        popover: {
+          title: 'Información del Registro',
+          description: 'Aquí puedes ver toda la información del registro.',
+          position: 'bottom',
+        },
+      },
+    ];
+    if (role === 'admin' || role === 'lider') {
+      steps.push(
+        {
+          element: '.tour-card',
+          popover: {
+            title: 'Usuarios',
+            description:
+              'Aquí puedes asignar tanto usuarios como equipos a la actividad.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card-name',
+          popover: {
+            title: 'Nombre',
+            description: 'Aquí puedes ver el nombre del usuario.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card-role',
+          popover: {
+            title: 'Rol',
+            description: 'Aquí puedes ver el rol del usuario.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card-email',
+          popover: {
+            title: 'Correo',
+            description: 'Aquí puedes ver el correo del usuario.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-card-phone',
+          popover: {
+            title: 'Teléfono',
+            description: 'Aquí puedes ver el teléfono del usuario.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-edit',
+          popover: {
+            title: 'Editar',
+            description: 'Haz clic aquí para editar el usuario.',
+            position: 'bottom',
+          },
+        },
+        {
+          element: '.tour-delete',
+          popover: {
+            title: 'Dar de baja',
+            description: 'Haz clic aquí para dar de baja el usuario.',
+            position: 'bottom',
+          },
+        }
+      );
+    }
+    return steps;
+  },
 };
 
 // Función para iniciar el tour según la vista actual y el rol del usuario

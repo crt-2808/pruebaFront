@@ -23,6 +23,8 @@ import {
   showInfoAlert,
   showLoadingAlert,
 } from '../utils/alerts';
+import { SessionManager } from '../utils/sessionManager';
+import { startTour } from '../utils/tourConfigColab';
 
 const mapboxToken = process.env.REACT_APP_MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
@@ -45,6 +47,7 @@ const SeguimientoCambaceos = () => {
   const navigate = useNavigate();
   const [idPlanificador, setIdPlanificador] = useState(null);
   const [idColaborador, setIdColaborador] = useState(null);
+  const role = SessionManager.getRole();
 
   const [coordinates, setCoordinates] = useState({
     latitude: 26.084241,
@@ -188,6 +191,10 @@ const SeguimientoCambaceos = () => {
     filtrarRegistros();
   }, [search, registros]);
 
+  useEffect(() => {
+    startTour('trackCambaceo', role);
+  }, [role]);
+
   const handleClickAvatar = async (idPlanificador, idColaborador) => {
     try {
       const response = await fetchWithToken(
@@ -308,7 +315,7 @@ const SeguimientoCambaceos = () => {
                   <h3 className='textoBuscaSeg'>Busca tu cambaceo</h3>
                 </div>
                 <div className='col-md-6'>
-                  <div className='input-wrapper'>
+                  <div className='input-wrapper' id='buscarUsuario'>
                     <input
                       type='text'
                       className='form-control'
@@ -497,15 +504,15 @@ const SeguimientoCambaceos = () => {
                             ...registro.Colaboradores,
                           ];
                           return (
-                            <div className='col-md-4' key={index}>
+                            <div className='col-md-4 cambaceoCard' key={index}>
                               <div className='card custom-card centrar p-3'>
-                                <h2 className='card-title custom-card-title'>
+                                <h2 className='card-title custom-card-title cambaceoCardTitle'>
                                   {registro.Tipo}
                                 </h2>
-                                <h4 className='card-subtitle mb-2 text-muted'>
+                                <h4 className='card-subtitle mb-2 text-muted cambaceoCardDate'>
                                   {formatearFecha(registro.FechaAsignacion)}
                                 </h4>
-                                <div className='avatars-container'>
+                                <div className='avatars-container cambaceoCardAvatars'>
                                   {colaboradoresConCreador
                                     .slice(0, maxAvatarsToShow)
                                     .map((colaborador, idx) => (
@@ -550,7 +557,7 @@ const SeguimientoCambaceos = () => {
                                   )}
                                 </div>
                                 <button
-                                  className='btn-custom'
+                                  className='btn-custom cambaceoCardBtn'
                                   onClick={() => handleVerClick(registro)}
                                 >
                                   Ver más

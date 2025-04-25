@@ -23,10 +23,13 @@ import {
   showSuccessAlert,
   showSuccessToast,
 } from '../utils/alerts';
+import { startTour } from '../utils/tourConfigColab';
+import { SessionManager } from '../utils/sessionManager';
 
 function CalendarioVisita() {
   useAuthRedirect();
   CalendarioEsp();
+  const role = SessionManager.getRole();
   const mapboxToken = process.env.REACT_APP_MAPBOX_TOKEN;
   const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
   const navigate = useNavigate();
@@ -223,6 +226,9 @@ function CalendarioVisita() {
   useEffect(() => {
     cargarColaboradores();
   }, []);
+  useEffect(() => {
+    startTour('createdVisita', role);
+  }, [role]);
   const opcionesColaboradores = colaboradores.map((colaborador) => ({
     label: colaborador.nombreCompleto,
     value: `${colaborador.id}_${colaborador.nombreCompleto}`,
@@ -292,7 +298,7 @@ function CalendarioVisita() {
                   <br />
                 </label>
               </div>
-              <div>
+              <div id='users-tour'>
                 <MultiSelect
                   value={colaboradoresSeleccionados}
                   options={opcionesColaboradores}
@@ -307,7 +313,7 @@ function CalendarioVisita() {
               <div className='p-field'>
                 <label htmlFor='Telefono'>Teléfono</label>
               </div>
-              <div>
+              <div id='phone-tour'>
                 <InputMask
                   id='Telefono'
                   value={Telefono}
@@ -321,7 +327,7 @@ function CalendarioVisita() {
               <div className='p-field'>
                 <label htmlFor='FechaAsignacion'>Fecha y Hora</label>
               </div>
-              <div>
+              <div id='date-tour'>
                 <Calendar
                   id='FechaAsignacion'
                   value={FechaAsignacion}
@@ -341,7 +347,7 @@ function CalendarioVisita() {
                   <br />
                 </label>
               </div>
-              <div>
+              <div id='address-tour'>
                 <span className='p-input-icon-right' style={{ width: '100%' }}>
                   {address && (
                     <i
@@ -376,7 +382,7 @@ function CalendarioVisita() {
                   <br />
                 </label>
               </div>
-              <div>
+              <div id='company-tour'>
                 <InputText
                   id='TipoEmpresa'
                   value={TipoEmpresa}
@@ -392,7 +398,7 @@ function CalendarioVisita() {
                   <br />
                 </label>
               </div>
-              <div>
+              <div id='website-tour'>
                 <InputText
                   id='Sitioweb'
                   value={Sitioweb}
@@ -405,7 +411,7 @@ function CalendarioVisita() {
               <div className='p-field'>
                 <label htmlFor='Descripcion'>Descripción</label>
               </div>
-              <div>
+              <div id='description-tour'>
                 <InputTextarea
                   id='Descripcion'
                   autoResize
@@ -421,7 +427,7 @@ function CalendarioVisita() {
               <Map
                 {...viewState}
                 onMove={(evt) => setViewState(evt.viewState)}
-                className='centrar'
+                className='centrar map'
                 style={{
                   width: '80%',
                   height: '480px',

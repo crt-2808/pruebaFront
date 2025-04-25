@@ -16,9 +16,12 @@ import {
   showLoadingAlert,
   showSuccessAlert,
 } from '../utils/alerts';
+import { startTour } from '../utils/tourConfigColab';
+import { SessionManager } from '../utils/sessionManager';
 // Componente principal
 const SeguimientoLlamada = () => {
   useAuthRedirect();
+  const role = SessionManager.getRole();
   // Estado para almacenar los datos de la base de datos
   const [registros, setRegistros] = useState([]);
   const [modoCuestionario, setModoCuestionario] = useState(false);
@@ -167,6 +170,9 @@ const SeguimientoLlamada = () => {
 
   const handleBuscar = () => {};
 
+  useEffect(() => {
+    startTour('trackLlamada', role);
+  }, [role]);
   // Renderiza las seguimientovisita con los datos de la base de datos
   return (
     <div className='fluid'>
@@ -194,7 +200,7 @@ const SeguimientoLlamada = () => {
                   </h6>
                 </div>
                 <div className='col-md-6'>
-                  <div className='input-wrapper'>
+                  <div className='input-wrapper' id='buscarUsuario'>
                     <input
                       type='text'
                       className='form-control'
@@ -302,7 +308,7 @@ const SeguimientoLlamada = () => {
                       {registros.map((registro, index) => (
                         <div className='col-md-3' key={index}>
                           <div
-                            className='card centrar p-3'
+                            className='card centrar p-3 tour-card'
                             style={{
                               width: '15rem',
                               height: '16rem',
@@ -314,7 +320,7 @@ const SeguimientoLlamada = () => {
                             }}
                           >
                             <h2
-                              className='card-title'
+                              className='card-title tour-card-title'
                               style={{
                                 fontSize: '2rem', // Tamaño predeterminado
                                 margin: 0, // Elimina cualquier margen adicional que pueda afectar
@@ -325,14 +331,14 @@ const SeguimientoLlamada = () => {
                             >
                               {registro.NombreCompleto}
                             </h2>
-                            <h4 className='card-subtitle mb-2 text-muted'>
+                            <h4 className='card-subtitle mb-2 text-muted tour-card-date'>
                               {formatearFecha(registro.FechaAsignacion)}
                             </h4>
-                            <p className='card-text text-truncate'>
+                            <p className='card-text text-truncate email tour-phone'>
                               {registro.Telefono}
                             </p>
                             <button
-                              className='btnDiario'
+                              className='btnDiario tour-card-btn'
                               onClick={() => handleVerClick(registro)}
                             >
                               Ver

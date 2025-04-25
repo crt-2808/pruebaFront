@@ -10,9 +10,12 @@ import { Row, Col } from 'react-bootstrap';
 import { useAuthRedirect } from '../useAuthRedirect';
 import { useUserContext } from '../userProvider';
 import { API_URL, fetchWithToken } from '../utils/api';
+import { startTour } from '../utils/tourConfigColab';
+import { SessionManager } from '../utils/sessionManager';
 // Componente principal
 const SeguimientoVisita = () => {
   useAuthRedirect();
+  const role = SessionManager.getRole();
   // Estado para almacenar los datos de la base de datos
   const [registros, setRegistros] = useState([]);
   const [modoCuestionario, setModoCuestionario] = useState(false);
@@ -189,6 +192,9 @@ const SeguimientoVisita = () => {
 
   const handleBuscar = () => {};
 
+  useEffect(() => {
+    startTour('trackVisita', role);
+  }, [role]);
   // Renderiza las seguimientovisita con los datos de la base de datos
   return (
     <div className='fluid'>
@@ -216,7 +222,7 @@ const SeguimientoVisita = () => {
                   </h6>
                 </div>
                 <div className='col-md-6'>
-                  <div className='input-wrapper'>
+                  <div className='input-wrapper' id='buscarUsuario'>
                     <input
                       type='text'
                       className='form-control'
@@ -343,7 +349,7 @@ const SeguimientoVisita = () => {
                       {registros.map((registro, index) => (
                         <div className='col-md-3' key={index}>
                           <div
-                            className='card centrar p-3'
+                            className='card centrar p-3 tour-card'
                             style={{
                               width: '15rem',
                               height: '16rem',
@@ -355,7 +361,7 @@ const SeguimientoVisita = () => {
                             }}
                           >
                             <h2
-                              className='card-title'
+                              className='card-title tour-card-title'
                               style={{
                                 fontSize: '1.5rem', // Tamaño predeterminado
                                 margin: 0, // Elimina cualquier margen adicional que pueda afectar
@@ -363,14 +369,14 @@ const SeguimientoVisita = () => {
                             >
                               {registro.TipoEmpresa}
                             </h2>
-                            <h4 className='card-subtitle mb-2 text-muted'>
+                            <h4 className='card-subtitle mb-2 text-muted tour-card-date'>
                               {formatearFecha(registro.FechaAsignacion)}
                             </h4>
-                            <p className='card-text text-truncate email'>
+                            <p className='card-text text-truncate email tour-card-btn'>
                               {registro.NombreCompleto}
                             </p>
                             <button
-                              className='btnDiario'
+                              className='btnDiario tour-card-btn'
                               onClick={() => handleVerClick(registro)}
                             >
                               Ver

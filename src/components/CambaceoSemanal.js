@@ -20,6 +20,8 @@ import { CalendarioEsp } from '../utils/calendarLocale';
 import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 import { fetchWithToken } from '../utils/api';
 import { API_URL } from '../utils/api';
+import { SessionManager } from '../utils/sessionManager';
+import { startTour } from '../utils/tourConfigColab';
 
 const mapboxToken = process.env.REACT_APP_MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
@@ -27,6 +29,7 @@ const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
 function CambaceoSemanal() {
   CalendarioEsp();
   const navigate = useNavigate();
+  const role = SessionManager.getRole();
   const [address, setAddress] = useState('');
   const [coordinates, setCoordinates] = useState({
     latitude: 26.084241,
@@ -521,6 +524,9 @@ function CambaceoSemanal() {
     const FechaNueva = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     return FechaNueva;
   };
+  useEffect(() => {
+    startTour('createdSemanal', role);
+  }, [role]);
 
   return (
     <div className='fluid'>
@@ -558,7 +564,7 @@ function CambaceoSemanal() {
           <Form onSubmit={handleSubmit(onSubmit)} className='mt-2 mt-md-0'>
             <Row className='mb-2'>
               <Col xs={12} md={6}>
-                <div>
+                <div id='asignarUserTour'>
                   <Form.Group>
                     <h5 style={{ textAlign: 'left' }}>Asesores</h5>
                     <MultiSelect
@@ -573,7 +579,7 @@ function CambaceoSemanal() {
                     />
                   </Form.Group>
                 </div>
-                <div style={{ marginTop: '15px' }}>
+                <div style={{ marginTop: '15px' }} id='direccionTour'>
                   <Form.Group>
                     <h5 style={{ textAlign: 'left' }}>Dirección</h5>
                     <span
@@ -626,7 +632,7 @@ function CambaceoSemanal() {
                     )}
                   </Form.Group>
                 </div>
-                <div style={{ marginTop: '15px' }}>
+                <div style={{ marginTop: '15px' }} id='fecha-inicio'>
                   <Row>
                     <Col>
                       <Form.Group>
@@ -646,7 +652,7 @@ function CambaceoSemanal() {
                     </Col>
                   </Row>
                 </div>
-                <div style={{ marginTop: '15px' }}>
+                <div style={{ marginTop: '15px' }} id='fecha-fin'>
                   <Row>
                     <Col>
                       <Form.Group>

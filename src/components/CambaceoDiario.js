@@ -20,6 +20,8 @@ import { CalendarioEsp } from '../utils/calendarLocale';
 import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 import { fetchWithToken } from '../utils/api';
 import { API_URL } from '../utils/api';
+import { SessionManager } from '../utils/sessionManager';
+import { startTour } from '../utils/tourConfigColab';
 
 const mapboxToken = process.env.REACT_APP_MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
@@ -27,6 +29,7 @@ const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
 function CambaceoDiario() {
   CalendarioEsp();
   const navigate = useNavigate();
+  const role = SessionManager.getRole();
   const [address, setAddress] = useState('');
   const [coordinates, setCoordinates] = useState({
     latitude: 26.084241,
@@ -170,6 +173,7 @@ function CambaceoDiario() {
     };
 
     fetchTeamMembers();
+    startTour('colabPruebaMaps', role);
   }, []);
 
   const onSubmit = async (data) => {
@@ -210,7 +214,10 @@ function CambaceoDiario() {
           (col) => col.id === parseInt(id)
         );
 
-        if (colaborador.tipo === 'Colaborador'||colaborador.tipo==="coordinador") {
+        if (
+          colaborador.tipo === 'Colaborador' ||
+          colaborador.tipo === 'coordinador'
+        ) {
           tipoColaborador.push(id);
         } else if (colaborador.tipo === 'Equipo') {
           tipoEquipo.push(id);
@@ -374,12 +381,12 @@ function CambaceoDiario() {
       (item) => !seleccionados.includes(item)
     );
     setColaboradoresSeleccionados(seleccionados);
-  
+
     // Manejo de deseleccionados
     deseleccionados.forEach(async (item) => {
       const [id, nombreCompleto] = item.split('_');
       const colaborador = colaboradores.find((col) => col.id === parseInt(id));
-  
+
       if (colaborador.tipo === 'Asesor' || colaborador.tipo === 'Coordinador') {
         try {
           const res = await fetchWithToken(
@@ -392,7 +399,7 @@ function CambaceoDiario() {
             }
           );
           const data = await res.json();
-  
+
           if (data.id) {
             const updatedColaboradores = colaboradores.map((colab) => {
               if (colab.tipo === 'Equipo' && colab.id === data.id) {
@@ -417,7 +424,7 @@ function CambaceoDiario() {
             }
           );
           const data = await res.json();
-  
+
           if (data.length > 0) {
             const updatedColaboradores = colaboradores.map((colab) => {
               if (
@@ -435,13 +442,13 @@ function CambaceoDiario() {
         }
       }
     });
-  
+
     // Manejo de seleccionados
     const colaboradorIds = seleccionados.map((item) => item.split('_')[0]);
-  
+
     colaboradorIds.forEach(async (id) => {
       const colaborador = colaboradores.find((col) => col.id === parseInt(id));
-  
+
       if (colaborador.tipo === 'Asesor' || colaborador.tipo === 'Coordinador') {
         try {
           const res = await fetchWithToken(
@@ -454,7 +461,7 @@ function CambaceoDiario() {
             }
           );
           const data = await res.json();
-  
+
           if (data.id) {
             const updatedColaboradores = colaboradores.map((colab) => {
               if (colab.tipo === 'Equipo' && colab.id === data.id) {
@@ -479,7 +486,7 @@ function CambaceoDiario() {
             }
           );
           const data = await res.json();
-  
+
           if (data.length > 0) {
             const updatedColaboradores = colaboradores.map((colab) => {
               if (
@@ -493,11 +500,14 @@ function CambaceoDiario() {
             setColaboradores(updatedColaboradores);
           }
         } catch (error) {
-          console.error('Error al obtener los colaboradores del equipo:', error);
+          console.error(
+            'Error al obtener los colaboradores del equipo:',
+            error
+          );
         }
       }
     });
-  
+
     console.log('Colaboradores seleccionados:', seleccionados);
   };
   const cargarColaboradores = async () => {
@@ -509,14 +519,16 @@ function CambaceoDiario() {
         },
       });
       const data = await response.json();
-      console.log("esta es la data ", data);
+      console.log('esta es la data ', data);
 
       // Procesar colaboradores
-      const colaboradoresProcesados = data.colaboradores.filter((colaborador) => colaborador.Rol !== 'gerente').map((colaborador) => ({
-        id: colaborador.idUsuario,
-        nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
-        tipo: colaborador.Rol === 'colaborador' ? 'Asesor' : colaborador.Rol,
-      }));
+      const colaboradoresProcesados = data.colaboradores
+        .filter((colaborador) => colaborador.Rol !== 'gerente')
+        .map((colaborador) => ({
+          id: colaborador.idUsuario,
+          nombreCompleto: `${colaborador.Nombre} ${colaborador.Apellido_pat} ${colaborador.Apellido_mat}`,
+          tipo: colaborador.Rol === 'colaborador' ? 'Asesor' : colaborador.Rol,
+        }));
 
       // Procesar equipos
       const equiposProcesados = data.equipos.map((equipo) => ({
@@ -628,7 +640,7 @@ function CambaceoDiario() {
           <Form onSubmit={handleSubmit(onSubmit)} className='mt-2 mt-md-0'>
             <Row className='mb-2'>
               <Col xs={12} md={6}>
-                <div>
+                <div id='asignarUserTour'>
                   <Form.Group>
                     <h5 style={{ textAlign: 'left' }}>Asesores </h5>
                     <MultiSelect
@@ -643,7 +655,7 @@ function CambaceoDiario() {
                     />
                   </Form.Group>
                 </div>
-                <div style={{ marginTop: '15px' }}>
+                <div style={{ marginTop: '15px' }} id='direccionTour'>
                   <Form.Group>
                     <h5 style={{ textAlign: 'left' }}>Dirección</h5>
                     <span
@@ -696,7 +708,7 @@ function CambaceoDiario() {
                     )}
                   </Form.Group>
                 </div>
-                <div style={{ marginTop: '15px' }}>
+                <div style={{ marginTop: '15px' }} id='fecha-inicio'>
                   <Row>
                     <Col>
                       <Form.Group>
@@ -716,7 +728,7 @@ function CambaceoDiario() {
                     </Col>
                   </Row>
                 </div>
-                <div style={{ marginTop: '15px' }}>
+                <div style={{ marginTop: '15px' }} id='horario'>
                   <Row>
                     <Col>
                       <Form.Group>
