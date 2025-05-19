@@ -743,8 +743,7 @@ export const tourSteps = {
           element: '.tour-card',
           popover: {
             title: 'Usuarios',
-            description:
-              'Aquí puedes asignar tanto usuarios como equipos a la actividad.',
+            description: 'Aquí puedes ver la infomacion completa del usuario.',
             position: 'bottom',
           },
         },
